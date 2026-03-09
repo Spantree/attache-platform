@@ -77,7 +77,7 @@ Each crosswalk carries:
 
 - **Source system** — which integration established the binding
 - **External ID** — the identifier in that system
-- **Confidence** — how certain we are (1.0 = deterministic, <1.0 = inferred)
+- **Confidence** — how certain we are (1.0 = deterministic, &lt;1.0 = inferred)
 - **Match method** — how the binding was established (email match, name similarity, process of elimination, manual confirmation)
 - **Status** — active, pending review, rejected
 
