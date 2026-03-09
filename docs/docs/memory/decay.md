@@ -5,6 +5,12 @@ sidebar_label: Decay & Retrieval
 
 # Decay & Retrieval
 
+:::tip ELI5
+Imagine your agent's memory is a library. Every book glows — bright if you read it recently or often, dim if you haven't touched it in months. When you pull a book off the shelf, the books next to it glow a little brighter too (spreading activation). Some books hold the whole shelf together — even if nobody reads them, they can't be removed without everything falling apart (structural protection). The librarian periodically walks through and moves the dimmest books to the basement (archival). They're not gone — just out of the way so you can find the bright ones faster.
+
+That's the decay model. It keeps the agent's search results focused on what matters, even as the library grows to thousands of books.
+:::
+
 Search results shouldn't treat a note from six months ago the same as one from yesterday. A conversation about "GATX infrastructure" last week is more relevant than a similar conversation from January — unless the January note has been accessed repeatedly, linked heavily, or sits at a critical point in the knowledge graph.
 
 This might feel like overkill for an agent with 50 notes. It's not — it's designed for agents that run for **months or years**, accumulating thousands of notes, tens of thousands of messages, and hundreds of entity profiles. Without decay, every search query pays the cost of sifting through the entire history. A 6-month-old note about a resolved bug competes equally with yesterday's architecture decision for the same context window tokens. At scale, undifferentiated retrieval wastes the most expensive resource in the system: **context window space**.
