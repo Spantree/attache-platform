@@ -1,0 +1,58 @@
+/**
+ * Custom CSS for Attache Site documentation.
+ * Infima CSS framework variables overridden with brand colors.
+ */
+
+:root {
+  --ifm-color-primary: #6366f1;
+  --ifm-color-primary-dark: #4c4fef;
+  --ifm-color-primary-darker: #4246ee;
+  --ifm-color-primary-darkest: #1d21eb;
+  --ifm-color-primary-light: #7a7df3;
+  --ifm-color-primary-lighter: #8486f4;
+  --ifm-color-primary-lightest: #a9abf7;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #c1c2f9;
+  --ifm-color-primary-dark: #aaabf7;
+  --ifm-color-primary-darker: #a0a2f6;
+  --ifm-color-primary-darkest: #7b7df2;
+  --ifm-color-primary-light: #d8d9fb;
+  --ifm-color-primary-lighter: #e2e2fc;
+  --ifm-color-primary-lightest: #ffffff;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Doc content images */
+.markdown img {
+  max-height: 300px;
+  width: auto;
+  display: block;
+  margin: 1.5rem auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.markdown img.img-left {
+  float: left;
+  display: inline;
+  margin: 0.25rem 1.5rem 1rem 0;
+  max-height: 200px;
+  max-width: 40%;
+}
+
+.markdown img.img-right {
+  float: right;
+  display: inline;
+  margin: 0.25rem 0 1rem 1.5rem;
+  max-height: 200px;
+  max-width: 40%;
+}
+
+.markdown h2,
+.markdown h3 {
+  clear: both;
+}

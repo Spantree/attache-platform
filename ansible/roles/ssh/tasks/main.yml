@@ -1,0 +1,27 @@
+---
+# SSH hardening — key-only auth, no root login
+# Note: macOS manages sshd via launchd, not systemd
+
+- name: Disable password authentication
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PasswordAuthentication"
+    line: "PasswordAuthentication no"
+  notify: restart sshd
+
+- name: Disable root login
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PermitRootLogin"
+    line: "PermitRootLogin no"
+  notify: restart sshd
+
+- name: Disable keyboard-interactive auth
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?KbdInteractiveAuthentication"
+    line: "KbdInteractiveAuthentication no"
+  notify: restart sshd

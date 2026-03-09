@@ -1,0 +1,20 @@
+{
+  "name": "attache-site",
+  "version": "1.0.0",
+  "description": "Attache Site - Built with Trellis",
+  "workspaces": [
+    "docs"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "bun run build:docs",
+    "build:docs": "bun --filter=docs run build -- --out-dir ../../dist/docs",
+    "dev:docs": "bun --filter=docs run start",
+    "dev": "bun run dev:docs & bun run dev:proxy",
+    "dev:stop": "lsof -ti :3030 -ti :3035 | xargs kill -9 2>/dev/null || true",
+    "dev:proxy": "bun run dev-server.ts",
+    "deploy": "bun run build && bunx wrangler deploy"
+  },
+  "author": "Attaché",
+  "license": "MIT"
+}

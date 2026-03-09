@@ -1,0 +1,7 @@
+all:
+  hosts:
+    my-agent:
+      ansible_host: 192.168.1.100
+      ansible_user: evie
+      ansible_become: false
+      agent_name: Evie

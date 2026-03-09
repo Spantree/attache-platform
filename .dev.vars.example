@@ -1,0 +1,10 @@
+# Cloudflare Workers local development variables
+# Copy to .dev.vars and fill in values.
+#
+# To enable passcode authentication locally:
+# 1. Generate a hash: echo -n "your-password" | shasum -a 256 | cut -d' ' -f1
+# 2. Set PASSCODE_HASH below
+# 3. Run: bunx wrangler dev
+#
+# Leave commented out for a public (no-auth) site.
+# PASSCODE_HASH=

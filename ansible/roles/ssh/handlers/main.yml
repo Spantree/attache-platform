@@ -1,0 +1,7 @@
+---
+- name: restart sshd
+  become: true
+  ansible.builtin.shell: |
+    launchctl unload /System/Library/LaunchDaemons/ssh.plist 2>/dev/null || true
+    launchctl load -w /System/Library/LaunchDaemons/ssh.plist
+  changed_when: true

@@ -1,0 +1,17 @@
+# Default variables for all hosts
+node_version: "22"
+openclaw_version: "latest"
+mise_version: "latest"
+
+# Homebrew packages to install
+homebrew_packages:
+  - git
+  - jq
+  - gh
+  - mise
+  - tailscale
+  - trash
+
+# Homebrew casks
+homebrew_casks:
+  - 1password-cli

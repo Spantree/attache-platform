@@ -1,0 +1,14 @@
+{
+  // Set PASSCODE_HASH to enable passcode authentication.
+  // Generate: echo -n "your-password" | shasum -a 256 | cut -d' ' -f1
+  // Set in CF dashboard: Settings → Environment Variables → PASSCODE_HASH
+  // Leave unset for a public (no-auth) site.
+  "name": "attache-site",
+  "compatibility_date": "2026-01-20",
+  "main": "./worker.js",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  }
+}

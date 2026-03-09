@@ -1,0 +1,20 @@
+---
+- name: Install Node.js via mise
+  ansible.builtin.shell: |
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    mise use --global node@{{ node_version }}
+  args:
+    creates: "{{ ansible_env.HOME }}/.local/share/mise/installs/node"
+  changed_when: true
+
+- name: Verify Node.js installation
+  ansible.builtin.shell: |
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    eval "$(mise activate bash)"
+    node --version
+  register: node_ver
+  changed_when: false
+
+- name: Display Node.js version
+  ansible.builtin.debug:
+    msg: "Node.js {{ node_ver.stdout }} installed"

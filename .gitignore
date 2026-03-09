@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.DS_Store
+*.tgz
+.env
+.env.local
+.docusaurus/
+build/
+.dev.vars
+.wrangler/
+ansible/inventory/hosts.yml
+*.retry
+bun.lock

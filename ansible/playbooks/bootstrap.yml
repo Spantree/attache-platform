@@ -1,0 +1,43 @@
+---
+# Attaché Bootstrap Playbook
+# Provisions a bare macOS Tahoe machine into a fully configured OpenClaw agent host.
+#
+# Usage:
+#   ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml
+#
+# Prerequisites:
+#   - Target has macOS Tahoe installed with a single admin user
+#   - SSH (Remote Login) is enabled on the target
+#   - Your SSH key is copied to the target (ssh-copy-id)
+
+- name: Bootstrap Attaché agent host
+  hosts: all
+  gather_facts: true
+
+  pre_tasks:
+    - name: Verify macOS
+      ansible.builtin.assert:
+        that:
+          - ansible_os_family == "Darwin"
+        fail_msg: "Attaché only supports macOS hosts"
+
+  roles:
+    - role: homebrew
+      tags: [homebrew]
+    - role: shell
+      tags: [shell]
+    - role: node
+      tags: [node]
+    - role: openclaw
+      tags: [openclaw]
+    - role: ssh
+      tags: [ssh]
+    - role: workspace
+      tags: [workspace]
+
+  post_tasks:
+    - name: Bootstrap complete
+      ansible.builtin.debug:
+        msg: >
+          Attaché bootstrap complete for {{ agent_name | default(ansible_user) }}.
+          SSH into {{ ansible_host }} and run 'openclaw pair' to connect your agent.

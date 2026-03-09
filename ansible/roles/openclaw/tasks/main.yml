@@ -1,0 +1,35 @@
+---
+- name: Install OpenClaw via npm
+  ansible.builtin.shell: |
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    eval "$(mise activate bash)"
+    npm install -g openclaw@{{ openclaw_version }}
+  register: openclaw_install
+  changed_when: "'added' in openclaw_install.stdout or 'updated' in openclaw_install.stdout"
+
+- name: Verify OpenClaw installation
+  ansible.builtin.shell: |
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    eval "$(mise activate bash)"
+    openclaw --version
+  register: openclaw_ver
+  changed_when: false
+
+- name: Display OpenClaw version
+  ansible.builtin.debug:
+    msg: "OpenClaw {{ openclaw_ver.stdout }} installed"
+
+- name: Create OpenClaw config directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.openclaw"
+    state: directory
+    mode: "0700"
+
+- name: Start OpenClaw gateway as launch agent
+  ansible.builtin.shell: |
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    eval "$(mise activate bash)"
+    openclaw gateway start
+  register: gateway_start
+  changed_when: "'started' in gateway_start.stdout"
+  failed_when: false
