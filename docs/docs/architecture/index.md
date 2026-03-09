@@ -4,7 +4,7 @@ sidebar_position: 3
 
 # Architecture
 
-Attaché uses a two-layer architecture: a **base platform** that every agent shares, and an optional **user config repo** that customizes the agent for a specific person or team.
+Attaché uses a two-layer architecture. A **base platform** handles everything needed to run an OpenClaw agent on bare macOS. An optional **user config repo** layers personalization on top — your dotfiles, skills, workspace files, and custom Ansible playbooks.
 
 ## Two-Layer Design
 
@@ -13,15 +13,15 @@ Attaché uses a two-layer architecture: a **base platform** that every agent sha
 │           User Config Repo                  │
 │  (github.com/username/agent-name)           │
 │                                             │
-│  attache.config.json, Brewfile, workspace/,         │
-│  ansible/playbooks/, ansible/roles/,        │
-│  ansible/group_vars/, shell/, scripts/      │
+│  attache.config.json, Brewfile, workspace/, │
+│  skills/, ansible/, shell/, scripts/        │
 ├─────────────────────────────────────────────┤
 │           Attaché Base Platform             │
 │  (github.com/Spantree/attache-platform)     │
 │                                             │
-│  Core Ansible roles: homebrew, mise, node,  │
-│  openclaw, ssh, shell, workspace, git       │
+│  Ansible roles: homebrew, mise, node,       │
+│  docker, openclaw, ssh, tailscale,          │
+│  workspace, supabase                        │
 └─────────────────────────────────────────────┘
          ▼            ▼            ▼
     macOS Tahoe   OpenClaw    Agent Workspace
@@ -29,148 +29,80 @@ Attaché uses a two-layer architecture: a **base platform** that every agent sha
 
 ### Layer 1: Base Platform
 
-The base platform is opinionated and turnkey. It installs everything needed to run an OpenClaw agent on a bare macOS Tahoe machine:
+The base platform is opinionated and turnkey. Every Attaché agent runs the same set of roles, and the playbooks are idempotent — run them again anytime to converge.
 
-- **Xcode CLI tools** and Rosetta (Apple Silicon)
-- **Homebrew** and core CLI packages
-- **mise** for version management
-- **Node.js** and **Bun** via mise
-- **OpenClaw** installed globally, gateway running as a launch agent
-- **SSH hardening** (key-only auth, no root login)
-- **Git** with sensible defaults
-- **Workspace scaffolding** (`~/.openclaw/workspaces/main/` with `memory/`, `knowledge/`, and `skills/`)
-- **Tailscale** installed and ready for secure tunnel access
+**System foundations** come first: Xcode CLI tools, Rosetta on Apple Silicon, and Homebrew with core CLI packages. These rarely change but need to be present before anything else.
 
-Every Attaché agent runs the same base. It's idempotent — run it again anytime to converge.
+**Runtime tooling** follows: mise for version management, Node.js and Bun for OpenClaw's runtime, and Git with sensible defaults (auto-setup remote, rerere, diff3 merge style).
+
+**OpenClaw itself** is installed globally via npm, with the gateway configured as a launch agent that starts on boot and survives reboots.
+
+**Infrastructure services** round out the base: Docker via Colima (not Docker Desktop), Supabase running in Compose with pgvector and pg_trgm extensions, and Tailscale for secure tunnel access.
+
+**Security hardening** locks down SSH to key-only authentication with no root login, and the workspace directory structure is scaffolded at `~/.openclaw/workspaces/main/` with `memory/`, `knowledge/`, and `skills/` subdirectories.
 
 ### Layer 2: User Config Repo
 
-The user config repo is where personalization lives. It can be:
+The config repo is where personalization lives. It can be public (a shared team config like `myorg/attache-config`) or private (a specific agent's setup like `divideby0/evie`). Attaché discovers a known directory structure and applies it automatically after the base completes.
 
-- **Public** — `github.com/username/attache-config` for shared configurations
-- **Private** — `github.com/username/agent-name` for a specific agent (e.g., `divideby0/evie`)
+See the [Config Repo Guide](../config-repo/) for the full directory structure and `attache.config.json` reference.
 
-The config repo uses a known directory structure that Attaché discovers and applies automatically.
+## Bootstrap Sequence
 
-## Config Repo Structure
+The bootstrap runs as a single Ansible playbook with two phases. The base phase installs all core infrastructure. The overlay phase clones and applies the user config repo if one is specified.
 
 ```
-my-agent/
-├── attache.config.json              # Feature flags and variable overrides
-├── Brewfile                 # Additional Homebrew packages (merged with base)
-├── mise/
-│   └── config.toml          # Additional mise tools (merged with base)
-├── shell/
-│   ├── zshrc.local          # Agent-specific aliases, PATH, env vars
-│   └── starship.toml        # Custom prompt configuration
-├── workspace/
-│   ├── SOUL.md              # Agent personality and voice
-│   ├── USER.md              # About the human
-│   ├── AGENTS.md            # Workspace conventions
-│   ├── TOOLS.md             # Local tool notes
-│   ├── IDENTITY.md          # Agent identity metadata
-│   └── skills/              # Custom OpenClaw skills
-├── ansible/
-│   ├── group_vars/          # Merged with base group_vars (user wins)
-│   │   └── all.yml
-│   ├── playbooks/           # Run after base bootstrap completes
-│   │   ├── integrations.yml # Messaging surface setup, bot tokens
-│   │   └── credentials.yml  # 1Password → credential file extraction
-│   └── roles/               # Custom roles for user playbooks
-│       ├── supabase-local/
-│       ├── slack-bot/
-│       └── discord-bot/
-├── scripts/                 # Shell scripts run in alphabetical order
-│   ├── 01-1password.sh
-│   ├── 02-tailscale.sh
-│   └── 03-github-auth.sh
-└── credentials/
-    └── README.md            # Instructions (actual creds via 1Password/vault)
+1. Pre-flight checks (macOS version, Xcode CLI, Rosetta)
+2. Base platform roles:
+   homebrew → shell → node → docker → openclaw →
+   ssh → tailscale → workspace → supabase
+3. If config repo specified:
+   a. Clone config repo → ~/.attache/config
+   b. Merge group_vars (user overrides base)
+   c. Re-run base with merged vars (idempotent)
+   d. Install extra Homebrew packages from Brewfile
+   e. Install extra mise tools
+   f. Copy skills/ → ~/.openclaw/skills/
+   g. Copy workspace/ → ~/.openclaw/workspaces/main/
+   h. Install shell overlays
+   i. Start user docker-compose services
+   j. Start skill docker-compose services
+   k. Run user ansible/playbooks/* in order
+   l. Run scripts/* in alphabetical order
+4. Start OpenClaw gateway
+5. Print next steps (openclaw pair)
 ```
 
-### attache.config.json
+## Merge Behavior
 
-The main configuration file. Controls feature flags and overrides base defaults:
-
-```json
-{
-  "agent_name": "Evie",
-
-  "backends": {
-    "secrets": "onepassword",
-    "tunnel": "tailscale",
-    "database": "supabase"
-  },
-
-  "coding_agents": {
-    "claude_code": { "max_sessions": 4 },
-    "codex": true
-  },
-
-  "homebrew_extra": ["ffmpeg", "sox", "imagemagick", "pandoc-crossref"],
-  "homebrew_casks_extra": ["1password"],
-
-  "git": {
-    "user_name": "Evie (Attaché)",
-    "user_email": "evie@spantree.net"
-  }
-}
-```
-
-### Merge Behavior
+When a config repo overlays the base, different file types merge differently. The goal is predictable behavior where the user's choices always win on conflict.
 
 | Item | Behavior |
 |---|---|
 | `group_vars/all.yml` | Deep-merged with base. User values win on conflict. |
-| `Brewfile` | Appended to base packages. No deduplication needed (Homebrew handles it). |
+| `Brewfile` | Appended to base packages. Homebrew handles deduplication. |
 | `mise/config.toml` | Merged with base tools. User versions override base versions. |
-| `workspace/` | Copied into `~/.openclaw/workspaces/main/`. Existing files are overwritten. |
+| `workspace/` | Copied into `~/.openclaw/workspaces/main/`. Overwrites existing files. |
 | `skills/` | Copied into `~/.openclaw/skills/`. Shared across all workspaces. |
-| `shell/` | Installed as overlays (e.g., `zshrc.local` sourced from `.zshrc`). |
+| `shell/` | Installed as overlays (`zshrc.local` sourced from `.zshrc`). |
 | `ansible/playbooks/` | Run after base bootstrap. Entirely user-controlled. |
 | `ansible/roles/` | Available to user playbooks only. Not mixed into base. |
 | `scripts/` | Run in alphabetical order after everything else. |
 
-## Bootstrap Sequence
-
-```
-1. Pre-flight checks (macOS version, Xcode CLI, Rosetta)
-2. Clone attache-platform (base)
-3. Run base bootstrap.yml with default group_vars
-4. If config repo specified:
-   a. Clone config repo → ~/.attache/config
-   b. Merge group_vars (user overrides base)
-   c. Re-run base bootstrap with merged vars (idempotent)
-   d. Install extra Homebrew packages from Brewfile
-   e. Install extra mise tools from mise/config.toml
-   f. Copy workspace/ → ~/.openclaw/workspaces/main/
-   g. Install shell overlays (zshrc.local, starship.toml)
-   h. Run ansible/playbooks/* in order
-   i. Run scripts/* in alphabetical order
-5. Start OpenClaw gateway
-6. Print next steps (openclaw pair)
-```
-
 ## Security Model
 
-**SSH:** Key-only authentication, no root login, no password auth.
+**Credentials never live in the config repo.** Use a secrets backend (1Password CLI is the default) to inject credentials at bootstrap time. The `credentials/` directory in the config repo is for instructions and templates only, never actual secrets.
 
-**Credentials:** Never stored in the config repo. Use 1Password CLI, environment variables, or vault services. The `credentials/` directory in the config repo is for instructions and templates only.
+**SSH is locked down** to key-only authentication with password auth and root login disabled. The base playbook configures this automatically, and the SSH hardening role runs on every bootstrap to ensure the settings haven't drifted.
 
-**Config repos:** Can be public (shared team configs) or private (agent-specific with workspace files). Private repos require the agent's SSH key or a GitHub token to clone.
+**Config repos can be public or private.** Public repos work well for shared team configurations that don't contain workspace files. Private repos hold agent-specific content like `SOUL.md` and require the agent's SSH key or a GitHub token to clone.
 
 ## Networking
 
-**Secure tunneling is required.** Attaché agents need secure remote access for management, and services like Supabase Studio should never be exposed on the open network.
+Secure tunneling is required for every Attaché deployment. Agent machines run services (Supabase Studio, dev servers, the OpenClaw gateway) that should never be exposed on the open network, and you need reliable remote access for management.
 
-**Tailscale** is the default and first supported tunnel provider. It's installed as part of the base platform — not optional. After bootstrap, the agent machine must be joined to a tailnet (via auth key or interactive login).
+**Tailscale is the default tunnel provider** and the first one Attaché supports. It's installed as part of the base platform, not as an optional feature. After bootstrap, the agent machine must be joined to a tailnet via auth key or interactive login.
 
-Why Tailscale:
-- **Zero-config mesh networking** — agent machines are reachable by Tailscale hostname, no port forwarding or dynamic DNS
-- **MagicDNS** — `agent-mac.tailnet-name.ts.net` just works
-- **ACLs** — control who can reach the agent machine and which ports are open
-- **Tailscale Serve/Funnel** — expose dev servers or services securely without opening firewall ports
+**Tailscale was chosen for practical reasons.** Zero-config mesh networking means agent machines are reachable by hostname without port forwarding or dynamic DNS. MagicDNS gives you `agent-mac.tailnet.ts.net` out of the box. ACLs control who can reach the machine and which ports are open. And Tailscale Serve/Funnel lets you expose specific services without touching the firewall.
 
-Future tunnel providers (Cloudflare Tunnel, WireGuard, etc.) can be added as alternatives, but every Attaché deployment must have at least one.
-
-**Firewall:** macOS application firewall is enabled. SSH is restricted to key-only auth. All other services (Supabase, SonarQube, etc.) are only accessible via the secure tunnel.
+**Future tunnel providers** (Cloudflare Tunnel, WireGuard) can be added as alternatives, but every deployment must have at least one configured via `backends.tunnel` in `attache.config.json`.
