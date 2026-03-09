@@ -126,9 +126,17 @@ volumes:
   grafana-data:
 ```
 
-## Independent Compose Projects
+## Three Tiers, Same Convention
 
-Each compose file runs as its own project. No merging, no multi-file assembly:
+Docker Compose files can exist at three levels, all running independently:
+
+| Tier | Location | Purpose | Required? |
+|---|---|---|---|
+| **Base** | `attache-platform/docker-compose.yml` | Supabase, core infrastructure | Yes |
+| **User** | `<config-repo>/docker-compose.yml` | User's extra services (Redis, Ollama, etc.) | No |
+| **Skill** | `skills/<name>/docker-compose.yml` | Skill-specific services (SonarQube, Grafana, etc.) | No |
+
+Each runs as its own compose project. No merging, no multi-file assembly:
 
 ```bash
 # Start base services

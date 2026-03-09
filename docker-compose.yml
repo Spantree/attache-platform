@@ -1,0 +1,44 @@
+# Attaché Base Services
+# Required infrastructure for every Attaché agent.
+#
+# Usage:
+#   docker compose up -d
+#   docker compose logs -f supabase-db
+#   docker compose down
+
+services:
+  supabase-db:
+    image: supabase/postgres:15.6.1.143
+    container_name: attache-supabase-db
+    ports:
+      - "${SUPABASE_DB_PORT:-65432}:5432"
+    volumes:
+      - supabase-db-data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-attache-dev}
+      POSTGRES_DB: postgres
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  supabase-studio:
+    image: supabase/studio:latest
+    container_name: attache-supabase-studio
+    ports:
+      - "${SUPABASE_STUDIO_PORT:-65433}:3000"
+    environment:
+      STUDIO_PG_META_URL: http://supabase-meta:8080
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-attache-dev}
+      SUPABASE_URL: http://localhost:8000
+      SUPABASE_REST_URL: http://localhost:${SUPABASE_DB_PORT:-65432}
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  supabase-db-data:
