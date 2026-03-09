@@ -60,6 +60,8 @@
       tags: [openclaw, base]
     - role: ssh
       tags: [ssh, base]
+    - role: tailscale
+      tags: [tailscale, base]
     - role: workspace
       tags: [workspace, base]
     - role: supabase

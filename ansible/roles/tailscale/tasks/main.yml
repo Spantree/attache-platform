@@ -1,0 +1,19 @@
+---
+- name: Install Tailscale
+  community.general.homebrew_cask:
+    name: tailscale
+    state: present
+
+- name: Check Tailscale status
+  ansible.builtin.shell: /Applications/Tailscale.app/Contents/MacOS/Tailscale status 2>&1
+  register: tailscale_status
+  changed_when: false
+  failed_when: false
+
+- name: Display Tailscale status
+  ansible.builtin.debug:
+    msg: >
+      Tailscale installed. Status: {{ tailscale_status.stdout_lines[0] | default('not running') }}.
+      If not connected, run: open /Applications/Tailscale.app
+      Then authenticate via the Tailscale UI or use an auth key:
+      tailscale up --authkey=<YOUR_AUTH_KEY>

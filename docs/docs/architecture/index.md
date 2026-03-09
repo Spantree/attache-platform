@@ -34,7 +34,8 @@ The base platform is opinionated and turnkey. It installs everything needed to r
 - **OpenClaw** installed globally, gateway running as a launch agent
 - **SSH hardening** (key-only auth, no root login)
 - **Git** with sensible defaults
-- **Workspace scaffolding** (~/.openclaw/workspace with standard directories)
+- **Workspace scaffolding** (`~/.openclaw/workspaces/main/` with `memory/`, `knowledge/`, and `skills/`)
+- **Tailscale** installed and ready for secure tunnel access
 
 Every Attaché agent runs the same base. It's idempotent — run it again anytime to converge.
 
@@ -120,7 +121,7 @@ git:
 | `group_vars/all.yml` | Deep-merged with base. User values win on conflict. |
 | `Brewfile` | Appended to base packages. No deduplication needed (Homebrew handles it). |
 | `mise/config.toml` | Merged with base tools. User versions override base versions. |
-| `workspace/` | Copied into `~/.openclaw/workspace/`. Existing files are overwritten. |
+| `workspace/` | Copied into `~/.openclaw/workspaces/main/`. Existing files are overwritten. |
 | `shell/` | Installed as overlays (e.g., `zshrc.local` sourced from `.zshrc`). |
 | `ansible/playbooks/` | Run after base bootstrap. Entirely user-controlled. |
 | `ansible/roles/` | Available to user playbooks only. Not mixed into base. |
@@ -138,7 +139,7 @@ git:
    c. Re-run base bootstrap with merged vars (idempotent)
    d. Install extra Homebrew packages from Brewfile
    e. Install extra mise tools from mise/config.toml
-   f. Copy workspace/ → ~/.openclaw/workspace/
+   f. Copy workspace/ → ~/.openclaw/workspaces/main/
    g. Install shell overlays (zshrc.local, starship.toml)
    h. Run ansible/playbooks/* in order
    i. Run scripts/* in alphabetical order
@@ -156,6 +157,16 @@ git:
 
 ## Networking
 
-**Tailscale** (optional): Recommended for secure remote access to the agent machine. The base platform installs Tailscale if the feature flag is enabled; joining a tailnet is handled by the user's config scripts.
+**Secure tunneling is required.** Attaché agents need secure remote access for management, and services like Supabase Studio should never be exposed on the open network.
 
-**Firewall:** macOS application firewall is enabled. Only SSH and OpenClaw gateway ports are open.
+**Tailscale** is the default and first supported tunnel provider. It's installed as part of the base platform — not optional. After bootstrap, the agent machine must be joined to a tailnet (via auth key or interactive login).
+
+Why Tailscale:
+- **Zero-config mesh networking** — agent machines are reachable by Tailscale hostname, no port forwarding or dynamic DNS
+- **MagicDNS** — `agent-mac.tailnet-name.ts.net` just works
+- **ACLs** — control who can reach the agent machine and which ports are open
+- **Tailscale Serve/Funnel** — expose dev servers or services securely without opening firewall ports
+
+Future tunnel providers (Cloudflare Tunnel, WireGuard, etc.) can be added as alternatives, but every Attaché deployment must have at least one.
+
+**Firewall:** macOS application firewall is enabled. SSH is restricted to key-only auth. All other services (Supabase, SonarQube, etc.) are only accessible via the secure tunnel.

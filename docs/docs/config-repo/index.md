@@ -22,14 +22,19 @@ my-agent/
 ├── shell/
 │   ├── zshrc.local          # Sourced at end of .zshrc
 │   └── starship.toml        # Prompt configuration
-├── workspace/
+├── workspace/                   # Maps to ~/.openclaw/workspaces/main/
 │   ├── SOUL.md              # Agent personality
 │   ├── USER.md              # About the human
 │   ├── AGENTS.md            # Workspace conventions
 │   ├── TOOLS.md             # Local tool notes
 │   ├── IDENTITY.md          # Agent identity
 │   ├── HEARTBEAT.md         # Periodic task checklist
-│   ├── MEMORY.md            # Long-term memory seed
+│   ├── memory/
+│   │   └── MEMORY.md        # Long-term memory seed
+│   ├── knowledge/           # Entity profiles (basic-memory backed)
+│   │   ├── people/
+│   │   ├── organizations/
+│   │   └── research/
 │   └── skills/              # Custom OpenClaw skills
 ├── ansible/
 │   ├── group_vars/
@@ -52,11 +57,7 @@ features:
   oh_my_zsh: true           # Install Oh My Zsh + plugins
   starship: true            # Install Starship prompt
   claude_code: true         # Install Claude Code CLI
-  docker: false             # Install Docker Desktop
-  tailscale: true           # Install Tailscale
   onepassword_cli: true     # Install 1Password CLI
-  postgresql: false         # Install PostgreSQL via Homebrew
-  supabase: false           # Install Supabase CLI
 
 # Extra Homebrew formulae (appended to base)
 homebrew_extra:
@@ -83,7 +84,7 @@ git:
 
 ## Workspace Files
 
-Everything in `workspace/` gets copied to `~/.openclaw/workspace/` on the target. This is where your agent's personality, memory, and skills live.
+Everything in `workspace/` gets copied to `~/.openclaw/workspaces/main/` on the target. This is where your agent's personality, memory, and skills live.
 
 **At minimum, you'll want:**
 

@@ -1,26 +1,36 @@
 ---
-- name: Create OpenClaw workspace directory
+- name: Create workspaces/main directory
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.openclaw/workspace"
+    path: "{{ ansible_env.HOME }}/.openclaw/workspaces/main"
     state: directory
     mode: "0755"
 
 - name: Create workspace subdirectories
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.openclaw/workspace/{{ item }}"
+    path: "{{ ansible_env.HOME }}/.openclaw/workspaces/main/{{ item }}"
     state: directory
     mode: "0755"
   loop:
     - memory
+    - knowledge
+    - knowledge/people
+    - knowledge/organizations
+    - knowledge/projects
+    - knowledge/research
     - skills
     - assets
-    - context
 
 - name: Create credentials directory
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/.openclaw/credentials"
     state: directory
     mode: "0700"
+
+- name: Create attache config directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.attache"
+    state: directory
+    mode: "0755"
 
 - name: Create src directory for cloned repos
   ansible.builtin.file:
