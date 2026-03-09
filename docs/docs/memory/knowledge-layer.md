@@ -53,7 +53,7 @@ workspaces/main/knowledge/
 
 Folders reflect **type taxonomy**, not entity attributes. People are in `people/`, not `people/spantree-net/`. The exception is `sites/`, where the domain *is* the natural organizer (mirroring URL structure).
 
-For the full set of Zod schemas, see the [Document Types](./document-types).
+For the full set of Zod schemas, see the [Entity Types](/entity-types) section.
 
 ## File Naming and Folder Promotion
 

@@ -7,7 +7,7 @@ sidebar_label: Research
 
 Research is a first-class workflow in the knowledge layer. When the agent investigates a topic — comparing tools, evaluating architectures, gathering competitive intelligence — the output is a structured research note with citations, knowledge graph annotations, and provider metadata.
 
-Research notes use `schema.org/Report` with Attaché extensions. See the [Document Types](./document-types) for the full Zod schema.
+Research notes use `schema.org/Report` with Attaché extensions. See the [Report](/entity-types/report) type page for the full schema.
 
 ## Research Modes
 

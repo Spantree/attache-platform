@@ -53,7 +53,7 @@ Schema.org types are **open-world** — you can freely add properties beyond wha
 
 Property names use **snake_case** in YAML frontmatter and Postgres columns, mapped from Schema.org's camelCase equivalents at the serialization boundary (e.g., `given_name` ↔ Schema.org `givenName`).
 
-Each type has a corresponding Zod schema for validation and programmatic use — see the [Document Types](./document-types) for the full set.
+Each type has a corresponding Zod schema for validation and programmatic use — see the [Entity Types](/entity-types) section for the full set.
 
 ## Conventions
 
