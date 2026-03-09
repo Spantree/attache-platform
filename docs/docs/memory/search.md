@@ -61,6 +61,10 @@ LIMIT 10;
 
 Search results shouldn't treat a note from six months ago the same as one from yesterday. A conversation about "GATX infrastructure" last week is more relevant than a similar conversation from January — unless the January note has been accessed repeatedly, linked heavily, or sits at a critical point in the knowledge graph.
 
+This might feel like overkill for an agent with 50 notes. It's not — it's designed for agents that run for **months or years**, accumulating thousands of notes, tens of thousands of messages, and hundreds of entity profiles. Without decay, every search query pays the cost of sifting through the entire history. A 6-month-old note about a resolved bug competes equally with yesterday's architecture decision for the same context window tokens. At scale, undifferentiated retrieval wastes the most expensive resource in the system: **context window space**.
+
+Decay ensures that as the knowledge base grows, retrieval quality stays flat (or improves). Frequently-used, well-connected knowledge stays accessible. Stale, orphaned notes naturally fade. The agent's effective memory stays focused on what matters, even as the raw volume of stored information grows without bound.
+
 Attaché's decay model draws from [ACT-R](http://act-r.psy.cmu.edu/) (Adaptive Control of Thought — Rational), a cognitive architecture developed by John Anderson at Carnegie Mellon University since the 1990s. ACT-R models how human declarative memory works: memories that are used frequently and recently stay accessible; unused memories fade. We also draw inspiration from [Ori-Mnemos](https://github.com/aayoawoyemi/Ori-Mnemos), an open-source agent memory system that implements ACT-R with graph-aware extensions.
 
 ### Base-Level Activation
