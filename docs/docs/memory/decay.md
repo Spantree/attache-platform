@@ -17,30 +17,30 @@ Attaché's decay model draws from [ACT-R](http://act-r.psy.cmu.edu/) (Adaptive C
 
 Every memory chunk has a **base-level activation** determined by how often and how recently it's been accessed. ACT-R's formula:
 
-```
-B_i = ln(Σ t_j^(-d))     for j = 1..n
-```
+$$
+B_i = \ln\left(\sum_{j=1}^{n} t_j^{-d}\right)
+$$
 
 Where:
-- `n` = number of times the chunk was accessed
-- `t_j` = time since the j-th access (in days)
-- `d` = decay parameter (default 0.5)
+- $n$ = number of times the chunk was accessed
+- $t_j$ = time since the $j$-th access (in days)
+- $d$ = decay parameter (default $0.5$)
 
 The key insight: **both frequency and recency matter**. A note accessed 50 times decays much slower than one accessed once, even at the same age. This is fundamentally different from simple exponential decay based on file modification date.
 
 For computational efficiency, ACT-R's own research provides an **optimized approximation** that avoids iterating over every access event:
 
-```
-B_i ≈ ln(n / (1 - d)) - d × ln(L)
-```
+$$
+B_i \approx \ln\left(\frac{n}{1-d}\right) - d \cdot \ln(L)
+$$
 
-Where `L` is the note's lifetime in days and `n` is the total access count. This is O(1) regardless of access history size.
+Where $L$ is the note's lifetime in days and $n$ is the total access count. This is $O(1)$ regardless of access history size.
 
 The raw activation value is normalized to a 0–1 **vitality score** via sigmoid:
 
-```
-vitality = 1 / (1 + e^(-B_i))
-```
+$$
+\text{vitality} = \frac{1}{1 + e^{-B_i}}
+$$
 
 ## Metabolic Rates
 
@@ -53,7 +53,13 @@ Not all memory should decay at the same speed. A person's identity doesn't fade 
 | Episodic (daily logs) | 2.0× | Fast | Recent context matters most |
 | Activity (messages, transcripts) | 3.0× | Very fast | Burns hot, clears quickly |
 
-The metabolic rate multiplies the base decay parameter: `effective_d = d × metabolic_rate`. An entity with metabolic rate 0.1 and base decay 0.5 has an effective decay of 0.05 — it takes roughly 10× longer to fade than a knowledge note.
+The metabolic rate multiplies the base decay parameter:
+
+$$
+d_{\text{eff}} = d \times m
+$$
+
+An entity with metabolic rate $m = 0.1$ and base decay $d = 0.5$ has an effective decay of $0.05$ — it takes roughly 10× longer to fade than a knowledge note.
 
 ## Spreading Activation
 
@@ -61,13 +67,13 @@ When a note is accessed, its **neighbors in the knowledge graph** receive a vita
 
 The boost propagates along wiki-link edges using BFS:
 
-```
-boost_at_hop_k = utility × damping^k
-```
+$$
+\text{boost}(k) = u \cdot \alpha^k
+$$
 
-With default damping of 0.6 and max 2 hops:
-- Hop 1 neighbors: 60% of source utility
-- Hop 2 neighbors: 36% of source utility
+Where $u$ is the source utility and $\alpha$ is the damping factor. With default $\alpha = 0.6$ and max 2 hops:
+- Hop 1 neighbors: $60\%$ of source utility
+- Hop 2 neighbors: $36\%$ of source utility
 
 Boosts are **stored in Postgres and decayed on read** (half-life ~7 days). When you access a note about "GATX," its linked notes about Jeff Nee, the DTY business case, and the Yardbird agent all warm up — even if they haven't been directly accessed recently.
 
@@ -81,9 +87,9 @@ Two mechanisms protect structural integrity:
 
 **Structural boost**: Notes with high in-degree (many incoming links) decay slower. Each incoming link adds ~10% to effective stability, capped at 2×:
 
-```
-structural_boost = 1 + 0.1 × min(in_degree, 10)
-```
+$$
+s = 1 + 0.1 \cdot \min(\text{in\_degree}, 10)
+$$
 
 **Bridge protection floor**: [Tarjan's algorithm](https://en.wikipedia.org/wiki/Tarjan%27s_bridge-finding_algorithm) identifies articulation points — notes whose removal would disconnect the graph. These get a minimum vitality floor (default 0.5) regardless of access patterns, preventing them from being archived.
 
@@ -91,9 +97,11 @@ structural_boost = 1 + 0.1 × min(in_degree, 10)
 
 Old notes that gain new connections get a **revival spike** — a 14-day boost that prevents newly-relevant dormant notes from being immediately archived:
 
-```
-revival_boost = e^(-0.2 × days_since_new_connection)
-```
+$$
+r = e^{-0.2 \cdot \Delta t}
+$$
+
+Where $\Delta t$ is days since the new connection was established.
 
 This handles the case where a 6-month-old research note suddenly becomes relevant because a new project links to it.
 
