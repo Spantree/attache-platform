@@ -13,7 +13,7 @@ Attaché uses a two-layer architecture: a **base platform** that every agent sha
 │           User Config Repo                  │
 │  (github.com/username/agent-name)           │
 │                                             │
-│  attache.yml, Brewfile, workspace/,         │
+│  attache.config.json, Brewfile, workspace/,         │
 │  ansible/playbooks/, ansible/roles/,        │
 │  ansible/group_vars/, shell/, scripts/      │
 ├─────────────────────────────────────────────┤
@@ -56,7 +56,7 @@ The config repo uses a known directory structure that Attaché discovers and app
 
 ```
 my-agent/
-├── attache.yml              # Feature flags and variable overrides
+├── attache.config.json              # Feature flags and variable overrides
 ├── Brewfile                 # Additional Homebrew packages (merged with base)
 ├── mise/
 │   └── config.toml          # Additional mise tools (merged with base)
@@ -88,34 +88,33 @@ my-agent/
     └── README.md            # Instructions (actual creds via 1Password/vault)
 ```
 
-### attache.yml
+### attache.config.json
 
 The main configuration file. Controls feature flags and overrides base defaults:
 
-```yaml
-agent_name: Evie
+```json
+{
+  "agent_name": "Evie",
 
-features:
-  oh_my_zsh: true
-  starship: true
-  claude_code: true
-  docker: false
-  tailscale: true
-  onepassword_cli: true
-  postgresql: false
+  "backends": {
+    "secrets": "onepassword",
+    "tunnel": "tailscale",
+    "database": "supabase"
+  },
 
-homebrew_extra:
-  - ffmpeg
-  - sox
-  - imagemagick
-  - pandoc-crossref
+  "coding_agents": {
+    "claude_code": { "max_sessions": 4 },
+    "codex": true
+  },
 
-homebrew_casks_extra:
-  - 1password
+  "homebrew_extra": ["ffmpeg", "sox", "imagemagick", "pandoc-crossref"],
+  "homebrew_casks_extra": ["1password"],
 
-git:
-  user_name: "Evie (Attaché)"
-  user_email: "evie@spantree.net"
+  "git": {
+    "user_name": "Evie (Attaché)",
+    "user_email": "evie@spantree.net"
+  }
+}
 ```
 
 ### Merge Behavior
@@ -126,6 +125,7 @@ git:
 | `Brewfile` | Appended to base packages. No deduplication needed (Homebrew handles it). |
 | `mise/config.toml` | Merged with base tools. User versions override base versions. |
 | `workspace/` | Copied into `~/.openclaw/workspaces/main/`. Existing files are overwritten. |
+| `skills/` | Copied into `~/.openclaw/skills/`. Shared across all workspaces. |
 | `shell/` | Installed as overlays (e.g., `zshrc.local` sourced from `.zshrc`). |
 | `ansible/playbooks/` | Run after base bootstrap. Entirely user-controlled. |
 | `ansible/roles/` | Available to user playbooks only. Not mixed into base. |

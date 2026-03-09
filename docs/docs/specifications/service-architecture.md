@@ -73,7 +73,7 @@ Each skill with infrastructure needs ships a `docker-compose.yml` at the skill r
 skills/
 └── code-review/
     ├── SKILL.md
-    ├── manifest.yml
+    ├── attache.config.json
     ├── docker-compose.yml      # right at the root, not buried
     └── scripts/
         └── review.ts

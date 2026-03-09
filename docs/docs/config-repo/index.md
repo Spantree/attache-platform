@@ -19,7 +19,7 @@ All directories are optional. Attaché discovers and applies whatever it finds.
 
 ```
 my-agent/
-├── attache.yml              # Feature flags and variable overrides
+├── attache.config.json              # Feature flags and variable overrides
 ├── Brewfile                 # Additional Homebrew packages
 ├── mise/
 │   └── config.toml          # Additional mise tools
@@ -53,49 +53,42 @@ my-agent/
     └── README.md            # Setup instructions (no actual secrets)
 ```
 
-## attache.yml Reference
+## attache.config.json Reference
 
-```yaml
-# Agent identity
-agent_name: Evie
+```json
+{
+  "agent_name": "Evie",
 
-# Backends — what infrastructure backs each concern
-# Each backend implies installation and configuration of the underlying tool.
-backends:
-  secrets: onepassword       # 1Password CLI + service token in macOS Keychain
-  tunnel: tailscale          # Secure tunnel (required, Tailscale is default)
-  database: supabase         # Database layer (required, Supabase is default)
+  "backends": {
+    "secrets": "onepassword",
+    "tunnel": "tailscale",
+    "database": "supabase"
+  },
 
-# Coding agents — install with defaults (true) or custom config (map)
-coding_agents:
-  claude_code:               # Full dispatch harness (tmux, briefs, monitoring)
-    max_sessions: 4
-    default_model: claude-sonnet-4-20250514
-  codex: true                # Review-only for now (alternate code reviewer)
-  # gemini_cli: true         # Not yet supported
-  # aider: true              # Not yet supported
+  "coding_agents": {
+    "claude_code": {
+      "max_sessions": 4,
+      "default_model": "claude-sonnet-4-20250514"
+    },
+    "codex": true
+  },
 
-# Extra Homebrew formulae (appended to base)
-homebrew_extra:
-  - ffmpeg
-  - sox
-  - imagemagick
-  - ripgrep
-  - pandoc-crossref
+  "homebrew_extra": [
+    "ffmpeg", "sox", "imagemagick", "ripgrep", "pandoc-crossref"
+  ],
 
-# Extra Homebrew casks (appended to base)
-homebrew_casks_extra:
-  - 1password
+  "homebrew_casks_extra": ["1password"],
 
-# Extra mise tools (merged with base, your versions win)
-mise_extra:
-  python: "3.13.3"
-  rust: "1.82.0"
+  "mise_extra": {
+    "python": "3.13.3",
+    "rust": "1.82.0"
+  },
 
-# Git identity for the agent
-git:
-  user_name: "Evie (Attaché)"
-  user_email: "evie@spantree.net"
+  "git": {
+    "user_name": "Evie (Attaché)",
+    "user_email": "evie@spantree.net"
+  }
+}
 ```
 
 ### backends

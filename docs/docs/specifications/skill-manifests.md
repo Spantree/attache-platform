@@ -10,7 +10,7 @@ The **manifest** is how a skill declares what it needs to run.
 skills/
 └── code-review/
     ├── SKILL.md                    # OpenClaw skill (agent instructions)
-    ├── manifest.yml                # Dependencies and strategies
+    ├── attache.config.json                # Dependencies and strategies
     ├── docker-compose.yml          # Optional: services this skill needs
     └── scripts/                    # Skill scripts (TypeScript, shell)
         ├── review.ts
@@ -21,40 +21,36 @@ skills/
 
 The OpenClaw skill file. This is what the agent reads to understand how to use the skill. No changes from the standard OpenClaw skill format.
 
-### manifest.yml
+### attache.config.json
 
 Declares the skill's metadata, strategies, and requirements:
 
-```yaml
-name: code-review
-description: Holistic code review with multiple analysis strategies
-version: 1.0.0
+```json
+{
+  "name": "code-review",
+  "description": "Holistic code review with multiple analysis strategies",
+  "version": "1.0.0",
 
-# Strategies are different approaches the skill can take.
-# The agent picks strategies based on context and available infrastructure.
-strategies:
-  native:
-    description: Contextual review via OpenClaw (understands project intent and history)
-    requires: []
+  "strategies": {
+    "native": {
+      "description": "Contextual review via OpenClaw (understands project intent and history)"
+    },
+    "claude-code": {
+      "description": "Deep code analysis via Claude Code session dispatch",
+      "requires": { "skills": ["claude-code"] }
+    },
+    "codex": {
+      "description": "Code review via OpenAI Codex dispatch",
+      "requires": { "skills": ["codex"], "env": ["OPENAI_API_KEY"] }
+    },
+    "static-analysis": {
+      "description": "Static analysis for bugs, code smells, and vulnerabilities",
+      "requires": { "services": ["sonarqube"], "env": ["SONAR_HOST_URL", "SONAR_TOKEN"] }
+    }
+  },
 
-  claude-code:
-    description: Deep code analysis via Claude Code session dispatch
-    requires:
-      tools: [claude]
-
-  codex:
-    description: Code review via OpenAI Codex dispatch
-    requires:
-      env: [OPENAI_API_KEY]
-
-  static-analysis:
-    description: Static analysis for bugs, code smells, and vulnerabilities
-    requires:
-      services: [sonarqube]
-      env: [SONAR_HOST_URL, SONAR_TOKEN]
-
-# Which strategies to run by default (when all requirements are met)
-default_strategies: [native, claude-code, static-analysis]
+  "default_strategies": ["native", "claude-code", "static-analysis"]
+}
 ```
 
 ### docker-compose.yml
@@ -86,7 +82,7 @@ volumes:
 
 ### During Bootstrap
 
-1. Scan all skills in the workspace for `manifest.yml` files
+1. Scan all skills in the workspace for `attache.config.json` files
 2. For each skill with a `docker-compose.yml`, run `docker compose up -d` in that skill's directory
 4. Validate that declared `requires.env` variables are set (warn if missing)
 5. Validate that declared `requires.tools` are installed (warn if missing)
@@ -102,45 +98,55 @@ When the agent invokes a skill, it can check which strategies are available:
 
 This means a skill degrades gracefully. If SonarQube isn't running, the code review skill still works — it just skips the static analysis strategy and uses native + Claude Code.
 
-## Manifest Reference
+## attache.config.json Reference (Skill)
 
-```yaml
-# Required
-name: string                  # Unique skill identifier
-description: string           # Human-readable description
-version: string               # Semver
+```json
+{
+  "name": "string",
+  "description": "string",
+  "version": "string",
 
-# Optional
-strategies:
-  <strategy-name>:
-    description: string       # What this strategy does
-    requires:
-      services: [string]      # Docker service names (from this skill's compose file)
-      tools: [string]         # CLI tools that must be on PATH
-      env: [string]           # Environment variables that must be set
+  "strategies": {
+    "<strategy-name>": {
+      "description": "string",
+      "requires": {
+        "services": ["string"],
+        "skills": ["string"],
+        "tools": ["string"],
+        "env": ["string"]
+      }
+    }
+  },
 
-default_strategies: [string]  # Strategies to run by default
+  "default_strategies": ["string"],
 
-# Metadata
-author: string
-license: string
-homepage: string
+  "author": "string",
+  "license": "string",
+  "homepage": "string"
+}
 ```
+
+Note: This is the skill-level `attache.config.json`. The same filename is used at the config repo root for agent configuration — the schema is determined by context.
 
 ## Coding Agent Skills
 
 Coding agents (Claude Code, Codex, Gemini CLI, Aider) are a special category of skill. Each coding agent gets its own skill directory with a dispatch harness, configuration, and manifest.
 
-### Configuration in attache.yml
+### Configuration in attache.config.json
 
-```yaml
-coding_agents:
-  claude_code:               # Map = install with custom config
-    max_sessions: 4
-    default_model: claude-sonnet-4-20250514
-    permissions: "--dangerously-skip-permissions"
-  codex: true                # true = install with defaults
-  # gemini_cli: true
+In the agent's root `attache.config.json`:
+
+```json
+{
+  "coding_agents": {
+    "claude_code": {
+      "max_sessions": 4,
+      "default_model": "claude-sonnet-4-20250514",
+      "permissions": "--dangerously-skip-permissions"
+    },
+    "codex": true
+  }
+}
 ```
 
 `true` is shorthand for "install with default settings." A map provides custom configuration that's passed to the skill.
@@ -151,12 +157,12 @@ coding_agents:
 skills/
 ├── claude-code/
 │   ├── SKILL.md             # How the agent dispatches CC sessions
-│   ├── manifest.yml         # coding_agent: true, requires: [claude]
+│   ├── attache.config.json         # coding_agent: true, requires: [claude]
 │   └── scripts/
 │       └── dispatch.ts      # tmux lifecycle, brief gen, monitoring
 ├── codex/
 │   ├── SKILL.md             # How the agent uses Codex for reviews
-│   ├── manifest.yml         # coding_agent: true, requires: [codex]
+│   ├── attache.config.json         # coding_agent: true, requires: [codex]
 │   └── scripts/
 │       └── review.ts
 ```

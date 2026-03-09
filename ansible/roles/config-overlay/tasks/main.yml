@@ -15,16 +15,15 @@
     force: true
   when: config_repo != ""
 
-- name: Check for attache.yml
+- name: Check for attache.config.json
   ansible.builtin.stat:
-    path: "{{ config_dir }}/attache.yml"
+    path: "{{ config_dir }}/attache.config.json"
   register: attache_yml
   when: config_repo != ""
 
-- name: Load attache.yml variables
-  ansible.builtin.include_vars:
-    file: "{{ config_dir }}/attache.yml"
-    name: user_config
+- name: Load attache.config.json variables
+  ansible.builtin.set_fact:
+    user_config: "{{ lookup('file', config_dir + '/attache.config.json') | from_json }}"
   when: config_repo != "" and attache_yml.stat.exists
 
 - name: Check for user group_vars
