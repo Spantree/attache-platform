@@ -4,11 +4,15 @@ Attaché uses Docker Compose as its service layer. The base platform ships requi
 
 ## Design Principles
 
-- **One compose file per concern.** Base platform has its own. Each skill has its own. They're independent projects.
-- **Ansible orchestrates, Compose runs.** Ansible discovers compose files and runs `docker compose up`. Compose manages the actual containers.
-- **Skills own their services.** If a skill needs SonarQube, it ships a `docker-compose.yml` at the skill root. Attaché doesn't know or care what SonarQube is.
-- **Survive restarts.** Every service uses `restart: unless-stopped`. Colima itself starts on boot via launchd.
-- **Graceful degradation.** If a service isn't running, skills that need it skip those strategies. Nothing crashes.
+**One compose file per concern.** The base platform has its own `docker-compose.yml` for Supabase. Each skill that needs infrastructure has its own at the skill root. User config repos can add one too. They're all independent projects — no merging, no assembly.
+
+**Ansible orchestrates, Compose runs.** Ansible's job is discovering compose files and running `docker compose up`. Compose handles the actual container lifecycle — networking, volumes, health checks, restarts. This separation means you can always `docker compose` directly for debugging.
+
+**Skills own their services.** If a skill needs SonarQube, it ships a `docker-compose.yml`. Attaché doesn't know or care what SonarQube is. It just sees a compose file, starts the containers, and moves on.
+
+**Everything survives restarts.** Every service uses `restart: unless-stopped` so Docker brings them back when Colima starts. Colima itself runs as a launchd agent that starts on boot. The only way a service stays down is if you explicitly `docker compose down` it.
+
+**Graceful degradation is the norm.** If a service isn't running, skills that depend on it skip those strategies and report what was unavailable. A missing SonarQube container doesn't crash the code review skill — it just means static analysis is skipped while native review and Claude Code dispatch still run.
 
 ## Base Services
 

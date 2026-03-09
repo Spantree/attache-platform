@@ -10,8 +10,9 @@ Your config repo is where your agent becomes *yours*. It layers personalization 
 
 Create a new GitHub repo. It can be:
 
-- **Public** — great for shared team configs (e.g., `yourorg/attache-config`)
-- **Private** — for a specific agent with workspace files and credentials setup (e.g., `username/evie`)
+**Public repos** work well for shared team configurations that don't include workspace files or secrets. Name it something like `yourorg/attache-config` and let everyone on the team reference it.
+
+**Private repos** are for a specific agent's full setup — workspace files, skills, Ansible playbooks, everything. Name it after the agent (e.g., `username/evie`) and keep it locked down with SSH key access.
 
 ## Directory Structure
 
@@ -101,9 +102,7 @@ Each backend tells Attaché *what* you need, and Attaché handles the *how*:
 | `tunnel` | `tailscale` | Installs Tailscale, prompts for auth key or interactive login |
 | `database` | `supabase` | Runs local Supabase via Docker Compose (pgvector, pg_trgm enabled) |
 
-Future backend options (not yet implemented):
-- `secrets: vault` (HashiCorp Vault), `secrets: doppler`
-- `tunnel: cloudflare` (Cloudflare Tunnel)
+**Future backend options** are planned but not yet implemented. For secrets, HashiCorp Vault and Doppler are on the roadmap. For tunneling, Cloudflare Tunnel is the likely next addition.
 
 ### Shell configuration
 
@@ -115,16 +114,9 @@ The base does *not* install Oh My Zsh, Starship, or any shell framework. If you 
 
 Everything in `workspace/` gets copied to `~/.openclaw/workspaces/main/` on the target. Everything in `skills/` gets copied to `~/.openclaw/skills/` (shared across all workspaces).
 
-**At minimum, you'll want:**
+**At minimum, you'll want two files.** `SOUL.md` defines who the agent is — its personality, voice, and boundaries. `USER.md` describes the human it's working for — name, preferences, timezone, context. These two files give the agent enough to be useful from its first session.
 
-- **SOUL.md** — who the agent is (personality, voice, boundaries)
-- **USER.md** — who the human is (name, preferences, context)
-
-**Optional but recommended:**
-
-- **AGENTS.md** — workspace conventions and behavioral rules
-- **TOOLS.md** — notes about local tool configurations
-- **IDENTITY.md** — agent name, avatar, emoji
+**Three more files round out a well-configured workspace.** `AGENTS.md` establishes workspace conventions and behavioral rules. `TOOLS.md` holds notes about local tool configurations — camera names, SSH hosts, voice preferences. `IDENTITY.md` captures the agent's name, emoji, and avatar metadata.
 
 ## Skills
 
