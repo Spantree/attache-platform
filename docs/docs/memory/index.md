@@ -47,7 +47,9 @@ All four layers converge on Supabase (Postgres) as the data backbone, though the
 Entity types in the knowledge and identity layers use **fully-qualified type names** to make provenance unambiguous:
 
 - `schema.org/Person` — a standard [Schema.org](https://schema.org) type (portable, understood by LLMs natively)
-- `attache/Project` — a custom Attaché extension
+- `attache.dev/Project` — a custom Attaché type (when no Schema.org type fits)
+
+Schema.org types are **open-world** — you can freely add properties beyond what the spec defines. Most Attaché types use a standard Schema.org type with extension properties (e.g., `schema.org/Report` with `mode`, `status`, and `providers` fields for research notes). Custom `attache.dev/*` types are only created when no Schema.org type fits at all.
 
 Property names use **snake_case** in YAML frontmatter and Postgres columns, mapped from Schema.org's camelCase equivalents at the serialization boundary (e.g., `given_name` ↔ Schema.org `givenName`).
 

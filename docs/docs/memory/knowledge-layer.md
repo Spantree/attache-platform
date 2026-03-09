@@ -24,15 +24,15 @@ For resource types (VideoObject, WebPage, HowTo), **markdown is primary** with o
 Knowledge is organized into folders by type. Types are **fully qualified** to make provenance unambiguous:
 
 - `schema.org/Person` — a standard [Schema.org](https://schema.org) type
-- `attache/Project` — a custom Attaché extension
+- `attache.dev/Project` — a custom Attaché type (when no Schema.org type fits)
 
-This makes it immediately clear what's portable (Schema.org, used by 45M+ web domains, understood by LLMs natively) vs. what's our own extension.
+This makes it immediately clear what's portable vs. what's ours. Schema.org types are **open-world** — you can freely add extension properties beyond the spec. Most types use `schema.org/*` with Attaché-specific extensions (e.g., `schema.org/Report` with `mode` and `providers` fields). Custom `attache.dev/*` types are only created when no Schema.org type fits at all.
 
 ```
 workspaces/main/knowledge/
 ├── people/                        # schema.org/Person
 ├── organizations/                 # schema.org/Organization
-├── projects/                      # attache/Project
+├── projects/                      # attache.dev/Project
 ├── events/                        # schema.org/Event
 ├── media/
 │   ├── videos/                    # schema.org/VideoObject
@@ -47,7 +47,7 @@ workspaces/main/knowledge/
 ├── guides/                        # schema.org/HowTo
 │   ├── runbooks/
 │   └── agent-procedures/
-├── research/                      # attache/Research (structured research notes)
+├── research/                      # schema.org/Report (with research extensions)
 └── decisions/                     # Decision records (freeform)
 ```
 
@@ -274,11 +274,11 @@ export const OrganizationSchema = z.object({
 });
 ```
 
-### attache/Project
+### attache.dev/Project
 
 ```typescript
 export const ProjectSchema = z.object({
-  type: z.literal("attache/Project"),
+  type: z.literal("attache.dev/Project"),
   title: z.string(),
   aliases: z.array(z.string()).default([]),
   status: z.enum(["active", "archived", "planned"]).optional(),
@@ -426,14 +426,16 @@ export const MessageSchema = z.object({
 });
 ```
 
-### attache/Research
+### schema.org/Report (research notes)
 
 ```typescript
-export const ResearchSchema = z.object({
-  type: z.literal("attache/Research"),
+export const ReportSchema = z.object({
+  type: z.literal("schema.org/Report"),
   title: z.string(),
-  mode: z.enum(["deep_research", "adaptive", "external"]),
-  status: z.enum(["draft", "pending", "completed", "failed"]),
+  about: z.string().optional(),              // Schema.org: subject matter
+  // Attaché extensions for research process
+  mode: z.enum(["deep_research", "adaptive", "external"]).optional(),
+  status: z.enum(["draft", "pending", "completed", "failed"]).optional(),
   providers: z.record(z.object({
     tool_calls: z.number(),
     model: z.string().optional(),
@@ -459,7 +461,7 @@ export const KnowledgeTypeSchema = z.discriminatedUnion("type", [
   HowToSchema,
   SoftwareSourceCodeSchema,
   MessageSchema,
-  ResearchSchema,
+  ReportSchema,
 ]);
 
 export type KnowledgeType = z.infer<typeof KnowledgeTypeSchema>;
@@ -481,12 +483,16 @@ Research notes are produced by different backends, identified by the `mode` fiel
 
 ### Research Note Schema
 
+Research notes use `schema.org/Report` with Attaché extensions for the research process:
+
 ```typescript
-export const ResearchSchema = z.object({
-  type: z.literal("attache/Research"),
+export const ReportSchema = z.object({
+  type: z.literal("schema.org/Report"),
   title: z.string(),
-  mode: z.enum(["deep_research", "adaptive", "external"]),
-  status: z.enum(["draft", "pending", "completed", "failed"]),
+  about: z.string().optional(),              // Schema.org property
+  // Attaché extensions
+  mode: z.enum(["deep_research", "adaptive", "external"]).optional(),
+  status: z.enum(["draft", "pending", "completed", "failed"]).optional(),
   providers: z.record(z.object({
     tool_calls: z.number(),
     model: z.string().optional(),
@@ -500,8 +506,9 @@ export const ResearchSchema = z.object({
 
 ```markdown
 ---
-type: attache/Research
+type: schema.org/Report
 title: "Search Quality Comparison: Firecrawl vs Exa"
+about: search quality for coding research queries
 mode: adaptive
 status: completed
 providers:
