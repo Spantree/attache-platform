@@ -53,8 +53,8 @@ const config: Config = {
       title: 'Attaché',
       items: [
         {
-          to: '/',
-          label: 'Home',
+          to: '/intro',
+          label: 'Docs',
           position: 'left',
         },
         // TODO: Add slides link when slides component is enabled
@@ -68,8 +68,8 @@ const config: Config = {
           title: 'Project',
           items: [
             {
-              label: 'Home',
-              to: '/',
+              label: 'Docs',
+              to: '/intro',
             },
             // TODO: Add slides link when slides component is enabled
             // { label: 'Slides', href: '/slides/' },
