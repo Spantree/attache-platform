@@ -23,117 +23,242 @@ You might think identity resolution belongs inside the knowledge layer — just 
 
 ## Data Model
 
-Identity resolution runs in Postgres with core tables for entities, crosswalks, activities, and audit history.
+Identity resolution runs in Postgres. Rather than a single monolithic entity table, the schema uses **dedicated tables per domain** with a unified `_person_id` foreign key convention that links records across integrations to canonical people.
 
-### Entities
+### Core Entity Tables
 
 ```sql
--- Canonical entities (golden records)
-CREATE TABLE entities (
-  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  schema_type   TEXT NOT NULL,        -- 'schema.org/Person', 'schema.org/Organization', etc.
-  name          TEXT,                 -- Display name (survivorship-resolved)
-  attributes    JSONB DEFAULT '{}',   -- Schema.org properties as JSON
-  status        TEXT DEFAULT 'active', -- active, merged, deleted
-  merged_into   UUID REFERENCES entities(id),
-  created_at    TIMESTAMPTZ DEFAULT now(),
-  updated_at    TIMESTAMPTZ DEFAULT now()
+-- Canonical people (golden records)
+CREATE TABLE people (
+  id          UUID PRIMARY KEY,
+  first_name  TEXT,
+  last_name   TEXT,
+  full_name   TEXT,
+  permalink   TEXT,           -- links to basic-memory knowledge file
+  slug        TEXT,
+  created_at  TIMESTAMPTZ NOT NULL,
+  updated_at  TIMESTAMPTZ NOT NULL
+);
+
+-- Canonical organizations
+CREATE TABLE organizations (
+  id          UUID PRIMARY KEY,
+  name        TEXT NOT NULL,
+  slug        TEXT,
+  domain      TEXT,           -- primary web domain
+  industries  TEXT[],
+  permalink   TEXT,
+  created_at  TIMESTAMPTZ NOT NULL,
+  updated_at  TIMESTAMPTZ NOT NULL
 );
 ```
 
-### Crosswalks
+### Crosslinks
 
-A **crosswalk** (Reltio's term) is a directional link between a canonical "golden record" and a source-system identifier:
-
-```
-entity: cedric-hurst (confidence: 1.0)
-  ├── google_calendar → cedric@spantree.net     (deterministic, confidence: 1.0)
-  ├── slack           → U01234567               (deterministic, confidence: 1.0)
-  ├── fellow          → fellow:person:abc123     (inferred, confidence: 0.95)
-  ├── float           → 17851606                 (deterministic, confidence: 1.0)
-  └── zoom            → "Cedric's MacBook Pro"   (inferred, confidence: 0.7)
-```
+Crosslinks (our crosswalk implementation) bind a canonical person to their identifiers across systems:
 
 ```sql
--- Cross-system identity bindings
-CREATE TABLE crosswalks (
-  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  entity_id     UUID NOT NULL REFERENCES entities(id),
-  source        TEXT NOT NULL,        -- 'slack', 'fellow', 'google_calendar', 'zoom'
-  external_id   TEXT NOT NULL,        -- ID in that system
-  confidence    REAL NOT NULL DEFAULT 1.0,  -- 1.0 = deterministic, <1.0 = inferred
-  match_method  TEXT,                 -- 'email_exact', 'name_similarity', 'elimination', 'manual'
-  status        TEXT DEFAULT 'active', -- active, pending_review, rejected
-  metadata      JSONB DEFAULT '{}',   -- extra context (display name in source, etc.)
-  first_seen    TIMESTAMPTZ DEFAULT now(),
-  last_seen     TIMESTAMPTZ DEFAULT now(),
-  confirmed_by  TEXT,                 -- null = auto, user ID = manually confirmed
-  confirmed_at  TIMESTAMPTZ,
-  UNIQUE(source, external_id)
+CREATE TABLE people_crosslinks (
+  id          UUID PRIMARY KEY,
+  _person_id  UUID NOT NULL REFERENCES people(id),
+  source      TEXT NOT NULL,  -- 'slack', 'fellow', 'google_calendar', 'apollo', etc.
+  kind        TEXT NOT NULL,  -- 'email', 'slack_id', 'github_handle', 'fellow_attendee', etc.
+  value       TEXT NOT NULL,  -- the actual identifier
+  created_at  TIMESTAMPTZ NOT NULL,
+  updated_at  TIMESTAMPTZ NOT NULL
 );
 ```
 
-Each crosswalk carries:
+A person's crosslinks might look like:
 
-- **Source system** — which integration established the binding
-- **External ID** — the identifier in that system
-- **Confidence** — how certain we are (1.0 = deterministic, &lt;1.0 = inferred)
-- **Match method** — how the binding was established (email match, name similarity, process of elimination, manual confirmation)
-- **Status** — active, pending review, rejected
+```
+people.id: a1b2c3d4
+  ├── source: slack,    kind: slack_id,          value: U01234567
+  ├── source: slack,    kind: email,             value: cedric@spantree.net
+  ├── source: fellow,   kind: email,             value: cedric@spantree.net
+  ├── source: fellow,   kind: speaker_label,     value: Cedric Hurst
+  ├── source: apollo,   kind: linkedin_url,      value: linkedin.com/in/cedrichurst
+  ├── source: github,   kind: github_handle,     value: divideby0
+  └── source: float,    kind: float_id,          value: 17851606
+```
 
-### Activity Log
+The `_person_id` foreign key convention extends across all integration tables — `slack_users._person_id`, `slack_messages._person_id`, `fellow_attendees._person_id`, `apollo_people._person_id` — creating a unified identity graph without requiring a separate join table for each integration.
 
-The activity log connects entities to events over time, bridging episodic (temporal) and entity (identity) memory:
+### Integration-Specific Tables
+
+Rather than collapsing everything into generic entity/activity tables, each integration has purpose-built tables that preserve source-specific structure:
+
+**Fellow (meetings):**
 
 ```sql
--- Entity-event associations
-CREATE TABLE activities (
-  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  entity_id     UUID NOT NULL REFERENCES entities(id),
-  event_type    TEXT NOT NULL,        -- 'meeting', 'message', 'commit', 'task', 'email'
-  event_id      TEXT,                 -- source-system event identifier
-  role          TEXT,                 -- 'attendee', 'organizer', 'author', 'reviewer'
-  source        TEXT NOT NULL,        -- which integration produced this
-  occurred_at   TIMESTAMPTZ NOT NULL,
-  metadata      JSONB DEFAULT '{}',
-  created_at    TIMESTAMPTZ DEFAULT now()
+-- Meeting metadata from Fellow
+CREATE TABLE fellow_notes (
+  id                TEXT PRIMARY KEY,  -- Fellow's note ID
+  title             TEXT,
+  event_guid        TEXT,              -- links to Google Calendar
+  event_start       TIMESTAMPTZ,
+  event_end         TIMESTAMPTZ,
+  content_markdown  TEXT,              -- meeting notes
+  synced_at         TIMESTAMPTZ NOT NULL
+);
+
+-- Recordings with AI-generated summaries
+CREATE TABLE fellow_recordings (
+  id                TEXT PRIMARY KEY,
+  note_id           TEXT REFERENCES fellow_notes(id),
+  title             TEXT,
+  started_at        TIMESTAMPTZ,
+  ended_at          TIMESTAMPTZ,
+  event_guid        TEXT,              -- cross-ref to calendar
+  ai_summary        TEXT,
+  ai_action_items   JSONB,
+  ai_decisions      JSONB,
+  ai_topics         JSONB,
+  synced_at         TIMESTAMPTZ NOT NULL
+);
+
+-- Individual speaker turns in transcripts
+CREATE TABLE fellow_transcript_segments (
+  id                UUID PRIMARY KEY,
+  recording_id      TEXT NOT NULL REFERENCES fellow_recordings(id),
+  attendee_id       UUID REFERENCES fellow_attendees(id),
+  speaker_label     TEXT,              -- raw speaker name from transcript
+  offset_start_ms   INTEGER NOT NULL,
+  offset_end_ms     INTEGER NOT NULL,
+  timestamp_start   TIMESTAMPTZ,
+  timestamp_end     TIMESTAMPTZ,
+  text              TEXT NOT NULL
+);
+
+-- Meeting attendees (the identity bridge)
+CREATE TABLE fellow_attendees (
+  id              UUID PRIMARY KEY,
+  note_id         TEXT,                -- which meeting
+  recording_id    TEXT,                -- which recording
+  _person_id      UUID REFERENCES people(id),  -- resolved identity
+  email           TEXT,                -- from calendar invite
+  speaker_label   TEXT,                -- from transcript
+  attendee_type   TEXT NOT NULL        -- 'organizer', 'attendee', 'speaker'
 );
 ```
 
-Activities answer questions like:
+This decomposition is critical for identity resolution. The `fellow_attendees` table is the bridge: it links a `speaker_label` from the transcript ("Cedric Hurst") to an `email` from the calendar invite (`cedric@spantree.net`) to a resolved `_person_id`. This is where meeting-scoped resolution happens.
 
-- "Who attended this meeting?" → filter by event
-- "What has this person been involved in?" → filter by entity
-- "Show me all activity in the last 30 days" → filter by time
-- "Who works with whom most often?" → co-occurrence analysis
-
-### Audit Trail
+**Slack:**
 
 ```sql
--- Merge/unmerge audit trail
-CREATE TABLE entity_audit_log (
-  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  action        TEXT NOT NULL,        -- 'merge', 'unmerge', 'crosswalk_add', 'crosswalk_reject'
-  entity_id     UUID NOT NULL,
-  related_id    UUID,                 -- the other entity in a merge
-  details       JSONB DEFAULT '{}',   -- what changed, confidence, reasoning
-  performed_by  TEXT,                 -- 'system', 'agent', user ID
-  created_at    TIMESTAMPTZ DEFAULT now()
+CREATE TABLE slack_messages (
+  channel_id    TEXT NOT NULL,
+  ts            TEXT NOT NULL,         -- Slack's unique message ID
+  workspace_id  TEXT NOT NULL,
+  user_id       TEXT,
+  text          TEXT,
+  thread_ts     TEXT,                  -- parent thread
+  _person_id    UUID REFERENCES people(id),  -- resolved identity
+  sent_at       TIMESTAMPTZ NOT NULL,
+  -- ... reactions, attachments, blocks as JSONB
+  PRIMARY KEY (channel_id, ts)
+);
+
+CREATE TABLE slack_users (
+  id            TEXT PRIMARY KEY,
+  workspace_id  TEXT NOT NULL,
+  display_name  TEXT,
+  real_name     TEXT,
+  email         TEXT,
+  _person_id    UUID REFERENCES people(id),  -- resolved identity
+  -- ...
 );
 ```
 
-### Indexes
+**Enrichment (Apollo, Exa):**
 
 ```sql
-CREATE INDEX idx_crosswalks_lookup    ON crosswalks(source, external_id);
-CREATE INDEX idx_crosswalks_entity    ON crosswalks(entity_id);
-CREATE INDEX idx_crosswalks_pending   ON crosswalks(status) WHERE status = 'pending_review';
-CREATE INDEX idx_activities_entity    ON activities(entity_id, occurred_at DESC);
-CREATE INDEX idx_activities_event     ON activities(event_type, event_id);
-CREATE INDEX idx_activities_time      ON activities(occurred_at DESC);
-CREATE INDEX idx_entities_type        ON entities(schema_type);
-CREATE INDEX idx_entities_merged      ON entities(merged_into) WHERE merged_into IS NOT NULL;
+-- Apollo enrichment data for people
+CREATE TABLE apollo_people (
+  id                UUID PRIMARY KEY,
+  _person_id        UUID NOT NULL REFERENCES people(id),
+  apollo_id         TEXT,
+  title             TEXT,
+  headline          TEXT,
+  linkedin_url      TEXT,
+  email             TEXT,
+  seniority         TEXT,
+  organization_id   TEXT,
+  employment_history JSONB,
+  current_roles     JSONB,
+  raw_response      JSONB,
+  enriched_at       TIMESTAMPTZ NOT NULL
+);
+
+-- Apollo enrichment data for organizations
+CREATE TABLE apollo_organizations (
+  id                    UUID PRIMARY KEY,
+  apollo_id             TEXT,
+  name                  TEXT,
+  primary_domain        TEXT,
+  industry              TEXT,
+  estimated_num_employees INTEGER,
+  technology_names      JSONB,
+  raw_response          JSONB,
+  enriched_at           TIMESTAMPTZ NOT NULL
+);
+
+-- Exa company research
+CREATE TABLE exa_companies (
+  id                UUID PRIMARY KEY,
+  name              TEXT,
+  primary_domain    TEXT,
+  website_url       TEXT NOT NULL,
+  description       TEXT,
+  employee_count    INTEGER,
+  revenue_annual    BIGINT,
+  funding_total     BIGINT,
+  raw_response      JSONB,
+  enriched_at       TIMESTAMPTZ NOT NULL
+);
 ```
+
+**Research:**
+
+```sql
+-- Research session tracking
+CREATE TABLE research_activities (
+  id              UUID PRIMARY KEY,
+  session_id      TEXT NOT NULL,
+  mode            TEXT NOT NULL,       -- 'deep_research', 'adaptive', 'external'
+  status          TEXT NOT NULL,       -- 'draft', 'pending', 'completed', 'failed'
+  permalink       TEXT,                -- links to research note in basic-memory
+  provider        TEXT NOT NULL,       -- 'exa', 'firecrawl', 'apollo', etc.
+  model           TEXT,
+  tool_calls      INTEGER,
+  cost_usd        NUMERIC,
+  request_summary TEXT,
+  started_at      TIMESTAMPTZ NOT NULL,
+  completed_at    TIMESTAMPTZ,
+  created_at      TIMESTAMPTZ NOT NULL
+);
+```
+
+### Why Per-Integration Tables?
+
+A generic `activities(entity_id, event_type, event_id, role)` table seems cleaner in theory, but per-integration tables provide:
+
+- **Source-specific columns** — Slack messages have `thread_ts`, `reactions`, `blocks`. Fellow transcripts have `offset_start_ms`, `speaker_label`. These don't fit a generic schema without JSONB catch-alls everywhere.
+- **Efficient queries** — "Find all Slack messages from this person in this channel" is a simple indexed query, not a filtered scan of a generic activity table.
+- **Direct `_person_id` on source rows** — Rather than joining through an intermediary activity table, every source row directly links to the canonical person. This makes cross-layer queries (identity → activity → context) fast and straightforward.
+- **Enrichment isolation** — Apollo and Exa data is stored separately from the canonical record, preserving the raw API response (`raw_response` JSONB) for re-processing and keeping the core `people` table lean.
+
+The `_person_id` foreign key convention across all tables serves the same role as a generic activity log — it's the unified identity thread — but without forcing heterogeneous data into a single table.
+
+### Future: Confidence and Audit
+
+The current `people_crosslinks` table stores deterministic bindings. As probabilistic matching scales, planned additions include:
+
+- **`confidence`** column on crosslinks (1.0 = verified, &lt;1.0 = inferred)
+- **`match_method`** column (email_exact, name_similarity, elimination, manual)
+- **`status`** column (active, pending_review, rejected)
+- **`entity_audit_log`** table for merge/unmerge history
 
 ## Match Rules
 
