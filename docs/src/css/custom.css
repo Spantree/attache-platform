@@ -56,3 +56,8 @@
 .markdown h3 {
   clear: both;
 }
+
+/* Compact table text */
+.markdown table {
+  font-size: 0.8em;
+}
