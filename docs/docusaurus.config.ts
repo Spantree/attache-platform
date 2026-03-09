@@ -7,7 +7,7 @@ const config: Config = {
   tagline: 'Turnkey AI agent platform powered by OpenClaw',
 
   url: 'https://attache.dev',
-  baseUrl: '/docs/',
+  baseUrl: '/',
 
   organizationName: 'Spantree',
   projectName: 'attache',
