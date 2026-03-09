@@ -1,12 +1,13 @@
 # Service Architecture
 
-Attaché uses Docker Compose as its service layer. The base platform ships required services (Supabase). Skills can add optional services via their own compose files. Docker Compose's native multi-file merge handles the assembly — no custom tooling.
+Attaché uses Docker Compose as its service layer. The base platform ships required services (Supabase). Skills can add optional services via their own compose files. Each skill runs its own independent compose project — no merging, no assembly.
 
 ## Design Principles
 
-- **Compose files all the way down.** No abstraction layer, no custom YAML format. Standard `docker-compose.yml` everywhere.
+- **One compose file per concern.** Base platform has its own. Each skill has its own. They're independent projects.
 - **Ansible orchestrates, Compose runs.** Ansible discovers compose files and runs `docker compose up`. Compose manages the actual containers.
-- **Skills own their services.** If a skill needs SonarQube, it ships a compose file for SonarQube. Attaché doesn't know or care what SonarQube is.
+- **Skills own their services.** If a skill needs SonarQube, it ships a `docker-compose.yml` at the skill root. Attaché doesn't know or care what SonarQube is.
+- **Survive restarts.** Every service uses `restart: unless-stopped`. Colima itself starts on boot via launchd.
 - **Graceful degradation.** If a service isn't running, skills that need it skip those strategies. Nothing crashes.
 
 ## Base Services
@@ -66,12 +67,22 @@ The base platform runs migrations on first boot to set up the required schemas, 
 
 ## Skill Services
 
-Skills add services via their own `docker-compose.yml`. Attaché discovers and merges them automatically.
+Each skill with infrastructure needs ships a `docker-compose.yml` at the skill root. It runs as its own independent compose project.
+
+```
+skills/
+└── code-review/
+    ├── SKILL.md
+    ├── manifest.yml
+    ├── docker-compose.yml      # right at the root, not buried
+    └── scripts/
+        └── review.ts
+```
 
 ### Example: Code Review Skill
 
 ```yaml
-# skills/code-review/services/docker-compose.yml
+# skills/code-review/docker-compose.yml
 services:
   sonarqube:
     image: sonarqube:community
@@ -91,7 +102,7 @@ volumes:
 ### Example: Monitoring Skill
 
 ```yaml
-# skills/monitoring/services/docker-compose.yml
+# skills/monitoring/docker-compose.yml
 services:
   grafana:
     image: grafana/grafana-oss
@@ -108,32 +119,35 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./services/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     restart: unless-stopped
 
 volumes:
   grafana-data:
 ```
 
-## How Compose Files Are Merged
+## Independent Compose Projects
 
-Docker Compose natively supports multiple `-f` flags. Later files override earlier ones:
+Each compose file runs as its own project. No merging, no multi-file assembly:
 
 ```bash
-docker compose \
-  -f ~/.attache/base/docker-compose.yml \
-  -f ~/.openclaw/workspaces/main/skills/code-review/services/docker-compose.yml \
-  -f ~/.openclaw/workspaces/main/skills/monitoring/services/docker-compose.yml \
-  up -d
+# Start base services
+cd ~/.attache/base && docker compose up -d
+
+# Start a skill's services
+cd ~/.openclaw/workspaces/main/skills/code-review && docker compose up -d
+
+# Update a skill's services (without touching anything else)
+cd ~/.openclaw/workspaces/main/skills/code-review && docker compose pull && docker compose up -d
+
+# Remove a skill's services
+cd ~/.openclaw/workspaces/main/skills/code-review && docker compose down -v
+
+# Check what's running across all projects
+docker ps --filter "name=attache-"
 ```
 
-Ansible handles the discovery and flag assembly:
-
-1. Always include `~/.attache/base/docker-compose.yml`
-2. Scan all skills in `workspaces/main/skills/` for `services/docker-compose.yml`
-3. Build the `-f` flag list
-4. Run `docker compose up -d`
-5. Write a convenience script at `~/.attache/compose.sh` that captures the full command
+This means installing, updating, or removing a skill's infrastructure never affects the base platform or other skills.
 
 ### Container Naming Convention
 
@@ -146,7 +160,7 @@ attache-sonarqube
 attache-grafana
 ```
 
-This avoids conflicts with any other Docker workloads on the machine.
+This avoids conflicts with any other Docker workloads on the machine and makes it easy to list all Attaché services with `docker ps --filter "name=attache-"`.
 
 ## Environment Variables
 
@@ -180,23 +194,55 @@ colima_mount_type: virtiofs
 
 The base platform installs Colima via Homebrew and starts it with appropriate resource limits. Docker Desktop is explicitly *not* used — it has permission issues with agent user home directories and requires a GUI session.
 
+## Surviving Restarts
+
+Every service must survive a machine reboot. This requires two things:
+
+### 1. Colima Starts on Boot
+
+Ansible installs a launchd agent that starts Colima automatically:
+
+```xml
+<!-- ~/Library/LaunchAgents/com.attache.colima.plist -->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.attache.colima</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/colima</string>
+        <string>start</string>
+        <string>--foreground</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+</dict>
+</plist>
+```
+
+### 2. Containers Restart Automatically
+
+Every `docker-compose.yml` (base and skill) must use `restart: unless-stopped` on all services. This ensures Docker restarts them when Colima comes up after a reboot.
+
+The only way a service stays down is if you explicitly `docker compose down` it.
+
 ## Lifecycle Commands
 
 ```bash
-# Start all services
-~/.attache/compose.sh up -d
+# Base platform
+cd ~/.attache/base && docker compose up -d
+cd ~/.attache/base && docker compose down
+cd ~/.attache/base && docker compose logs -f supabase-db
 
-# Stop all services
-~/.attache/compose.sh down
+# Skill services (each skill independently)
+cd skills/code-review && docker compose up -d
+cd skills/code-review && docker compose down
+cd skills/code-review && docker compose logs -f sonarqube
 
-# View running services
-~/.attache/compose.sh ps
-
-# View logs for a specific service
-~/.attache/compose.sh logs -f sonarqube
-
-# Restart a single service
-~/.attache/compose.sh restart sonarqube
+# See all Attaché services
+docker ps --filter "name=attache-"
 ```
 
 ## Ansible's Role

@@ -11,11 +11,10 @@ skills/
 └── code-review/
     ├── SKILL.md                    # OpenClaw skill (agent instructions)
     ├── manifest.yml                # Dependencies and strategies
-    ├── scripts/                    # Skill scripts (TypeScript, shell)
-    │   ├── review.ts
-    │   └── sonar-scan.ts
-    └── services/
-        └── docker-compose.yml      # Optional: services this skill needs
+    ├── docker-compose.yml          # Optional: services this skill needs
+    └── scripts/                    # Skill scripts (TypeScript, shell)
+        ├── review.ts
+        └── sonar-scan.ts
 ```
 
 ### SKILL.md
@@ -58,9 +57,9 @@ strategies:
 default_strategies: [native, claude-code, static-analysis]
 ```
 
-### services/docker-compose.yml
+### docker-compose.yml
 
-Standard Docker Compose file. Nothing custom — just regular compose:
+Standard Docker Compose file at the skill root. Each skill runs as its own independent compose project:
 
 ```yaml
 services:
@@ -88,8 +87,7 @@ volumes:
 ### During Bootstrap
 
 1. Scan all skills in the workspace for `manifest.yml` files
-2. For each skill with a `services/docker-compose.yml`, add it to the compose file list
-3. Run `docker compose -f base.yml -f skill1.yml -f skill2.yml up -d`
+2. For each skill with a `docker-compose.yml`, run `docker compose up -d` in that skill's directory
 4. Validate that declared `requires.env` variables are set (warn if missing)
 5. Validate that declared `requires.tools` are installed (warn if missing)
 
