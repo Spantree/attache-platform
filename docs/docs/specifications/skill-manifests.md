@@ -127,6 +127,51 @@ license: string
 homepage: string
 ```
 
+## Coding Agent Skills
+
+Coding agents (Claude Code, Codex, Gemini CLI, Aider) are a special category of skill. Each coding agent gets its own skill directory with a dispatch harness, configuration, and manifest.
+
+### Configuration in attache.yml
+
+```yaml
+coding_agents:
+  claude_code:               # Map = install with custom config
+    max_sessions: 4
+    default_model: claude-sonnet-4-20250514
+    permissions: "--dangerously-skip-permissions"
+  codex: true                # true = install with defaults
+  # gemini_cli: true
+```
+
+`true` is shorthand for "install with default settings." A map provides custom configuration that's passed to the skill.
+
+### Skill Structure
+
+```
+skills/
+├── claude-code/
+│   ├── SKILL.md             # How the agent dispatches CC sessions
+│   ├── manifest.yml         # coding_agent: true, requires: [claude]
+│   └── scripts/
+│       └── dispatch.ts      # tmux lifecycle, brief gen, monitoring
+├── codex/
+│   ├── SKILL.md             # How the agent uses Codex for reviews
+│   ├── manifest.yml         # coding_agent: true, requires: [codex]
+│   └── scripts/
+│       └── review.ts
+```
+
+### Supported Coding Agents
+
+| Agent | Status | Use case |
+|---|---|---|
+| **claude-code** | ✅ Supported | Full dispatch harness — tmux session management, brief generation, context assembly, worktree isolation, completion notifications |
+| **codex** | ✅ Supported (limited) | Alternate code reviewer — dispatched for review tasks, no full session harness yet |
+| **gemini-cli** | 🔜 Planned | TBD |
+| **aider** | 🔜 Planned | TBD |
+
+The `claude-code` skill is the reference implementation. It's a port of the `cc-dispatch` pattern: assemble context, generate a brief, launch a tmux session, monitor for completion, notify the orchestrating agent. Other coding agent skills can follow the same pattern as they mature.
+
 ## Skill Categories
 
 Skills fall into a few natural categories:

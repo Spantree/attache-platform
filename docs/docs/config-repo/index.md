@@ -66,11 +66,14 @@ backends:
   tunnel: tailscale          # Secure tunnel (required, Tailscale is default)
   database: supabase         # Database layer (required, Supabase is default)
 
-# Coding agents to install
+# Coding agents — install with defaults (true) or custom config (map)
 coding_agents:
-  - claude_code              # Claude Code CLI
-  # - codex                  # OpenAI Codex CLI
-  # - aider                  # Aider
+  claude_code:               # Full dispatch harness (tmux, briefs, monitoring)
+    max_sessions: 4
+    default_model: claude-sonnet-4-20250514
+  codex: true                # Review-only for now (alternate code reviewer)
+  # gemini_cli: true         # Not yet supported
+  # aider: true              # Not yet supported
 
 # Extra Homebrew formulae (appended to base)
 homebrew_extra:
