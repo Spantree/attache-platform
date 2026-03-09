@@ -95,16 +95,12 @@ The filesystem path is a convenience for humans. The database (entity ID + cross
 The knowledge base is designed to work as an [Obsidian](https://obsidian.md) vault. Required setup:
 
 - **[Front Matter Title plugin](https://github.com/snezhig/obsidian-front-matter-title)** — displays the frontmatter `title` field instead of the filename in the file explorer, graph view, tabs, and search. This is essential for `index.md` files in promoted folders to display as "Cedric Hurst" instead of "index".
-- **`aliases`** in frontmatter — Obsidian uses these natively for link suggestions and search. Add common name variants.
-
 ```yaml
 ---
 type: schema.org/Person
+id: a1b2c3d4-5678-90ab-cdef-1234567890ab
 permalink: people/cedric-hurst
 title: Cedric Hurst
-aliases:
-  - Cedric
-  - cedric-hurst
 ---
 ```
 

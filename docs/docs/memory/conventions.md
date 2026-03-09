@@ -19,11 +19,9 @@ Frontmatter holds **structured metadata only** — short values, lists, dates, i
 type: schema.org/Person
 
 # 2. Identity fields
+id: a1b2c3d4-5678-90ab-cdef-1234567890ab
 permalink: people/cedric-hurst
 title: Cedric Hurst
-aliases:
-  - Cedric
-  - cedric-hurst
 
 # 3. Schema properties (snake_case, short values only)
 email: cedric@spantree.net
@@ -51,6 +49,7 @@ The body holds human-readable prose and basic-memory [knowledge graph annotation
 ```markdown
 ---
 type: schema.org/Person
+id: a1b2c3d4-5678-90ab-cdef-1234567890ab
 permalink: people/cedric-hurst
 title: Cedric Hurst
 email: cedric@spantree.net

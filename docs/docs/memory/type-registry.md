@@ -11,6 +11,20 @@ Schemas define **frontmatter-only fields** — short, structured metadata. Long-
 
 Schema.org types are **open-world** — you can freely add properties beyond what the spec defines. Most Attaché types use a standard Schema.org type with extension properties. Custom `attache.dev/*` types are only created when no Schema.org type fits at all.
 
+### Common fields
+
+Every entity includes these identity fields (not repeated in individual schemas below):
+
+```typescript
+// Shared across all knowledge types
+const baseFields = {
+  id: z.string().uuid(),             // Postgres entity UUID
+  permalink: z.string().optional(),  // basic-memory permalink (explicit when folderized)
+};
+```
+
+The `id` field is the **canonical identifier** — it's the Postgres `entities.id` UUID that links the markdown note to its crosswalks, activities, and activation cache. When a note is materialized from Postgres, `id` is always present. When a note is created manually (e.g., freeform research), `id` is assigned on first sync.
+
 ## schema.org/Person
 
 ```typescript
@@ -54,7 +68,6 @@ The only custom Attaché type — no Schema.org type fits the concept of a cross
 export const ProjectSchema = z.object({
   type: z.literal("attache.dev/Project"),
   title: z.string(),
-  aliases: z.array(z.string()).default([]),
   status: z.enum(["active", "archived", "planned"]).optional(),
   repos: z.array(z.string().url()).default([]),
   channels: z.record(z.string()).default({}),
