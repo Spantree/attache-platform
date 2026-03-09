@@ -1,9 +1,9 @@
 ---
-sidebar_position: 5
-sidebar_label: Conventions
+sidebar_position: 6
+sidebar_label: Markdown Format
 ---
 
-# Conventions
+# Markdown Format
 
 All markdown files in the knowledge base follow consistent formatting and annotation rules. These conventions ensure that files are human-readable, Obsidian-compatible, and machine-parseable through the Zod → Markdown serialization layer.
 

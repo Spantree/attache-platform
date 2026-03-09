@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 sidebar_label: Knowledge Layer
 ---
 
@@ -53,7 +53,7 @@ workspaces/main/knowledge/
 
 Folders reflect **type taxonomy**, not entity attributes. People are in `people/`, not `people/spantree-net/`. The exception is `sites/`, where the domain *is* the natural organizer (mirroring URL structure).
 
-For the full set of Zod schemas, see the [Type Registry](./type-registry).
+For the full set of Zod schemas, see the [Document Types](./document-types).
 
 ## File Naming and Folder Promotion
 
@@ -106,7 +106,7 @@ title: Cedric Hurst
 
 ## Search
 
-Knowledge supports three search approaches, and they work best in combination. See [Search](./search) for the full architecture.
+Knowledge supports three search approaches, and they work best in combination. See [Search Model](./search-model) for the full architecture.
 
 **Semantic search** uses pgvector embeddings to find conceptually similar entities.
 

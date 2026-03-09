@@ -1,9 +1,9 @@
 ---
 sidebar_position: 8
-sidebar_label: Search
+sidebar_label: Search Model
 ---
 
-# Search
+# Search Model
 
 An agent that can store information but can't find it again is useless. The memory system's search infrastructure is designed around a simple principle: the agent shouldn't need to know where an answer lives to find it. Whether the relevant context is in a daily note, a person profile, a Slack message, or a meeting transcript, search should surface it.
 

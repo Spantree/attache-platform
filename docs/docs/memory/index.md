@@ -31,7 +31,7 @@ All four layers converge on Supabase (Postgres) as the data backbone, though the
 
 | Layer | Primary Storage | Access Pattern |
 |---|---|---|
-| [Episodic Memory](./memory-layer) | Markdown files | File reads + embedding search |
+| [Episodic Memory](./episodic-layer) | Markdown files | File reads + embedding search |
 | [Knowledge](./knowledge-layer) | Markdown + Postgres (basic-memory) | Structured queries + semantic search |
 | [Activity](./activity-layer) | Postgres | Full-text search + time-range queries |
 | [Identity](./identity-layer) | Postgres | Lookup by identifier + fuzzy matching |
@@ -53,11 +53,11 @@ Schema.org types are **open-world** — you can freely add properties beyond wha
 
 Property names use **snake_case** in YAML frontmatter and Postgres columns, mapped from Schema.org's camelCase equivalents at the serialization boundary (e.g., `given_name` ↔ Schema.org `givenName`).
 
-Each type has a corresponding Zod schema for validation and programmatic use — see the [Knowledge Layer type registry](./knowledge-layer#type-registry) for the full set.
+Each type has a corresponding Zod schema for validation and programmatic use — see the [Document Types](./document-types) for the full set.
 
 ## Conventions
 
-All markdown files in the memory system follow consistent formatting rules. See [Knowledge Layer — YAML conventions](./knowledge-layer#yaml-frontmatter-conventions) for the full specification, but the key principles are:
+All markdown files in the memory system follow consistent formatting rules. See [Markdown Format](./markdown-format) for the full specification, but the key principles are:
 
 - **Frontmatter stays lean** — short scalars and block-style lists only. No long text.
 - **Long content goes in the body** — descriptions, notes, and context as regular markdown.

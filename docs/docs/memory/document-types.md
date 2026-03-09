@@ -1,13 +1,13 @@
 ---
-sidebar_position: 6
-sidebar_label: Type Registry
+sidebar_position: 7
+sidebar_label: Document Types
 ---
 
-# Type Registry
+# Document Types
 
 Entity and resource types are defined as Zod schemas with fully-qualified type discriminators. Property names use **snake_case** (matching Postgres and YAML conventions), mapped from Schema.org's camelCase equivalents.
 
-Schemas define **frontmatter-only fields** — short, structured metadata. Long-form content (descriptions, transcripts, notes) belongs in the markdown document body. See [Conventions](./conventions) for formatting rules.
+Schemas define **frontmatter-only fields** — short, structured metadata. Long-form content (descriptions, transcripts, notes) belongs in the markdown document body. See [Markdown Format](./markdown-format) for formatting rules.
 
 Schema.org types are **open-world** — you can freely add properties beyond what the spec defines. Most Attaché types use a standard Schema.org type with extension properties. Custom `attache.dev/*` types are only created when no Schema.org type fits at all.
 

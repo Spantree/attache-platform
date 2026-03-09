@@ -1,9 +1,9 @@
 ---
 sidebar_position: 1
-sidebar_label: Episodic Memory
+sidebar_label: Episodic Layer
 ---
 
-# Episodic Memory
+# Episodic Layer
 
 The episodic memory layer is the agent's temporal record — a stream of what happened, what was decided, and what matters. It's named after the cognitive science concept of [episodic memory](https://en.wikipedia.org/wiki/Episodic_memory): first-person, time-ordered experiences that consolidate over time into lasting knowledge.
 
