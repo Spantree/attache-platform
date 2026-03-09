@@ -13,11 +13,11 @@ The memory system gives agents continuity across sessions. It's organized into f
 
 **Memory** is the temporal layer — what happened, when, and in what order. Daily session logs capture the raw stream of events. A curated long-term file distills the important bits. This is the agent's journal and its long-term recall, stored as markdown files that are cheap to read and easy to search.
 
-**Knowledge** is the entity layer — who, what, and how things relate to each other. People profiles, organization details, research notes, project documentation. These are markdown files indexed by basic-memory into Supabase, giving you both human-readable files and structured database queries.
+**Knowledge** is the entity layer — who, what, and how things relate to each other. People profiles, organization details, research notes, project documentation. These are markdown files indexed by basic-memory into Supabase, with types aligned to [Schema.org](https://schema.org) vocabulary and defined as Zod schemas for validation and programmatic use.
 
 **Activity** is the raw event layer — Slack messages, meeting transcripts, calendar events, email threads. These come from external integrations and land directly in Postgres. The agent doesn't write this data; it ingests and queries it.
 
-**Identity** is the reconciliation layer — connecting the same person across different systems. The "Cedric Hurst" in Slack, the "cedric@spantree.net" in Google Calendar, and the "divideby0" on GitHub are all the same person. Identity resolution happens in Postgres with confidence scoring and manual overrides.
+**Identity** is the reconciliation layer — connecting the same person across different systems. The "Cedric Hurst" in Slack, the "cedric@spantree.net" in Google Calendar, and the "divideby0" on GitHub are all the same person. Identity resolution happens in Postgres with confidence scoring, crosswalks, and manual overrides — following classic [Master Data Management (MDM)](https://en.wikipedia.org/wiki/Master_data_management) patterns.
 
 ## How the Layers Work Together
 
@@ -41,3 +41,22 @@ All four layers converge on Supabase (Postgres) as the data backbone, though the
 **Postgres handles everything structured.** basic-memory indexes knowledge files into Postgres for relational queries. Activity data from integrations goes directly into Postgres tables. Identity crosslinks and match candidates live in dedicated tables with foreign keys.
 
 **pgvector enables semantic search** across all layers. Embeddings are generated for memory files, knowledge entities, and activity records, allowing the agent to find relevant context even when the exact words don't match.
+
+## Schema Alignment
+
+Entity types in the knowledge and identity layers use **fully-qualified type names** to make provenance unambiguous:
+
+- `schema.org/Person` — a standard [Schema.org](https://schema.org) type (portable, understood by LLMs natively)
+- `attache/Project` — a custom Attaché extension
+
+Property names use **snake_case** in YAML frontmatter and Postgres columns, mapped from Schema.org's camelCase equivalents at the serialization boundary (e.g., `given_name` ↔ Schema.org `givenName`).
+
+Each type has a corresponding Zod schema for validation and programmatic use — see the [Knowledge Layer type registry](./knowledge-layer#type-registry) for the full set.
+
+## Conventions
+
+All markdown files in the memory system follow consistent formatting rules. See [Knowledge Layer — YAML conventions](./knowledge-layer#yaml-frontmatter-conventions) for the full specification, but the key principles are:
+
+- **Frontmatter stays lean** — short scalars and block-style lists only. No long text.
+- **Long content goes in the body** — descriptions, notes, and context as regular markdown.
+- **Observations and relations** use basic-memory's knowledge graph syntax with a controlled vocabulary of categories and relation types.
