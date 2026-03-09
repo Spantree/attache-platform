@@ -19,37 +19,66 @@ This separation matters because the raw data is useful long after the agent has 
 
 Activity goes directly into Postgres tables, one per source. There's no markdown layer here — these are high-volume, structured records that need efficient time-range queries and full-text search.
 
-```sql
--- Slack messages
-CREATE TABLE slack_messages (
-  id BIGSERIAL PRIMARY KEY,
-  team_id TEXT NOT NULL,
-  channel_id TEXT NOT NULL,
-  ts TEXT NOT NULL,              -- Slack's message timestamp (unique ID)
-  user_id TEXT,
-  text TEXT,
-  thread_ts TEXT,                -- Parent thread timestamp
-  metadata JSONB,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  search_vector TSVECTOR         -- Generated for FTS
-);
+Rather than a single generic activity table, each integration has **purpose-built tables** that preserve source-specific structure. Every table links back to the [Identity Layer](./identity-layer) via the `_person_id` foreign key convention.
 
--- Meeting transcripts
-CREATE TABLE fellow_meetings (
-  id BIGSERIAL PRIMARY KEY,
-  event_guid TEXT UNIQUE,
-  title TEXT,
-  start_time TIMESTAMPTZ,
-  transcript TEXT,
-  summary TEXT,
-  speakers JSONB,
-  search_vector TSVECTOR
+**Slack** stores messages with full threading context, reactions, and blocks:
+
+```sql
+CREATE TABLE slack_messages (
+  channel_id    TEXT NOT NULL,
+  ts            TEXT NOT NULL,         -- Slack's unique message ID
+  workspace_id  TEXT NOT NULL,
+  user_id       TEXT,
+  text          TEXT,
+  thread_ts     TEXT,                  -- parent thread
+  reactions     JSONB,
+  blocks        JSONB,
+  _person_id    UUID REFERENCES people(id),
+  sent_at       TIMESTAMPTZ NOT NULL,
+  PRIMARY KEY (channel_id, ts)
 );
 ```
 
-**Full-text search** via tsvector handles most activity queries. "What did Jeff say about the deployment last Tuesday?" becomes a time-filtered FTS query against Slack messages.
+**Fellow** decomposes meeting data into three tables for precise querying:
 
-**JSONB metadata** captures source-specific fields without requiring schema changes for every integration. Slack reactions, Fellow action items, calendar attendee lists — these go into the metadata column and can be queried with Postgres JSON operators.
+```sql
+-- Meeting metadata (from Fellow notes)
+CREATE TABLE fellow_notes (
+  id                TEXT PRIMARY KEY,
+  title             TEXT,
+  event_guid        TEXT,              -- cross-ref to Google Calendar
+  event_start       TIMESTAMPTZ,
+  event_end         TIMESTAMPTZ,
+  content_markdown  TEXT               -- meeting notes
+);
+
+-- Recordings with AI-generated analysis
+CREATE TABLE fellow_recordings (
+  id              TEXT PRIMARY KEY,
+  note_id         TEXT REFERENCES fellow_notes(id),
+  ai_summary      TEXT,
+  ai_action_items JSONB,
+  ai_decisions    JSONB,
+  ai_topics       JSONB
+);
+
+-- Individual speaker turns (transcript segments)
+CREATE TABLE fellow_transcript_segments (
+  id              UUID PRIMARY KEY,
+  recording_id    TEXT REFERENCES fellow_recordings(id),
+  attendee_id     UUID REFERENCES fellow_attendees(id),
+  speaker_label   TEXT,                -- raw name from transcript
+  offset_start_ms INTEGER NOT NULL,
+  offset_end_ms   INTEGER NOT NULL,
+  text            TEXT NOT NULL
+);
+```
+
+This decomposition matters. A question like "what did Jeff say about the deployment?" doesn't search a monolithic transcript blob — it queries individual transcript segments joined to resolved attendee identities, filtered by topic. The `fellow_attendees` table (detailed in the [Identity Layer](./identity-layer)) bridges speaker labels to canonical people.
+
+**Full-text search** via tsvector handles most activity queries. Time-filtered FTS against Slack messages or transcript segments is the most common pattern.
+
+**JSONB columns** capture source-specific structured data (Slack reactions, Fellow AI action items, calendar attendee lists) without requiring schema changes for every new field.
 
 ## Ingestion
 
@@ -75,7 +104,7 @@ The agent queries activity when it needs to answer questions about what happened
 
 Activity feeds the other layers but doesn't replace them. When the agent reads Slack messages and notices a pattern — a recurring topic, a decision being made, a person's communication style — it captures that insight as memory or knowledge. The activity stays as the source record, available for re-examination later.
 
-**Activity → Memory:** "We discussed the DTY business case in Slack on March 5" goes into the daily notes.
+**Activity → Episodic Memory:** "We discussed the DTY business case in Slack on March 5" goes into the daily notes.
 
 **Activity → Knowledge:** A new person appears in a meeting transcript, so the agent creates a person profile in the knowledge layer.
 
