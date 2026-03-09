@@ -1,0 +1,4 @@
+---
+config_repo: ""
+config_repo_private: false
+config_dir: "{{ ansible_env.HOME }}/.attache/config"

@@ -3,7 +3,12 @@
 # Provisions a bare macOS Tahoe machine into a fully configured OpenClaw agent host.
 #
 # Usage:
+#   # Base only
 #   ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml
+#
+#   # With user config repo
+#   ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml \
+#     -e config_repo=divideby0/evie
 #
 # Prerequisites:
 #   - Target has macOS Tahoe installed with a single admin user
@@ -21,19 +26,44 @@
           - ansible_os_family == "Darwin"
         fail_msg: "Attaché only supports macOS hosts"
 
+    - name: Check for Xcode CLI tools
+      ansible.builtin.command: xcode-select -p
+      register: xcode_check
+      changed_when: false
+      failed_when: false
+
+    - name: Fail if Xcode CLI tools missing
+      ansible.builtin.fail:
+        msg: >
+          Xcode Command Line Tools are not installed on the target.
+          SSH in and run: xcode-select --install
+      when: xcode_check.rc != 0
+
+    - name: Install Rosetta on Apple Silicon
+      ansible.builtin.shell: /usr/sbin/softwareupdate --install-rosetta --agree-to-license
+      when: ansible_architecture == "arm64"
+      register: rosetta
+      changed_when: "'Install of Rosetta' in rosetta.stdout"
+      failed_when: false
+
   roles:
+    # Layer 1: Base platform
     - role: homebrew
-      tags: [homebrew]
+      tags: [homebrew, base]
     - role: shell
-      tags: [shell]
+      tags: [shell, base]
     - role: node
-      tags: [node]
+      tags: [node, base]
     - role: openclaw
-      tags: [openclaw]
+      tags: [openclaw, base]
     - role: ssh
-      tags: [ssh]
+      tags: [ssh, base]
     - role: workspace
-      tags: [workspace]
+      tags: [workspace, base]
+
+    # Layer 2: User config overlay
+    - role: config-overlay
+      tags: [config, overlay]
 
   post_tasks:
     - name: Bootstrap complete

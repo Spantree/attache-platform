@@ -60,22 +60,33 @@ all:
       agent_name: Evie              # display name for the agent
 ```
 
-## Step 4: Run the Bootstrap Playbook
+## Step 4: Run the Bootstrap
+
+### Base only (no config repo)
 
 ```bash
 cd ansible
 ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml
 ```
 
-This single command will:
+This installs the core platform: Homebrew, Node.js, OpenClaw, SSH hardening, workspace scaffolding.
 
-1. **Install Homebrew** and essential packages
-2. **Install Node.js** via mise (version manager)
-3. **Install OpenClaw** globally via npm
-4. **Configure the shell** (zsh, PATH, environment variables)
-5. **Set up SSH hardening** (key-only auth, no root login)
-6. **Create the workspace** directory structure
-7. **Install and start the OpenClaw gateway** as a launch agent
+### With a config repo
+
+```bash
+ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml \
+  -e config_repo=divideby0/evie
+```
+
+This runs the base bootstrap, then clones and applies your config repo on top. See [Architecture](../architecture/index.md) for the full merge behavior.
+
+For private config repos, ensure the agent's SSH key is authorized on GitHub, or pass a token:
+
+```bash
+ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml \
+  -e config_repo=divideby0/evie \
+  -e config_repo_private=true
+```
 
 ## Step 5: Connect Your Agent
 
@@ -90,5 +101,6 @@ Follow the pairing prompts to connect your agent to your OpenClaw account and me
 
 ## What's Next?
 
-- [Architecture Overview](../architecture/index.md) — understand how the pieces fit together
+- [Architecture](../architecture/index.md) — understand the two-layer design
+- [Config Repo Guide](../config-repo/index.md) — set up your own config repo
 - [Specifications](../specifications/index.md) — detailed specs for each component

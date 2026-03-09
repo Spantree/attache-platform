@@ -1,0 +1,156 @@
+---
+# Config Overlay Role
+# Clones and applies a user config repo on top of the base platform.
+
+- name: Skip config overlay if no repo specified
+  ansible.builtin.debug:
+    msg: "No config_repo specified, skipping config overlay"
+  when: config_repo == ""
+
+- name: Clone config repo
+  ansible.builtin.git:
+    repo: "git@github.com:{{ config_repo }}.git"
+    dest: "{{ config_dir }}"
+    version: main
+    force: true
+  when: config_repo != ""
+
+- name: Check for attache.yml
+  ansible.builtin.stat:
+    path: "{{ config_dir }}/attache.yml"
+  register: attache_yml
+  when: config_repo != ""
+
+- name: Load attache.yml variables
+  ansible.builtin.include_vars:
+    file: "{{ config_dir }}/attache.yml"
+    name: user_config
+  when: config_repo != "" and attache_yml.stat.exists
+
+- name: Check for user group_vars
+  ansible.builtin.stat:
+    path: "{{ config_dir }}/ansible/group_vars/all.yml"
+  register: user_group_vars
+  when: config_repo != ""
+
+- name: Load user group_vars overrides
+  ansible.builtin.include_vars:
+    file: "{{ config_dir }}/ansible/group_vars/all.yml"
+  when: config_repo != "" and user_group_vars.stat.exists
+
+# --- Brewfile ---
+
+- name: Check for user Brewfile
+  ansible.builtin.stat:
+    path: "{{ config_dir }}/Brewfile"
+  register: user_brewfile
+  when: config_repo != ""
+
+- name: Install packages from user Brewfile
+  ansible.builtin.shell: |
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    brew bundle --file="{{ config_dir }}/Brewfile" --no-lock
+  when: config_repo != "" and user_brewfile.stat.exists
+  changed_when: true
+
+# --- mise tools ---
+
+- name: Check for user mise config
+  ansible.builtin.stat:
+    path: "{{ config_dir }}/mise/config.toml"
+  register: user_mise_config
+  when: config_repo != ""
+
+- name: Copy user mise config and install tools
+  when: config_repo != "" and user_mise_config.stat.exists
+  block:
+    - name: Copy user mise config
+      ansible.builtin.copy:
+        src: "{{ config_dir }}/mise/config.toml"
+        dest: "{{ ansible_env.HOME }}/.config/mise/config.local.toml"
+        remote_src: true
+        mode: "0644"
+
+    - name: Install user mise tools
+      ansible.builtin.shell: |
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+        mise install
+      changed_when: true
+
+# --- Workspace files ---
+
+- name: Check for workspace directory
+  ansible.builtin.stat:
+    path: "{{ config_dir }}/workspace"
+  register: user_workspace
+  when: config_repo != ""
+
+- name: Copy workspace files
+  ansible.builtin.copy:
+    src: "{{ config_dir }}/workspace/"
+    dest: "{{ ansible_env.HOME }}/.openclaw/workspace/"
+    remote_src: true
+    mode: preserve
+  when: config_repo != "" and user_workspace.stat.exists
+
+# --- Shell overlays ---
+
+- name: Check for shell directory
+  ansible.builtin.stat:
+    path: "{{ config_dir }}/shell"
+  register: user_shell
+  when: config_repo != ""
+
+- name: Install zshrc.local
+  ansible.builtin.copy:
+    src: "{{ config_dir }}/shell/zshrc.local"
+    dest: "{{ ansible_env.HOME }}/.zshrc.local"
+    remote_src: true
+    mode: "0644"
+  when: config_repo != "" and user_shell.stat.exists
+
+- name: Install starship.toml
+  ansible.builtin.stat:
+    path: "{{ config_dir }}/shell/starship.toml"
+  register: user_starship
+  when: config_repo != "" and user_shell.stat.exists
+
+- name: Copy starship config
+  ansible.builtin.copy:
+    src: "{{ config_dir }}/shell/starship.toml"
+    dest: "{{ ansible_env.HOME }}/.config/starship.toml"
+    remote_src: true
+    mode: "0644"
+  when: config_repo != "" and user_shell.stat.exists and user_starship.stat.exists
+
+# --- User playbooks ---
+
+- name: Find user playbooks
+  ansible.builtin.find:
+    paths: "{{ config_dir }}/ansible/playbooks"
+    patterns: "*.yml,*.yaml"
+  register: user_playbooks
+  when: config_repo != ""
+
+- name: Run user playbooks
+  ansible.builtin.include_tasks:
+    file: run-user-playbook.yml
+  loop: "{{ user_playbooks.files | sort(attribute='path') }}"
+  loop_control:
+    loop_var: playbook_file
+  when: config_repo != "" and user_playbooks.files | length > 0
+
+# --- Bootstrap scripts ---
+
+- name: Find user scripts
+  ansible.builtin.find:
+    paths: "{{ config_dir }}/scripts"
+    patterns: "*.sh"
+  register: user_scripts
+  when: config_repo != ""
+
+- name: Run user bootstrap scripts
+  ansible.builtin.shell: "bash {{ item.path }}"
+  loop: "{{ user_scripts.files | sort(attribute='path') }}"
+  when: config_repo != "" and user_scripts.files | length > 0
+  changed_when: true
