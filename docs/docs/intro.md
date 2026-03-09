@@ -1,3 +1,7 @@
+---
+slug: /
+---
+
 # What is Attaché?
 
 **Attaché is a turnkey platform for deploying personal AI agents powered by [OpenClaw](https://openclaw.ai).**
