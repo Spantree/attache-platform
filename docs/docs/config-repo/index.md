@@ -22,6 +22,10 @@ my-agent/
 ├── shell/
 │   ├── zshrc.local          # Sourced at end of .zshrc
 │   └── starship.toml        # Prompt configuration
+├── skills/                      # Shared across workspaces → ~/.openclaw/skills/
+│   ├── code-review/
+│   ├── knowledge/
+│   └── sonarqube/
 ├── workspace/                   # Maps to ~/.openclaw/workspaces/main/
 │   ├── SOUL.md              # Agent personality
 │   ├── USER.md              # About the human
@@ -31,11 +35,10 @@ my-agent/
 │   ├── HEARTBEAT.md         # Periodic task checklist
 │   ├── memory/
 │   │   └── MEMORY.md        # Long-term memory seed
-│   ├── knowledge/           # Entity profiles (basic-memory backed)
-│   │   ├── people/
-│   │   ├── organizations/
-│   │   └── research/
-│   └── skills/              # Custom OpenClaw skills
+│   └── knowledge/           # Entity profiles (basic-memory backed)
+│       ├── people/
+│       ├── organizations/
+│       └── research/
 ├── ansible/
 │   ├── group_vars/
 │   │   └── all.yml          # Variable overrides (deep-merged with base)
@@ -84,7 +87,7 @@ git:
 
 ## Workspace Files
 
-Everything in `workspace/` gets copied to `~/.openclaw/workspaces/main/` on the target. This is where your agent's personality, memory, and skills live.
+Everything in `workspace/` gets copied to `~/.openclaw/workspaces/main/` on the target. Everything in `skills/` gets copied to `~/.openclaw/skills/` (shared across all workspaces).
 
 **At minimum, you'll want:**
 
@@ -96,7 +99,12 @@ Everything in `workspace/` gets copied to `~/.openclaw/workspaces/main/` on the 
 - **AGENTS.md** — workspace conventions and behavioral rules
 - **TOOLS.md** — notes about local tool configurations
 - **IDENTITY.md** — agent name, avatar, emoji
-- **skills/** — custom OpenClaw skills unique to this agent
+
+## Skills
+
+Skills live at the config repo root in `skills/`, not inside `workspace/`. This is intentional — skills are shared resources that can be linked into multiple workspaces.
+
+During bootstrap, Ansible copies `skills/` to `~/.openclaw/skills/`. If you later add additional workspaces, they can all reference the same skill set.
 
 ## Custom Ansible
 

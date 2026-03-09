@@ -143,13 +143,13 @@ Each runs as its own compose project. No merging, no multi-file assembly:
 cd ~/.attache/base && docker compose up -d
 
 # Start a skill's services
-cd ~/.openclaw/workspaces/main/skills/code-review && docker compose up -d
+cd ~/.openclaw/skills/code-review && docker compose up -d
 
 # Update a skill's services (without touching anything else)
-cd ~/.openclaw/workspaces/main/skills/code-review && docker compose pull && docker compose up -d
+cd ~/.openclaw/skills/code-review && docker compose pull && docker compose up -d
 
 # Remove a skill's services
-cd ~/.openclaw/workspaces/main/skills/code-review && docker compose down -v
+cd ~/.openclaw/skills/code-review && docker compose down -v
 
 # Check what's running across all projects
 docker ps --filter "name=attache-"

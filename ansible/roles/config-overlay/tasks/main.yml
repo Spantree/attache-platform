@@ -93,6 +93,22 @@
     mode: preserve
   when: config_repo != "" and user_workspace.stat.exists
 
+# --- Skills (shared across workspaces) ---
+
+- name: Check for skills directory
+  ansible.builtin.stat:
+    path: "{{ config_dir }}/skills"
+  register: user_skills
+  when: config_repo != ""
+
+- name: Copy skills to shared location
+  ansible.builtin.copy:
+    src: "{{ config_dir }}/skills/"
+    dest: "{{ ansible_env.HOME }}/.openclaw/skills/"
+    remote_src: true
+    mode: preserve
+  when: config_repo != "" and user_skills.stat.exists
+
 # --- Shell overlays ---
 
 - name: Check for shell directory
@@ -174,7 +190,7 @@
 
 - name: Find skill docker-compose files
   ansible.builtin.find:
-    paths: "{{ ansible_env.HOME }}/.openclaw/workspaces/main/skills"
+    paths: "{{ ansible_env.HOME }}/.openclaw/skills"
     patterns: "docker-compose.yml,docker-compose.yaml"
     recurse: true
     depth: 2

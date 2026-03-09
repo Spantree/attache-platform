@@ -17,8 +17,13 @@
     - knowledge/organizations
     - knowledge/projects
     - knowledge/research
-    - skills
     - assets
+
+- name: Create shared skills directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.openclaw/skills"
+    state: directory
+    mode: "0755"
 
 - name: Create credentials directory
   ansible.builtin.file:
