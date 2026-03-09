@@ -154,3 +154,36 @@
   loop: "{{ user_scripts.files | sort(attribute='path') }}"
   when: config_repo != "" and user_scripts.files | length > 0
   changed_when: true
+
+# --- Docker services (user config repo) ---
+
+- name: Check for user docker-compose.yml
+  ansible.builtin.stat:
+    path: "{{ config_dir }}/docker-compose.yml"
+  register: user_compose
+  when: config_repo != ""
+
+- name: Start user docker services
+  ansible.builtin.shell: docker compose up -d
+  args:
+    chdir: "{{ config_dir }}"
+  when: config_repo != "" and user_compose.stat.exists
+  changed_when: true
+
+# --- Docker services (skills) ---
+
+- name: Find skill docker-compose files
+  ansible.builtin.find:
+    paths: "{{ ansible_env.HOME }}/.openclaw/workspaces/main/skills"
+    patterns: "docker-compose.yml,docker-compose.yaml"
+    recurse: true
+    depth: 2
+  register: skill_compose_files
+
+- name: Start skill docker services
+  ansible.builtin.shell: docker compose up -d
+  args:
+    chdir: "{{ item.path | dirname }}"
+  loop: "{{ skill_compose_files.files }}"
+  when: skill_compose_files.files | length > 0
+  changed_when: true

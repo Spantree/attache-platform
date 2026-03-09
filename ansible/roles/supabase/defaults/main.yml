@@ -1,0 +1,2 @@
+---
+attache_platform_dir: "{{ ansible_env.HOME }}/.attache/platform"

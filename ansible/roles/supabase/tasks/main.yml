@@ -1,0 +1,43 @@
+---
+- name: Clone attache-platform repo
+  ansible.builtin.git:
+    repo: "https://github.com/Spantree/attache-platform.git"
+    dest: "{{ attache_platform_dir }}"
+    version: main
+    force: true
+
+- name: Create .env for base services
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ attache_platform_dir }}/.env"
+    mode: "0600"
+
+- name: Create logs directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.attache/logs"
+    state: directory
+    mode: "0755"
+
+- name: Start base services via docker compose
+  ansible.builtin.shell: |
+    docker compose up -d
+  args:
+    chdir: "{{ attache_platform_dir }}"
+  register: compose_up
+  changed_when: "'Started' in compose_up.stderr or 'Creating' in compose_up.stderr"
+
+- name: Wait for Supabase DB to be healthy
+  ansible.builtin.shell: |
+    docker inspect --format='{{ '{{' }}.State.Health.Status{{ '}}' }}' attache-supabase-db
+  register: db_health
+  until: db_health.stdout == "healthy"
+  retries: 30
+  delay: 2
+  changed_when: false
+
+- name: Run migrations
+  ansible.builtin.shell: |
+    docker exec attache-supabase-db psql -U postgres -f /docker-entrypoint-initdb.d/00-extensions.sql
+  register: migrations
+  changed_when: "'CREATE' in migrations.stdout"
+  failed_when: false

@@ -1,0 +1,37 @@
+---
+- name: Install Colima and Docker CLI
+  community.general.homebrew:
+    name:
+      - colima
+      - docker
+      - docker-compose
+    state: present
+
+- name: Check if Colima is running
+  ansible.builtin.shell: colima status 2>&1
+  register: colima_status
+  changed_when: false
+  failed_when: false
+
+- name: Start Colima
+  ansible.builtin.shell: >
+    colima start
+    --cpu {{ colima_cpu }}
+    --memory {{ colima_memory }}
+    --disk {{ colima_disk }}
+    --mount-type virtiofs
+    --vm-type vz
+  when: "'is running' not in colima_status.stdout"
+  changed_when: true
+
+- name: Install Colima launchd plist
+  ansible.builtin.template:
+    src: com.attache.colima.plist.j2
+    dest: "{{ ansible_env.HOME }}/Library/LaunchAgents/com.attache.colima.plist"
+    mode: "0644"
+
+- name: Load Colima launchd agent
+  ansible.builtin.shell: >
+    launchctl load -w ~/Library/LaunchAgents/com.attache.colima.plist
+  changed_when: false
+  failed_when: false

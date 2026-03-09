@@ -1,0 +1,4 @@
+---
+colima_cpu: 4
+colima_memory: 8
+colima_disk: 60

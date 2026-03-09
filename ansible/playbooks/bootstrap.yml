@@ -54,14 +54,18 @@
       tags: [shell, base]
     - role: node
       tags: [node, base]
+    - role: docker
+      tags: [docker, base]
     - role: openclaw
       tags: [openclaw, base]
     - role: ssh
       tags: [ssh, base]
     - role: workspace
       tags: [workspace, base]
+    - role: supabase
+      tags: [supabase, base]
 
-    # Layer 2: User config overlay
+    # Layer 2: User config overlay (+ starts user/skill docker services)
     - role: config-overlay
       tags: [config, overlay]
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.attache.colima</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/colima</string>
+        <string>start</string>
+        <string>--foreground</string>
+        <string>--cpu</string>
+        <string>{{ colima_cpu }}</string>
+        <string>--memory</string>
+        <string>{{ colima_memory }}</string>
+        <string>--disk</string>
+        <string>{{ colima_disk }}</string>
+        <string>--mount-type</string>
+        <string>virtiofs</string>
+        <string>--vm-type</string>
+        <string>vz</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>{{ ansible_env.HOME }}/.attache/logs/colima.log</string>
+    <key>StandardErrorPath</key>
+    <string>{{ ansible_env.HOME }}/.attache/logs/colima.err</string>
+</dict>
+</plist>
