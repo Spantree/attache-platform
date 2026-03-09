@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # Quick Start
 
 This guide walks you through setting up an Attaché agent from scratch. By the end, you'll have a fully configured Mac running an OpenClaw-powered AI agent.

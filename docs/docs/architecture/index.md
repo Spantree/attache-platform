@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # Architecture
 
 Attaché uses a two-layer architecture: a **base platform** that every agent shares, and an optional **user config repo** that customizes the agent for a specific person or team.

@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # Config Repo Guide
 
 Your config repo is where your agent becomes *yours*. It layers personalization on top of Attaché's base platform — extra packages, shell config, workspace files, custom Ansible playbooks, and bootstrap scripts.
@@ -55,12 +59,18 @@ my-agent/
 # Agent identity
 agent_name: Evie
 
-# Feature toggles (all default to false unless noted)
-features:
-  oh_my_zsh: true           # Install Oh My Zsh + plugins
-  starship: true            # Install Starship prompt
-  claude_code: true         # Install Claude Code CLI
-  onepassword_cli: true     # Install 1Password CLI
+# Backends — what infrastructure backs each concern
+# Each backend implies installation and configuration of the underlying tool.
+backends:
+  secrets: onepassword       # 1Password CLI + service token in macOS Keychain
+  tunnel: tailscale          # Secure tunnel (required, Tailscale is default)
+  database: supabase         # Database layer (required, Supabase is default)
+
+# Coding agents to install
+coding_agents:
+  - claude_code              # Claude Code CLI
+  # - codex                  # OpenAI Codex CLI
+  # - aider                  # Aider
 
 # Extra Homebrew formulae (appended to base)
 homebrew_extra:
@@ -84,6 +94,26 @@ git:
   user_name: "Evie (Attaché)"
   user_email: "evie@spantree.net"
 ```
+
+### backends
+
+Each backend tells Attaché *what* you need, and Attaché handles the *how*:
+
+| Backend | Value | What Attaché does |
+|---|---|---|
+| `secrets` | `onepassword` | Installs 1Password CLI, stores service account token in macOS Keychain, configures `op` for non-interactive use |
+| `tunnel` | `tailscale` | Installs Tailscale, prompts for auth key or interactive login |
+| `database` | `supabase` | Runs local Supabase via Docker Compose (pgvector, pg_trgm enabled) |
+
+Future backend options (not yet implemented):
+- `secrets: vault` (HashiCorp Vault), `secrets: doppler`
+- `tunnel: cloudflare` (Cloudflare Tunnel)
+
+### Shell configuration
+
+Attaché's base ensures zsh is the default shell and sources `~/.zshrc.local` if it exists. Beyond that, **shell config is entirely yours** — put your `zshrc`, `zprofile`, and `zshenv` files in your config repo's `shell/` directory.
+
+The base does *not* install Oh My Zsh, Starship, or any shell framework. If you want them, add the installation to your `Brewfile`, `scripts/`, or Ansible playbooks in the config repo.
 
 ## Workspace Files
 

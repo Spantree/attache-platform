@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+---
+
 # Specifications
 
 Detailed specifications for each Attaché component.
