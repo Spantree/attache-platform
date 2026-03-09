@@ -21,7 +21,7 @@ Postgres handles all search through three complementary approaches, each coverin
 
 Different layers lean on different search tiers depending on the data and access pattern.
 
-**Memory search** relies heavily on semantic search via OpenClaw's `memory_search` tool. Daily notes and MEMORY.md are embedded with Gemini embeddings and searched by conceptual similarity. The agent runs this automatically before answering questions about prior work, decisions, or preferences.
+**Episodic memory search** relies heavily on semantic search via OpenClaw's `memory_search` tool. Daily notes and MEMORY.md are embedded with Gemini embeddings and searched by conceptual similarity. The agent runs this automatically before answering questions about prior work, decisions, or preferences.
 
 **Knowledge search** uses all three tiers. Semantic search for broad discovery ("find people related to AI coding tools"), structured SQL queries for precise lookups ("all organizations tagged with `client`"), and graph traversal for relationship exploration (starting from one entity and following links outward).
 

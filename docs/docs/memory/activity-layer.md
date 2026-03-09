@@ -75,7 +75,7 @@ The agent queries activity when it needs to answer questions about what happened
 
 Activity feeds the other layers but doesn't replace them. When the agent reads Slack messages and notices a pattern — a recurring topic, a decision being made, a person's communication style — it captures that insight as memory or knowledge. The activity stays as the source record, available for re-examination later.
 
-**Activity → Memory:** "We discussed the DTY business case in Slack on March 5" goes into the daily notes.
+**Activity → Episodic Memory:** "We discussed the DTY business case in Slack on March 5" goes into the daily notes.
 
 **Activity → Knowledge:** A new person appears in a meeting transcript, so the agent creates a person profile in the knowledge layer.
 

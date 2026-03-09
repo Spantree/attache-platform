@@ -1,11 +1,11 @@
 ---
 sidebar_position: 1
-sidebar_label: Memory Layer
+sidebar_label: Episodic Memory
 ---
 
-# Memory Layer
+# Episodic Memory
 
-The memory layer is the agent's temporal record — a stream of what happened, what was decided, and what matters. It's the closest analog to how humans remember: messy daily recollections distilled over time into the things worth keeping.
+The episodic memory layer is the agent's temporal record — a stream of what happened, what was decided, and what matters. It's named after the cognitive science concept of [episodic memory](https://en.wikipedia.org/wiki/Episodic_memory): first-person, time-ordered experiences that consolidate over time into lasting knowledge.
 
 ## Two Files, Two Purposes
 

@@ -11,7 +11,7 @@ The memory system gives agents continuity across sessions. It's organized into f
 
 ## Four Layers
 
-**Memory** is the temporal layer — what happened, when, and in what order. Daily session logs capture the raw stream of events. A curated long-term file distills the important bits. This is the agent's journal and its long-term recall, stored as markdown files that are cheap to read and easy to search.
+**Episodic memory** is the temporal layer — what happened, when, and in what order. Daily session logs capture the raw stream of events. A curated long-term file distills the important bits. This is the agent's journal and its long-term recall, stored as markdown files that are cheap to read and easy to search. The name comes from cognitive science: [episodic memory](https://en.wikipedia.org/wiki/Episodic_memory) is first-person, time-ordered, and naturally consolidates over time.
 
 **Knowledge** is the entity layer — who, what, and how things relate to each other. People profiles, organization details, research notes, project documentation. These are markdown files indexed by basic-memory into Supabase, with types aligned to [Schema.org](https://schema.org) vocabulary and defined as Zod schemas for validation and programmatic use.
 
@@ -21,7 +21,7 @@ The memory system gives agents continuity across sessions. It's organized into f
 
 ## How the Layers Work Together
 
-When an agent needs context, it pulls from multiple layers simultaneously. A question like "what did we discuss with the GATX team last week?" triggers a search across memory (session logs mentioning GATX), knowledge (people profiles for GATX contacts), and activity (Slack messages from the GATX channel).
+When an agent needs context, it pulls from multiple layers simultaneously. A question like "what did we discuss with the GATX team last week?" triggers a search across episodic memory (session logs mentioning GATX), knowledge (people profiles for GATX contacts), and activity (Slack messages from the GATX channel).
 
 **Search spans all layers** through a three-tier approach: full-text search via Postgres tsvector, fuzzy matching via pg_trgm, and semantic search via pgvector embeddings. The agent doesn't need to know which layer holds the answer — it searches everywhere and assembles context from the results.
 
@@ -31,7 +31,7 @@ All four layers converge on Supabase (Postgres) as the data backbone, though the
 
 | Layer | Primary Storage | Access Pattern |
 |---|---|---|
-| [Memory](./memory-layer) | Markdown files | File reads + embedding search |
+| [Episodic Memory](./memory-layer) | Markdown files | File reads + embedding search |
 | [Knowledge](./knowledge-layer) | Markdown + Postgres (basic-memory) | Structured queries + semantic search |
 | [Activity](./activity-layer) | Postgres | Full-text search + time-range queries |
 | [Identity](./identity-layer) | Postgres | Lookup by identifier + fuzzy matching |
