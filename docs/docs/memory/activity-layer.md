@@ -94,17 +94,17 @@ Activity data arrives through integration-specific sync scripts. Each integratio
 
 The agent queries activity when it needs to answer questions about what happened in a specific channel, meeting, or time period. A few patterns come up regularly.
 
-**Time-range queries** are the most common. "What happened in the GATX Slack channel this week?" filters by channel and timestamp, then returns the messages in chronological order.
+**Time-range queries** are the most common. "What happened in the #acme-project Slack channel this week?" filters by channel and timestamp, then returns the messages in chronological order.
 
 **Thread reconstruction** follows a Slack thread from the parent message through all replies, giving the agent the full conversation context. The `thread_ts` field makes this a simple query.
 
-**Cross-layer joins** connect activity to identity. A Slack message has a `user_id`; the identity layer maps that to a person profile in the knowledge layer. The agent can then query "what has Cedric said about the GATX project?" by joining Slack messages → identity crosslinks → person profiles.
+**Cross-layer joins** connect activity to identity. A Slack message has a `user_id`; the identity layer maps that to a person profile in the knowledge layer. The agent can then query "what has Cedric said about the Acme project?" by joining Slack messages → identity crosslinks → person profiles.
 
 ## Relationship to Other Layers
 
 Activity feeds the other layers but doesn't replace them. When the agent reads Slack messages and notices a pattern — a recurring topic, a decision being made, a person's communication style — it captures that insight as memory or knowledge. The activity stays as the source record, available for re-examination later.
 
-**Activity → Episodic Memory:** "We discussed the DTY business case in Slack on March 5" goes into the daily notes.
+**Activity → Episodic Memory:** "We discussed the migration plan in Slack on March 5" goes into the daily notes.
 
 **Activity → Knowledge:** A new person appears in a meeting transcript, so the agent creates a person profile in the knowledge layer.
 

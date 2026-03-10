@@ -75,7 +75,7 @@ and data engineering.
 ## Relations
 
 - works_at [[organizations/spantree]]
-- manages [[projects/kazo]]
+- manages [[projects/aurora]]
 - member_of [[organizations/trifork]]
 ```
 
@@ -106,7 +106,7 @@ Relations use the syntax `- relation_type [[target]]`. Controlled vocabulary:
 |---|---|---|
 | `works_at` | Employment | `- works_at [[organizations/spantree]]` |
 | `member_of` | Group membership | `- member_of [[organizations/trifork]]` |
-| `manages` | Management/ownership | `- manages [[projects/kazo]]` |
+| `manages` | Management/ownership | `- manages [[projects/aurora]]` |
 | `reports_to` | Reporting structure | `- reports_to [[people/john-smith]]` |
 | `part_of` | Hierarchical containment | `- part_of [[projects/attache]]` |
 | `related_to` | General connection | `- related_to [[people/raphael-dobers]]` |
@@ -114,7 +114,7 @@ Relations use the syntax `- relation_type [[target]]`. Controlled vocabulary:
 | `acquired_by` | Acquisition | `- acquired_by [[organizations/trifork]]` |
 | `attended` | Event participation | `- attended [[events/gtc-2026]]` |
 | `authored` | Content creation | `- authored [[media/videos/openclaw-demo]]` |
-| `has_repo` | Code repository link | `- has_repo [[repos/spantree-cosmo]]` |
+| `has_repo` | Code repository link | `- has_repo [[repos/aurora-engine]]` |
 | `uses` | Technology/tool usage | `- uses [[tools/openclaw]]` |
 | `contrasts_with` | Alternative approach | `- contrasts_with [[projects/other-agent]]` |
 | `supersedes` | Replacement | `- supersedes [[projects/old-system]]` |

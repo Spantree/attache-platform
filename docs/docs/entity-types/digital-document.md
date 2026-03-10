@@ -12,7 +12,7 @@ sidebar_label: DigitalDocument
 ```markdown
 ---
 type: schema.org/DigitalDocument
-title: "GATX DTY 2.0 Business Case"
+title: "Q2 Platform Migration Plan"
 url: https://docs.google.com/document/d/1abc.../edit
 author: Cedric Hurst
 date_created: "2026-02-28T00:00:00Z"
@@ -20,22 +20,22 @@ date_modified: "2026-03-05T00:00:00Z"
 source: google_drive
 mime_type: application/vnd.google-apps.document
 tags:
-  - gatx
-  - business-case
+  - infrastructure
+  - migration
 ---
 
-Business case document for the DTY 2.0 proposal at GATX's
-Global Innovation Center. Outlines projected $2.38M savings
-and R1 retrospective findings.
+Migration plan for moving the analytics platform from
+on-prem to cloud infrastructure. Includes timeline,
+risk assessment, and rollback procedures.
 
 ## Observations
 
-- [status] Draft — awaiting Hearne ops data from Ashish
-- [action] Validate savings estimate with Jeff Nee
+- [status] Draft — awaiting capacity data from ops team
+- [action] Validate cost projections with finance
 
 ## Relations
 
-- related_to [[projects/gatx-dty]]
+- related_to [[projects/aurora]]
 - authored [[people/cedric-hurst]]
 ```
 

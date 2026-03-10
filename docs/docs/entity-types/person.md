@@ -47,7 +47,7 @@ and data engineering.
 ## Relations
 
 - works_at [[organizations/spantree]]
-- manages [[projects/kazo]]
+- manages [[projects/aurora]]
 - member_of [[organizations/trifork]]
 ```
 
@@ -90,7 +90,7 @@ For name collisions, append the most distinguishing attribute:
 ```
 people/john-smith.md               ← only one
 people/john-smith-spantree.md      ← second appears, disambiguate by org
-people/john-smith-gatx.md
+people/john-smith-acme.md
 ```
 
 The filesystem path is a convenience for humans. The database (entity ID + crosswalks) handles true identity resolution.

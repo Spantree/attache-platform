@@ -13,7 +13,7 @@ Knowledge entities live in two places simultaneously, and that's by design.
 
 **Markdown files in `workspaces/main/knowledge/`** are the human-readable layer. Each entity is a file with YAML frontmatter for structured fields and a markdown body for rich, unstructured context. These files are version-controlled and editable by both the agent and its human.
 
-**Postgres (via basic-memory)** is the query layer. basic-memory indexes the markdown files into Supabase, extracting frontmatter fields, observations, and relations into database tables. This enables structured queries ("find all people at GATX"), relational traversal ("who is connected to this project?"), and full-text search that markdown files alone can't support.
+**Postgres (via basic-memory)** is the query layer. basic-memory indexes the markdown files into Supabase, extracting frontmatter fields, observations, and relations into database tables. This enables structured queries ("find all people at Acme Corp"), relational traversal ("who is connected to this project?"), and full-text search that markdown files alone can't support.
 
 For entity types (Person, Organization, Project), **Postgres is the system of record** for identity data — crosswalks, confidence scores, merge history. Markdown notes serve as a **materialized view**, regenerated from the authoritative Postgres data. Freeform knowledge about an entity (observations, context, history) is authored directly in the markdown body.
 
@@ -85,7 +85,7 @@ For name collisions, append the most distinguishing attribute:
 ```
 people/john-smith.md               ← only one
 people/john-smith-spantree.md      ← second appears, disambiguate by org
-people/john-smith-gatx.md
+people/john-smith-acme.md
 ```
 
 The filesystem path is a convenience for humans. The database (entity ID + crosswalks) handles true identity resolution.
@@ -118,6 +118,6 @@ Knowledge supports three search approaches, and they work best in combination. S
 
 Not every agent should see every piece of knowledge. A work agent handling client projects shouldn't have access to personal family details, and a project-specific agent shouldn't see unrelated client data.
 
-**File-level scopes** in frontmatter provide the coarse filter. The `scopes` field lists which contexts an entity belongs to — `work`, `personal`, `gatx`, whatever makes sense for your setup. Agents are configured with allowed scopes, and the retrieval layer enforces the boundary.
+**File-level scopes** in frontmatter provide the coarse filter. The `scopes` field lists which contexts an entity belongs to — `work`, `personal`, `acme`, whatever makes sense for your setup. Agents are configured with allowed scopes, and the retrieval layer enforces the boundary.
 
 **Section-level scopes** offer finer control when a single entity spans multiple contexts. An HTML comment (`<!-- scope: personal -->`) before a section marks everything until the next scope comment as restricted. This lets a person profile have both work-relevant and personal-relevant sections in one file.

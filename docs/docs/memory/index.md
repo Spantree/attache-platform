@@ -21,7 +21,7 @@ The memory system gives agents continuity across sessions. It's organized into f
 
 ## How the Layers Work Together
 
-When an agent needs context, it pulls from multiple layers simultaneously. A question like "what did we discuss with the GATX team last week?" triggers a search across episodic memory (session logs mentioning GATX), knowledge (people profiles for GATX contacts), and activity (Slack messages from the GATX channel).
+When an agent needs context, it pulls from multiple layers simultaneously. A question like "what did we discuss with the Acme team last week?" triggers a search across episodic memory (session logs mentioning Acme), knowledge (people profiles for Acme contacts), and activity (Slack messages from the Acme channel).
 
 **Search spans all layers** through a three-tier approach: full-text search via Postgres tsvector, fuzzy matching via pg_trgm, and semantic search via pgvector embeddings. The agent doesn't need to know which layer holds the answer — it searches everywhere and assembles context from the results.
 

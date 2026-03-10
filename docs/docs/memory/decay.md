@@ -11,7 +11,7 @@ Imagine your agent's memory is a library. Every book glows — bright if you rea
 That's the decay model. It keeps the agent's search results focused on what matters, even as the library grows to thousands of books.
 :::
 
-Search results shouldn't treat a note from six months ago the same as one from yesterday. A conversation about "GATX infrastructure" last week is more relevant than a similar conversation from January — unless the January note has been accessed repeatedly, linked heavily, or sits at a critical point in the knowledge graph.
+Search results shouldn't treat a note from six months ago the same as one from yesterday. A conversation about "Acme infrastructure" last week is more relevant than a similar conversation from January — unless the January note has been accessed repeatedly, linked heavily, or sits at a critical point in the knowledge graph.
 
 This might feel like overkill for an agent with 50 notes. It's not — it's designed for agents that run for **months or years**, accumulating thousands of notes, tens of thousands of messages, and hundreds of entity profiles. Without decay, every search query pays the cost of sifting through the entire history. A 6-month-old note about a resolved bug competes equally with yesterday's architecture decision for the same context window tokens. At scale, undifferentiated retrieval wastes the most expensive resource in the system: **context window space**.
 
@@ -81,7 +81,7 @@ Where $u$ is the source utility and $\alpha$ is the damping factor. With default
 - Hop 1 neighbors: $60\%$ of source utility
 - Hop 2 neighbors: $36\%$ of source utility
 
-Boosts are **stored in Postgres and decayed on read** (half-life ~7 days). When you access a note about "GATX," its linked notes about Jeff Nee, the DTY business case, and the Yardbird agent all warm up — even if they haven't been directly accessed recently.
+Boosts are **stored in Postgres and decayed on read** (half-life ~7 days). When you access a note about "Acme," its linked notes about Sarah Chen, the migration plan, and the monitoring dashboard all warm up — even if they haven't been directly accessed recently.
 
 This creates emergent behavior: clusters of actively-used notes form "warm neighborhoods" in the knowledge graph, while isolated, unused notes cool down naturally.
 

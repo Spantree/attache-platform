@@ -15,7 +15,7 @@ Postgres handles all search through three complementary approaches, each coverin
 
 **Fuzzy matching (pg_trgm)** handles typos and near-misses. If someone types "Cedrci" or the agent encounters "Spantreee" in a transcript, trigram similarity still finds the right records. This is particularly valuable for name matching in the identity layer, where meeting transcripts often contain misspellings or informal names.
 
-**Semantic search (pgvector)** uses embedding vectors to find conceptually similar content. A search for "who handles infrastructure at GATX" finds relevant person profiles even if they don't contain the word "infrastructure" — maybe the profile mentions "DevOps" or "platform engineering" instead. This is the most flexible search mode and the one agents use most often.
+**Semantic search (pgvector)** uses embedding vectors to find conceptually similar content. A search for "who handles infrastructure at Acme" finds relevant person profiles even if they don't contain the word "infrastructure" — maybe the profile mentions "DevOps" or "platform engineering" instead. This is the most flexible search mode and the one agents use most often.
 
 ## How Search Is Used
 
@@ -25,7 +25,7 @@ Different layers lean on different search tiers depending on the data and access
 
 **Knowledge search** uses all three tiers. Semantic search for broad discovery ("find people related to AI coding tools"), structured SQL queries for precise lookups ("all organizations tagged with `client`"), and graph traversal for relationship exploration (starting from one entity and following links outward).
 
-**Activity search** primarily uses full-text search with time-range filters. "What was discussed in #gatx-trifork last Tuesday?" is a tsvector query with a timestamp filter. Fuzzy matching catches misspellings in message content.
+**Activity search** primarily uses full-text search with time-range filters. "What was discussed in #acme-project last Tuesday?" is a tsvector query with a timestamp filter. Fuzzy matching catches misspellings in message content.
 
 **Identity search** relies on pg_trgm for fuzzy name matching and exact lookups on identifiers. When a meeting transcript mentions "Jeff," trigram similarity finds the best person match from known display names.
 
@@ -43,12 +43,12 @@ SELECT
   title,
   ts_rank(search_vector, query) AS text_rank,
   1 - (embedding <=> query_embedding) AS semantic_similarity,
-  similarity(title, 'Jeff Nee') AS name_similarity
+  similarity(title, 'Sarah Chen') AS name_similarity
 FROM knowledge_entities,
-  plainto_tsquery('english', 'GATX infrastructure') AS query
+  plainto_tsquery('english', 'Acme infrastructure') AS query
 WHERE search_vector @@ query
    OR embedding <=> query_embedding < 0.3
-   OR similarity(title, 'Jeff Nee') > 0.4
+   OR similarity(title, 'Sarah Chen') > 0.4
 ORDER BY (text_rank * 0.3 + semantic_similarity * 0.5 + name_similarity * 0.2) DESC
 LIMIT 10;
 ```

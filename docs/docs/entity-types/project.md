@@ -13,33 +13,31 @@ sidebar_label: Project
 ---
 type: attache.dev/Project
 id: c3d4e5f6-7890-12ab-cdef-345678901bcd
-permalink: projects/kazo
-title: Kazo
+permalink: projects/aurora
+title: Aurora
 status: active
 repos:
-  - https://github.com/spantree/cosmo
+  - https://github.com/example/aurora-engine
 channels:
-  slack: "#kazo-dev"
-  discord: "#kazo"
+  slack: "#aurora-dev"
+  discord: "#aurora"
 tags:
-  - client-project
-  - 3d
+  - internal
+  - data-platform
 ---
 
-Real-time 3D visualization platform for industrial environments.
-Previously codenamed "Cosmo."
+Internal data pipeline platform for real-time analytics.
 
 ## Observations
 
-- [fact] Kazo is the public name; Cosmo is the internal codename
-- [decision] Use NVIDIA Omniverse as rendering backend #architecture
+- [decision] Use Kafka for event streaming #architecture
 - [status] Active development, targeting Q2 2026 launch
 
 ## Relations
 
 - part_of [[organizations/spantree]]
 - depends_on [[projects/attache]]
-- related_to [[people/raphael-dobers]]
+- related_to [[people/jane-doe]]
 ```
 
 ## Fields

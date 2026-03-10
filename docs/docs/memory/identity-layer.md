@@ -282,9 +282,9 @@ How does the agent decide two identifiers refer to the same entity?
 
 ### Meeting-scoped Resolution
 
-Meeting-scoped resolution is particularly powerful. Calendar invites have attendee emails. Fellow transcripts have speaker names. The same meeting's event GUID connects both sources, so the agent can match "Jeff" in the transcript to "jeff.nee@gatx.com" from the calendar invite with high confidence.
+Meeting-scoped resolution is particularly powerful. Calendar invites have attendee emails. Fellow transcripts have speaker names. The same meeting's event GUID connects both sources, so the agent can match "Sarah" in the transcript to "sarah.chen@acme.com" from the calendar invite with high confidence.
 
-**Cross-meeting reinforcement** boosts confidence over time. If "Jeff" in transcript A maps to the same person as "Jeff Nee" in transcript B, and both meetings share the same calendar event series, the confidence score increases. Repeated co-occurrence is strong signal.
+**Cross-meeting reinforcement** boosts confidence over time. If "Sarah" in transcript A maps to the same person as "Sarah Chen" in transcript B, and both meetings share the same calendar event series, the confidence score increases. Repeated co-occurrence is strong signal.
 
 ## Confidence Tiers
 

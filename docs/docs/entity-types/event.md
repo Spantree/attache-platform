@@ -29,17 +29,17 @@ tags:
 ---
 
 NVIDIA's annual GPU Technology Conference. Attending for
-Omniverse sessions relevant to Kazo project.
+sessions relevant to Aurora project.
 
 ## Observations
 
 - [interested_in] Digital twin workflows #omniverse
-- [action] Meet with Switch team at NVIDIA booth
+- [action] Connect with NVIDIA partner team
 - [note] Registration confirmed, hotel booked
 
 ## Relations
 
-- related_to [[projects/kazo]]
+- related_to [[projects/aurora]]
 - related_to [[organizations/nvidia]]
 - attended [[people/cedric-hurst]]
 ```
