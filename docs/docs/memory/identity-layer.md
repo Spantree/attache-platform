@@ -3,7 +3,7 @@ sidebar_position: 2
 sidebar_label: Identity Graph
 ---
 
-# Identity Layer
+# Identity Graph
 
 The identity layer solves a deceptively hard problem: the same person shows up differently across every system. "Cedric Hurst" in a Fellow transcript, "cedric@spantree.net" on a calendar invite, "divideby0" on GitHub, "U035XHR0T" in Slack. The agent needs to know these are all the same human.
 

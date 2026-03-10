@@ -1,9 +1,9 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 sidebar_label: Research Reports
 ---
 
-# Research
+# Research Reports
 
 Research is a first-class workflow in the knowledge layer. When the agent investigates a topic — comparing tools, evaluating architectures, gathering competitive intelligence — the output is a structured research note with citations, knowledge graph annotations, and provider metadata.
 

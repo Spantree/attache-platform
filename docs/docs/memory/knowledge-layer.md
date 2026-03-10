@@ -3,7 +3,7 @@ sidebar_position: 4
 sidebar_label: Knowledge Base
 ---
 
-# Knowledge Layer
+# Knowledge Base
 
 The knowledge layer holds entity profiles — the nouns in the agent's world. People, organizations, projects, research topics, decisions. Unlike episodic memory (which is temporal and event-driven), knowledge is structured around *things* and their relationships.
 

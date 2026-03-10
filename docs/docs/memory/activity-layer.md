@@ -1,9 +1,9 @@
 ---
 sidebar_position: 3
-sidebar_label: Activity Log
+sidebar_label: Activity Logs
 ---
 
-# Activity Layer
+# Activity Logs
 
 The activity layer stores raw events from external systems — Slack messages, meeting transcripts, calendar events, email metadata. Unlike memory and knowledge, which the agent actively curates, activity data is ingested automatically and queried on demand.
 
