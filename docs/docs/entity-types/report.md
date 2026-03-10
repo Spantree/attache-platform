@@ -45,7 +45,7 @@ search quality differences for coding research queries.
 2. What exactly is "Deep Search" in Exa?
 3. How do the tools handle nuanced semantic queries?
 
-# Findings
+# Report
 
 ## Result Relevance
 
@@ -92,7 +92,7 @@ its neural search architecture (94% accuracy on SimpleQA)...
 Research notes follow a consistent internal structure:
 
 1. **Instructions** — context, scope, and specific questions (written during draft phase)
-2. **Findings** — the actual research output (written during execution)
+2. **Report** — the actual research output (written during execution)
 3. **Observations** — knowledge graph annotations extracted from findings
 4. **Relations** — links to related entities
 5. **References** — source citations with URLs

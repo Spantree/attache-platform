@@ -53,7 +53,7 @@ search quality differences for coding research queries.
 2. What exactly is "Deep Search" in Exa?
 3. How do the tools handle nuanced semantic queries?
 
-# Findings
+# Report
 
 ## Result Relevance
 
