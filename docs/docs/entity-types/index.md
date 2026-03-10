@@ -54,8 +54,8 @@ See [Markdown Format](/memory/markdown-format) for the full formatting specifica
 | [Web Pages](./web-page) | `schema.org/WebPage` | Markdown |
 | [Documents](./digital-document) | `schema.org/DigitalDocument` | Markdown |
 | [Guides](./how-to) | `schema.org/HowTo` | Markdown |
-| [Source Code](./source-code) | `schema.org/SoftwareSourceCode` | Markdown |
-| [Messages](./message) | `schema.org/Message` | Postgres only |
+| [Repositories](./source-code) | `schema.org/SoftwareSourceCode` | Markdown |
+| [Messages](./message) | `schema.org/Message` | Email: Markdown + Postgres; Chat: Postgres only |
 
 ## Discriminated Union
 
