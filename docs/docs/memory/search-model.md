@@ -1,9 +1,9 @@
 ---
 sidebar_position: 7
-sidebar_label: Search & Retrieval
+sidebar_label: Search and Retrieval
 ---
 
-# Search & Retrieval
+# Search and Retrieval
 
 An agent that can store information but can't find it again is useless. The search infrastructure is designed around two complementary problems: **search** (finding relevant content across all layers) and **retrieval ranking** (surfacing what matters most from the candidates). Search finds matches; retrieval ranking decides which matches deserve context window space.
 
@@ -87,7 +87,7 @@ Different layers lean on different tiers depending on the data and access patter
 | Activity Logs | Full-text + time-range filters | "What was discussed in #acme-project last Tuesday?" |
 | Identity Graph | pg_trgm fuzzy + exact lookups | Match "Jeff" from a transcript to a known person |
 
-## Retrieval Ranking: Vitality & Decay
+## Retrieval Ranking: Vitality and Decay
 
 Search finds candidates. Retrieval ranking decides which candidates deserve scarce context window tokens. Without ranking, a 6-month-old note about a resolved bug competes equally with yesterday's architecture decision — wasting the most expensive resource in the system.
 
