@@ -1,9 +1,9 @@
 ---
 sidebar_position: 5
-sidebar_label: Entity Types
+sidebar_label: Entities
 ---
 
-# Entity Types
+# Entities
 
 Entity types define the shape of knowledge in the system — what fields a person profile has, what a project looks like, how a research note is structured. Each type has a corresponding markdown format (what you write) and a Zod schema (what validates it).
 
@@ -47,7 +47,7 @@ See [Markdown Format](/memory/markdown-format) for the full formatting specifica
 | [Organizations](./organization) | `schema.org/Organization` | Markdown + Postgres |
 | [Projects](./project) | `attache.dev/Project` | Markdown + Postgres |
 | [Events](./event) | `schema.org/Event` | Markdown + Postgres |
-| [Reports](./report) | `schema.org/Report` | Markdown + Postgres |
+| [Research Reports](./research) | `schema.org/Report` | Markdown + Postgres |
 | [Videos](./video) | `schema.org/VideoObject` | Markdown |
 | [Podcasts](./podcast) | `schema.org/PodcastEpisode` | Markdown |
 | [Books](./book) | `schema.org/Book` | Markdown |
