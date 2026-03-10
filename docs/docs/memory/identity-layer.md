@@ -5,6 +5,10 @@ sidebar_label: Identity Graph
 
 # Identity Graph
 
+:::tip TL;DR
+The same person shows up as "cedric@spantree.net" in email, "divideby0" on GitHub, and "Cedric Hurst" in a meeting transcript. The identity graph figures out they're all the same human. It collects identifiers from every system, matches them with confidence scores, and gives the agent a single "this is Cedric" answer it can use everywhere.
+:::
+
 The identity layer solves a deceptively hard problem: the same person shows up differently across every system. "Cedric Hurst" in a Fellow transcript, "cedric@spantree.net" on a calendar invite, "divideby0" on GitHub, "U035XHR0T" in Slack. The agent needs to know these are all the same human.
 
 This is the classic **Master Data Management (MDM)** problem applied to agent memory. The same patterns that enterprise MDM platforms like [Reltio](https://www.reltio.com/) use — crosswalks, match/merge rules, survivorship, stewardship — apply here at a smaller scale.

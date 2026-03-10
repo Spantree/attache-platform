@@ -5,6 +5,10 @@ sidebar_label: Markdown Format
 
 # Markdown Format
 
+:::tip TL;DR
+Every knowledge file is a markdown document with YAML metadata at the top and human-readable prose in the body. Keep the metadata short (names, dates, tags), put the long stuff in the body, and use a simple annotation syntax for observations and relationships. A linter enforces the rules so you don't have to remember them.
+:::
+
 All markdown files in the knowledge base follow consistent formatting and annotation rules. These conventions ensure that files are human-readable, Obsidian-compatible, and machine-parseable through the Zod → Markdown serialization layer.
 
 ## YAML Frontmatter

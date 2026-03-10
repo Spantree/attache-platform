@@ -5,6 +5,10 @@ sidebar_label: Activity Logs
 
 # Activity Logs
 
+:::tip TL;DR
+This is the firehose — every Slack message, meeting transcript, and calendar event gets dumped into Postgres tables. The agent doesn't write this data; it just shows up from integrations. Think of it as the raw footage before editing. The agent watches it, extracts insights for the knowledge base, and queries it when someone asks "what happened in that meeting last Tuesday?"
+:::
+
 The activity layer stores raw events from external systems — Slack messages, meeting transcripts, calendar events, email metadata. Unlike memory and knowledge, which the agent actively curates, activity data is ingested automatically and queried on demand.
 
 ## What Activity Is (and Isn't)

@@ -5,6 +5,10 @@ sidebar_label: Memory System
 
 # Memory System
 
+:::tip TL;DR
+Your agent has amnesia — every session starts from scratch. The memory system gives it continuity by organizing information into four layers: a journal (episodic), a people directory (identity), a feed of messages and meetings (activity), and a structured knowledge base (knowledge). Different layers store different kinds of information in whatever format makes it easiest to find later.
+:::
+
 An Attaché agent wakes up fresh every session. It has no built-in memory of yesterday's conversations, last week's decisions, or the person it's working for. Everything it knows comes from files it reads and databases it queries.
 
 The memory system gives agents continuity across sessions. It's organized into four layers, each handling a different kind of information with storage optimized for how that information is accessed.

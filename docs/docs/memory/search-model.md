@@ -5,7 +5,11 @@ sidebar_label: Search and Retrieval
 
 # Search and Retrieval
 
-An agent that can store information but can't find it again is useless. The search infrastructure is designed around two complementary problems: **search** (finding relevant content across all layers) and **retrieval ranking** (surfacing what matters most from the candidates). Search finds matches; retrieval ranking decides which matches deserve context window space.
+:::tip TL;DR
+Your agent has a library of thousands of notes, messages, and profiles. Search is how it finds the right books — using exact words, fuzzy spelling, or "things that feel related." Retrieval ranking is how it decides which books to actually read — the ones you've used recently and often glow brighter than the dusty ones in the back. Together, they keep the agent focused on what matters without drowning in old noise.
+:::
+
+The search infrastructure is designed around two complementary problems: **search** (finding relevant content across all layers) and **retrieval ranking** (surfacing what matters most from the candidates). Search finds matches; retrieval ranking decides which matches deserve context window space.
 
 ## Search: Three Tiers
 
@@ -89,9 +93,18 @@ Different layers lean on different tiers depending on the data and access patter
 
 ## Retrieval Ranking: Vitality and Decay
 
-Search finds candidates. Retrieval ranking decides which candidates deserve scarce context window tokens. Without ranking, a 6-month-old note about a resolved bug competes equally with yesterday's architecture decision — wasting the most expensive resource in the system.
+["Attention Is All You Need"](https://arxiv.org/abs/1706.03762) could have been dismissed as overengineered in 2017 — why not just use RNNs with a simple hidden state? The answer was that uniform sequential processing doesn't scale. The same argument applies to agent memory. Naive retrieval — search everything, rank by text similarity — works fine at 50 notes. At 50,000 notes across four layers, undifferentiated retrieval wastes the most expensive resource in the system: **context window tokens**. A 6-month-old note about a resolved bug shouldn't compete equally with yesterday's architecture decision.
 
-Attaché's retrieval ranking is based on **vitality**, a composite score that captures how "alive" a piece of knowledge is. Vitality draws from [ACT-R](http://act-r.psy.cmu.edu/) (Adaptive Control of Thought — Rational), a cognitive architecture developed by John Anderson at Carnegie Mellon University since the 1990s, and [Ori-Mnemos](https://github.com/aayoawoyemi/Ori-Mnemos), an open-source agent memory system that extends ACT-R with graph-aware features.
+Vitality scoring is to agent memory what attention is to sequence processing — a principled mechanism for focusing on what matters. Both solve the same fundamental problem (selective focus over a large space), just at different timescales: attention operates within a single forward pass; vitality operates across an agent's lifetime.
+
+| | Transformers | Agent Memory |
+|---|---|---|
+| Naive approach | RNN hidden state | Search everything, sort by date |
+| Problem at scale | Long sequences lose early context | Large knowledge bases waste context tokens |
+| Solution | Selective attention (Q/K/V) | Selective retrieval (vitality scoring) |
+| Vindicated at scale | GPT-3/4 | Agents running for months/years |
+
+Attaché's vitality model draws from [ACT-R](http://act-r.psy.cmu.edu/) (Adaptive Control of Thought — Rational), a cognitive architecture developed by John Anderson at Carnegie Mellon University since the 1990s, and [Ori-Mnemos](https://github.com/aayoawoyemi/Ori-Mnemos), an open-source agent memory system that extends ACT-R with graph-aware features.
 
 ### Base-Level Activation (ACT-R)
 

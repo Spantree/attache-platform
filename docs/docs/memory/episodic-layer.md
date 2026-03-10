@@ -5,6 +5,10 @@ sidebar_label: Episodic Memory
 
 # Episodic Memory
 
+:::tip TL;DR
+Think of this as the agent's work journal. Every day it writes down what happened — decisions made, problems solved, things to remember. Over time, it reviews those notes and promotes the important stuff into a "greatest hits" file it reads at the start of every session. Raw daily notes fade; the curated highlights stick around.
+:::
+
 The episodic memory layer is the agent's temporal record — a stream of what happened, what was decided, and what matters. It's named after the cognitive science concept of [episodic memory](https://en.wikipedia.org/wiki/Episodic_memory): first-person, time-ordered experiences that consolidate over time into lasting knowledge.
 
 **This is OpenClaw's native memory system.** Out of the box, every OpenClaw agent gets episodic memory — daily logs, a curated long-term file, and semantic search over both. OpenClaw also ships with a `memory/reference/` folder convention for stable reference documents, but that's a lightweight stopgap. Attaché replaces it with the [Knowledge Layer](./knowledge-layer) — a structured, Schema.org-typed, basic-memory-backed knowledge base with proper entity resolution and relational queries. If you're running Attaché, `reference/` is superseded; use the knowledge layer instead.

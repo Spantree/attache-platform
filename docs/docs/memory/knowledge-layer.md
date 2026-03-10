@@ -5,6 +5,10 @@ sidebar_label: Knowledge Base
 
 # Knowledge Base
 
+:::tip TL;DR
+If episodic memory is a journal and activity is raw footage, the knowledge base is the wiki. Structured profiles for people, organizations, projects, and research — each one a markdown file the agent and human can both read and edit. These files are indexed into Postgres so the agent can search them, traverse relationships, and answer questions like "who at Acme works on infrastructure?"
+:::
+
 The knowledge layer holds entity profiles — the nouns in the agent's world. People, organizations, projects, research topics, decisions. Unlike episodic memory (which is temporal and event-driven), knowledge is structured around *things* and their relationships.
 
 ## Dual Storage
