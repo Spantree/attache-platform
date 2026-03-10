@@ -1,9 +1,9 @@
 ---
 sidebar_position: 13
-sidebar_label: Message
+sidebar_label: Messages
 ---
 
-# Message
+# Messages
 
 `schema.org/Message` — **Postgres only.** Messages are too high-volume for markdown files. This type defines the database row structure for indexed messages.
 

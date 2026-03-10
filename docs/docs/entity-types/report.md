@@ -1,9 +1,9 @@
 ---
 sidebar_position: 5
-sidebar_label: Report
+sidebar_label: Reports
 ---
 
-# Report
+# Reports
 
 `schema.org/Report` — structured research notes with citations, knowledge graph annotations, and provider metadata. This is a standard Schema.org type extended with Attaché properties for the research workflow.
 

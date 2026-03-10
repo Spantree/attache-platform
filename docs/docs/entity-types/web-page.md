@@ -1,9 +1,9 @@
 ---
 sidebar_position: 9
-sidebar_label: WebPage
+sidebar_label: Web Pages
 ---
 
-# WebPage
+# Web Pages
 
 `schema.org/WebPage` — bookmarked web pages, documentation, and articles organized by domain.
 

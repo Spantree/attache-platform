@@ -1,9 +1,9 @@
 ---
 sidebar_position: 4
-sidebar_label: Event
+sidebar_label: Events
 ---
 
-# Event
+# Events
 
 `schema.org/Event` — conferences, meetings, workshops, and other time-bound occurrences worth tracking as knowledge entities.
 

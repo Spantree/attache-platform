@@ -1,9 +1,9 @@
 ---
 sidebar_position: 8
-sidebar_label: Book
+sidebar_label: Books
 ---
 
-# Book
+# Books
 
 `schema.org/Book` — books the agent should know about.
 

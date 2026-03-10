@@ -1,9 +1,9 @@
 ---
 sidebar_position: 1
-sidebar_label: Person
+sidebar_label: People
 ---
 
-# Person
+# People
 
 `schema.org/Person` — people the agent interacts with, knows about, or encounters in activity data.
 

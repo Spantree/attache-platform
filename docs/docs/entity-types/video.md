@@ -1,9 +1,9 @@
 ---
 sidebar_position: 6
-sidebar_label: Video
+sidebar_label: Videos
 ---
 
-# VideoObject
+# Videos
 
 `schema.org/VideoObject` — videos worth remembering: conference talks, tutorials, demos.
 

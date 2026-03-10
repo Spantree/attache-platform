@@ -1,9 +1,9 @@
 ---
 sidebar_position: 10
-sidebar_label: DigitalDocument
+sidebar_label: Documents
 ---
 
-# DigitalDocument
+# Documents
 
 `schema.org/DigitalDocument` — documents from external systems like Google Drive and Notion.
 

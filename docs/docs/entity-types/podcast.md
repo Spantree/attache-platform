@@ -1,9 +1,9 @@
 ---
 sidebar_position: 7
-sidebar_label: Podcast
+sidebar_label: Podcasts
 ---
 
-# PodcastEpisode
+# Podcasts
 
 `schema.org/PodcastEpisode` — podcast episodes worth tracking.
 

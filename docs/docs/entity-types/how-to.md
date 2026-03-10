@@ -1,9 +1,9 @@
 ---
 sidebar_position: 11
-sidebar_label: HowTo
+sidebar_label: Guides
 ---
 
-# HowTo
+# Guides
 
 `schema.org/HowTo` — runbooks, procedures, and guides. These can target humans, agents, or both.
 

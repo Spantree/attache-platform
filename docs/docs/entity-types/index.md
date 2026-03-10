@@ -43,19 +43,19 @@ See [Markdown Format](/memory/markdown-format) for the full formatting specifica
 
 | Type | Schema | Stored in |
 |---|---|---|
-| [Person](./person) | `schema.org/Person` | Markdown + Postgres |
-| [Organization](./organization) | `schema.org/Organization` | Markdown + Postgres |
-| [Project](./project) | `attache.dev/Project` | Markdown + Postgres |
-| [Event](./event) | `schema.org/Event` | Markdown + Postgres |
-| [Report](./report) | `schema.org/Report` | Markdown + Postgres |
-| [VideoObject](./video) | `schema.org/VideoObject` | Markdown |
-| [PodcastEpisode](./podcast) | `schema.org/PodcastEpisode` | Markdown |
-| [Book](./book) | `schema.org/Book` | Markdown |
-| [WebPage](./web-page) | `schema.org/WebPage` | Markdown |
-| [DigitalDocument](./digital-document) | `schema.org/DigitalDocument` | Markdown |
-| [HowTo](./how-to) | `schema.org/HowTo` | Markdown |
-| [SoftwareSourceCode](./source-code) | `schema.org/SoftwareSourceCode` | Markdown |
-| [Message](./message) | `schema.org/Message` | Postgres only |
+| [People](./person) | `schema.org/Person` | Markdown + Postgres |
+| [Organizations](./organization) | `schema.org/Organization` | Markdown + Postgres |
+| [Projects](./project) | `attache.dev/Project` | Markdown + Postgres |
+| [Events](./event) | `schema.org/Event` | Markdown + Postgres |
+| [Reports](./report) | `schema.org/Report` | Markdown + Postgres |
+| [Videos](./video) | `schema.org/VideoObject` | Markdown |
+| [Podcasts](./podcast) | `schema.org/PodcastEpisode` | Markdown |
+| [Books](./book) | `schema.org/Book` | Markdown |
+| [Web Pages](./web-page) | `schema.org/WebPage` | Markdown |
+| [Documents](./digital-document) | `schema.org/DigitalDocument` | Markdown |
+| [Guides](./how-to) | `schema.org/HowTo` | Markdown |
+| [Source Code](./source-code) | `schema.org/SoftwareSourceCode` | Markdown |
+| [Messages](./message) | `schema.org/Message` | Postgres only |
 
 ## Discriminated Union
 

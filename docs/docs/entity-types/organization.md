@@ -1,9 +1,9 @@
 ---
 sidebar_position: 2
-sidebar_label: Organization
+sidebar_label: Organizations
 ---
 
-# Organization
+# Organizations
 
 `schema.org/Organization` — companies, teams, communities, and other groups the agent tracks.
 

@@ -1,9 +1,9 @@
 ---
 sidebar_position: 3
-sidebar_label: Project
+sidebar_label: Projects
 ---
 
-# Project
+# Projects
 
 `attache.dev/Project` — the only custom Attaché type. No Schema.org type fits the concept of a cross-system project container that links repos, channels, and people.
 

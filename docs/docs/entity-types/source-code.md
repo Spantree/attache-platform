@@ -1,9 +1,9 @@
 ---
 sidebar_position: 12
-sidebar_label: SourceCode
+sidebar_label: Source Code
 ---
 
-# SoftwareSourceCode
+# Source Code
 
 `schema.org/SoftwareSourceCode` — git repositories and codebases the agent works with or references.
 
