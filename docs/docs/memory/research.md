@@ -1,6 +1,6 @@
 ---
 sidebar_position: 5
-sidebar_label: Research
+sidebar_label: Research Reports
 ---
 
 # Research

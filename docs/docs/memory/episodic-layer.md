@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-sidebar_label: Episodic Layer
+sidebar_label: Episodic Memory
 ---
 
 # Episodic Layer

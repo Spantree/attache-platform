@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-sidebar_label: Identity Layer
+sidebar_label: Identity Graph
 ---
 
 # Identity Layer

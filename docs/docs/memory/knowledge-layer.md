@@ -1,6 +1,6 @@
 ---
 sidebar_position: 4
-sidebar_label: Knowledge Layer
+sidebar_label: Knowledge Base
 ---
 
 # Knowledge Layer

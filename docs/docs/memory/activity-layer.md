@@ -1,6 +1,6 @@
 ---
 sidebar_position: 3
-sidebar_label: Activity Layer
+sidebar_label: Activity Log
 ---
 
 # Activity Layer
