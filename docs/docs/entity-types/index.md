@@ -55,7 +55,7 @@ See [Markdown Format](/memory/markdown-format) for the full formatting specifica
 | [Documents](./digital-document) | `schema.org/DigitalDocument` | Markdown |
 | [Guides](./how-to) | `schema.org/HowTo` | Markdown |
 | [Repositories](./source-code) | `schema.org/SoftwareSourceCode` | Markdown |
-| [Messages](./message) | `schema.org/Message` | Email: Markdown + Postgres; Chat: Postgres only |
+| [Emails](./message) | `schema.org/Message` | Markdown + Postgres |
 
 ## Discriminated Union
 

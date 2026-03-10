@@ -1,17 +1,15 @@
 ---
 sidebar_position: 13
-sidebar_label: Messages
+sidebar_label: Emails
 ---
 
-# Messages
+# Emails
 
-`schema.org/Message` — messages the agent tracks across communication systems.
+`schema.org/Message` — email messages the agent tracks as knowledge entities.
 
-Messages split into two storage patterns based on volume and richness:
+Emails have a subject, body, and manageable volume — they get **markdown notes + Postgres**. The markdown body preserves the full email content for context and annotation, while Postgres enables search and threading queries.
 
-**Emails** have a subject, body, and manageable volume — they get **markdown notes + Postgres**. The markdown body preserves the full email content for context and annotation, while Postgres enables search and threading queries.
-
-**Chat messages** (Slack, Discord, etc.) are too high-volume for individual markdown files — they live in **Postgres only**, in integration-specific tables in the [Activity Layer](/memory/activity-layer).
+Chat messages (Slack, Discord, etc.) are not entities — they're high-volume activity data stored in integration-specific tables in the [Activity Logs](/memory/activity-layer).
 
 ## Email Example
 
@@ -61,14 +59,6 @@ window being too tight during peak hours.
 | `message_id` | string | Source-specific message ID |
 | `source` | string | Origin system (`gmail`, `slack`, etc.) |
 | `in_reply_to` | string | Parent message ID (threading) |
-
-## Storage by Source
-
-| Source | Storage | Why |
-|---|---|---|
-| Email (Gmail, etc.) | Markdown + Postgres | Lower volume, rich body, worth annotating |
-| Slack | Postgres only | High volume, stored in `slack_messages` table |
-| Discord | Postgres only | High volume, ephemeral context |
 
 <details>
 <summary>Zod schema</summary>
