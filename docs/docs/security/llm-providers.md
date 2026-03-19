@@ -11,9 +11,9 @@ This page breaks down what each provider does with your data, and how to choose 
 
 ## The data sovereignty argument
 
-With Attaché, your agent runs on hardware you control. Your files, credentials, memory, and conversation history stay on your Mac mini. The only data that leaves your network is the inference payload — the prompt and context sent to the LLM for processing, and the response that comes back.
+With Attache, your agent runs on hardware you control. Your files, credentials, memory, and conversation history stay on your Mac mini. The only data that leaves your network is the inference payload — the prompt and context sent to the LLM for processing, and the response that comes back.
 
-Compare this to cloud-based AI tools (Google Gemini with Drive access, Microsoft Copilot with email integration, GitHub Copilot with your full codebase) where the tool itself runs in someone else's infrastructure and has standing access to your data. With Attaché, you control what gets sent and when.
+Compare this to cloud-based AI tools (Google Gemini with Drive access, Microsoft Copilot with email integration, GitHub Copilot with your full codebase) where the tool itself runs in someone else's infrastructure and has standing access to your data. With Attache, you control what gets sent and when.
 
 The remaining question is: what does the LLM provider do with the inference data?
 
@@ -21,49 +21,57 @@ The remaining question is: what does the LLM provider do with the inference data
 
 ### Anthropic (Claude)
 
-| Tier | Trains on your data? | Retention | Zero Data Retention? |
-|---|---|---|---|
-| **API (default)** | No | 7 days (reduced from 30 in Sept 2025) | Available via agreement |
-| **API (ZDR agreement)** | No | Zero — deleted after response returned | Yes, covers API + Claude Code |
-| **Claude Pro / Max** | Opt-out available | Retained for product improvement | No |
-| **Claude Free** | Yes, by default | Retained | No |
+_Last verified: 2026-03-19. Sources: [Anthropic API Terms of Service](https://www.anthropic.com/api-terms), [Commercial Terms](https://www.anthropic.com/commercial-terms), [Privacy Policy](https://www.anthropic.com/privacy)._
 
-Anthropic's API does not use your data for model training, period. The 7-day retention is for abuse monitoring only. If you need zero retention, it's available through a commercial agreement and applies to API endpoints and Claude Code.
+| Tier                    | Trains on your data? | Retention                              | Zero Data Retention?          |
+| ----------------------- | -------------------- | -------------------------------------- | ----------------------------- |
+| **API (default)**       | No                   | 7 days (reduced from 30 in Sept 2025)  | Available via agreement       |
+| **API (ZDR agreement)** | No                   | Zero — deleted after response returned | Yes, covers API + Claude Code |
+| **Claude Pro / Max**    | Opt-out available    | Retained for product improvement       | No                            |
+| **Claude Free**         | Yes, by default      | Retained                               | No                            |
 
-**For Attaché deployments: use the API tier.** If handling sensitive client data, get a ZDR agreement.
+Anthropic's API terms state that API inputs and outputs are not used for model training. The 7-day retention is for trust and safety monitoring. Zero Data Retention is available through a commercial agreement and applies to API endpoints and Claude Code.
+
+**For Attache deployments: use the API tier.** If handling sensitive client data, get a ZDR agreement.
 
 ### OpenAI (GPT-4, GPT-4o)
 
-| Tier | Trains on your data? | Retention | Zero Data Retention? |
-|---|---|---|---|
-| **API (default)** | No (since March 2023) | 30 days for abuse monitoring | Enterprise agreements only |
-| **Team / Enterprise** | No | 30 days abuse monitoring | Enterprise: yes |
-| **ChatGPT Plus / Pro** | Opt-out available, but **on by default** | Retained | No |
-| **ChatGPT Free** | Yes, by default | Retained | No |
+_Last verified: 2026-03-19. Sources: [OpenAI API Data Usage Policy](https://openai.com/enterprise-privacy), [API Terms of Use](https://openai.com/policies/terms-of-use)._
 
-OpenAI's API hasn't used customer data for training since March 2023. But the retention window is 30 days (longer than Anthropic's 7 days). ZDR requires an Enterprise agreement. The consumer products (Plus, Free) have training enabled by default — users must manually opt out.
+| Tier                   | Trains on your data?                     | Retention                    | Zero Data Retention?       |
+| ---------------------- | ---------------------------------------- | ---------------------------- | -------------------------- |
+| **API (default)**      | No (since March 2023)                    | 30 days for abuse monitoring | Enterprise agreements only |
+| **Team / Enterprise**  | No                                       | 30 days abuse monitoring     | Enterprise: yes            |
+| **ChatGPT Plus / Pro** | Opt-out available, but **on by default** | Retained                     | No                         |
+| **ChatGPT Free**       | Yes, by default                          | Retained                     | No                         |
 
-**For Attaché deployments: use the API tier.** Be aware of the 30-day abuse monitoring window.
+OpenAI's API data usage policy states that API data is not used for training (effective March 1, 2023). The retention window is 30 days — longer than Anthropic's 7 days. ZDR requires an Enterprise agreement. Consumer products (Plus, Free) have training enabled by default; users must manually opt out.
+
+**For Attache deployments: use the API tier.** Be aware of the 30-day abuse monitoring window.
 
 ### Google (Gemini)
 
-| Tier | Trains on your data? | Retention | Zero Data Retention? |
-|---|---|---|---|
-| **Vertex AI** | No | Per GCP data processing terms | Yes (GCP enterprise terms) |
-| **Gemini API (paid)** | No | Varies | Check current terms |
-| **Gemini Free** | Yes | Retained | No |
+_Last verified: 2026-03-19. Sources: [Google Cloud Data Processing Terms](https://cloud.google.com/terms/data-processing-terms), [Gemini API Terms](https://ai.google.dev/terms)._
+
+| Tier                  | Trains on your data? | Retention                     | Zero Data Retention?       |
+| --------------------- | -------------------- | ----------------------------- | -------------------------- |
+| **Vertex AI**         | No                   | Per GCP data processing terms | Yes (GCP enterprise terms) |
+| **Gemini API (paid)** | No                   | Varies                        | Check current terms        |
+| **Gemini Free**       | Yes                  | Retained                      | No                         |
 
 Google Vertex AI runs within your GCP project and follows standard GCP data processing agreements. This is the strongest Google option for data-sensitive work.
 
 ### AWS Bedrock
 
-| Tier | Trains on your data? | Retention | Who has access? |
-|---|---|---|---|
-| **Bedrock (all models)** | No | Not stored or logged | AWS only — model providers have no access |
+_Last verified: 2026-03-19. Source: [Amazon Bedrock FAQs — Security](https://aws.amazon.com/bedrock/faqs/#Security)._
 
-AWS Bedrock offers the strongest data isolation of any hosted option. Amazon deep-copies the model into its own infrastructure. The model provider (Anthropic, Meta, etc.) never sees your prompts or completions. Your data stays within AWS's security boundary.
+| Tier                     | Trains on your data? | Retention                       | Who has access?                           |
+| ------------------------ | -------------------- | ------------------------------- | ----------------------------------------- |
+| **Bedrock (all models)** | No                   | Not stored or logged by default | AWS only — model providers have no access |
 
-From the AWS docs: *"Amazon Bedrock doesn't store or log your prompts and completions. Amazon Bedrock doesn't use your prompts and completions to train any AWS models and doesn't distribute them to third parties."*
+AWS Bedrock deep-copies models into AWS infrastructure. According to the [Bedrock security FAQ](https://aws.amazon.com/bedrock/faqs/#Security): "Amazon Bedrock doesn't store or log your prompts and completions. Amazon Bedrock doesn't use your prompts and completions to train any AWS models and doesn't distribute them to third parties."
+
+The model provider (Anthropic, Meta, etc.) never sees your prompts or completions. Your data stays within AWS's security boundary. Among the hosted options, Bedrock provides the strongest separation between your inference data and the model provider.
 
 **The tradeoff:** Bedrock is pay-as-you-go and more expensive per token than direct API access. For high-volume agent workloads, the cost difference can be significant. But for clients with strict data residency requirements, it's the right choice.
 
@@ -75,14 +83,14 @@ Similar to Bedrock — runs within your GCP project, follows your data processin
 
 Before getting anxious about LLM inference data, consider what you're already trusting third parties with:
 
-| Tool | Where your data goes | Who controls it | Training risk |
-|---|---|---|---|
-| **GitHub** | Microsoft servers | Microsoft | Private repos: no. Public repos: used for Copilot training |
-| **Google Workspace** | Google servers | Google | Enterprise: no training |
-| **Slack** | Salesforce servers | Salesforce | Enterprise: no training |
-| **OpenClaw + Anthropic API** | Your Mac mini + Anthropic inference | You + Anthropic | No (API default) |
-| **OpenClaw + AWS Bedrock** | Your Mac mini + AWS | You + AWS (provider has no access) | No |
-| **GitHub Copilot** | Microsoft servers | Microsoft | Enterprise: no. Individual: opt-out |
+| Tool                         | Where your data goes                | Who controls it                    | Training risk                                              |
+| ---------------------------- | ----------------------------------- | ---------------------------------- | ---------------------------------------------------------- |
+| **GitHub**                   | Microsoft servers                   | Microsoft                          | Private repos: no. Public repos: used for Copilot training |
+| **Google Workspace**         | Google servers                      | Google                             | Enterprise: no training                                    |
+| **Slack**                    | Salesforce servers                  | Salesforce                         | Enterprise: no training                                    |
+| **OpenClaw + Anthropic API** | Your Mac mini + Anthropic inference | You + Anthropic                    | No (API default)                                           |
+| **OpenClaw + AWS Bedrock**   | Your Mac mini + AWS                 | You + AWS (provider has no access) | No                                                         |
+| **GitHub Copilot**           | Microsoft servers                   | Microsoft                          | Enterprise: no. Individual: opt-out                        |
 
 Your source code already lives on GitHub. Your email is on Google or Microsoft servers. Your chat history is on Slack. If your organization trusts those platforms for standing data storage, it's worth asking why LLM inference — where data is processed and discarded — would be held to a stricter standard.
 
@@ -97,13 +105,14 @@ That's not an argument for being careless. It's an argument for consistency. App
 **For regulated industries or strict data residency:** AWS Bedrock or Google Vertex AI. The model provider never sees your data. Your inference runs within your cloud account's security boundary.
 
 **What to avoid:**
+
 - Consumer-tier subscriptions (Claude Free, ChatGPT Free/Plus) for any work involving client data
 - Assuming "I'm paying for it" means your data is protected — the tier matters, not just the price
 - Using one provider's consumer product while holding another provider's API to enterprise standards
 
 ## Configuration
 
-OpenClaw supports multiple LLM providers. Point your agent at the appropriate endpoint:
+Attache supports multiple LLM providers. Point your agent at the appropriate endpoint:
 
 ```json
 {
@@ -156,4 +165,4 @@ Whatever tier you choose, document it. Your security policy should state:
 4. For which clients or projects Bedrock/Vertex is required
 5. How this was communicated to the team
 
-This documentation is what turns "we think our data is safe" into "here's our data governance policy for AI inference." The former is hand-waving. The latter is governance.
+This documentation turns "we think our data is safe" into a defensible data governance policy for AI inference.

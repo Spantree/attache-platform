@@ -28,16 +28,16 @@ OpenClaw maintains its own security documentation at [docs.openclaw.ai/gateway/s
 
 A fresh Attache deployment ships with these decisions already made:
 
-| Default | What it prevents |
-|---|---|
-| **Dedicated Mac mini** | Agent runs on separate hardware. A compromise doesn't touch your primary workstation. |
-| **Dedicated `openclaw` OS user** | Agent process runs under a restricted account, not your admin user. |
-| **Key-only SSH** | Attache's setup playbook disables password authentication. Brute-force isn't viable. |
-| **Tailscale for remote access** | Gateway never touches the public internet. Every connection requires authenticated tailnet membership. |
-| **Loopback gateway binding** | Gateway listens on `127.0.0.1` only. Not reachable from LAN. Traffic goes through Tailscale or stays on localhost. |
-| **Token-based auth** | Every connection presents a token. Attache does not use `trusted-proxy` mode, which has been the subject of a [critical advisory](#the-cve-and-advisory-situation). |
-| **1Password for secrets** | Credentials live in scoped 1Password vaults, not plaintext config files. |
-| **Ansible-managed setup** | Infrastructure is declarative. Drift is detectable. Re-running a playbook converges back to a known-good configuration. |
+| Default                          | What it prevents                                                                                                                                                    |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Dedicated Mac mini**           | Agent runs on separate hardware. A compromise doesn't touch your primary workstation.                                                                               |
+| **Dedicated `openclaw` OS user** | Agent process runs under a restricted account, not your admin user.                                                                                                 |
+| **Key-only SSH**                 | Attache's setup playbook disables password authentication. Brute-force isn't viable.                                                                                |
+| **Tailscale for remote access**  | Gateway never touches the public internet. Every connection requires authenticated tailnet membership.                                                              |
+| **Loopback gateway binding**     | Gateway listens on `127.0.0.1` only. Not reachable from LAN. Traffic goes through Tailscale or stays on localhost.                                                  |
+| **Token-based auth**             | Every connection presents a token. Attache does not use `trusted-proxy` mode, which has been the subject of a [critical advisory](#the-cve-and-advisory-situation). |
+| **1Password for secrets**        | Credentials live in scoped 1Password vaults, not plaintext config files.                                                                                            |
+| **Ansible-managed setup**        | Infrastructure is declarative. Drift is detectable. Re-running a playbook converges back to a known-good configuration.                                             |
 
 Most OpenClaw tutorials have you running the gateway on your laptop, exposed on all interfaces, with full exec permissions. Attache exists because that's a terrible idea.
 
