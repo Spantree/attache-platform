@@ -1,0 +1,286 @@
+# OpenClaw Security Self-Audit Guide
+# Source: Attaché (https://docs.attache.dev/security)
+# Version: 2026-03-19
+# License: Apache 2.0
+#
+# This file is designed to be read by an OpenClaw agent to audit its own
+# deployment. Feed it to your agent and ask: "Read this file and audit
+# my configuration against these best practices."
+#
+# The agent should have access to its own openclaw.json config file
+# (typically at ~/.openclaw/openclaw.json) and be able to run
+# `openclaw --version` and `openclaw security audit`.
+
+---
+
+## How to use this file
+
+You are an OpenClaw agent. This file describes security best practices for
+your deployment. Read your own configuration file at ~/.openclaw/openclaw.json
+and check each item below. Report findings as PASS, WARN, or FAIL with
+specific remediation steps.
+
+Run these commands to gather your configuration:
+- `openclaw --version` (check version)
+- `cat ~/.openclaw/openclaw.json` (read config — redact tokens in output)
+- `openclaw security audit --json` (built-in audit)
+- `lsof -i -nP | grep ESTABLISHED` (network connections)
+- `ls ~/.ssh/authorized_keys` (SSH keys)
+- `crontab -l` (cron jobs)
+- `ls ~/Library/LaunchAgents/` (macOS LaunchAgents)
+
+---
+
+## 1. Version and Patching
+
+CRITICAL: Check `openclaw --version`
+
+- FAIL if version < 2026.3.12 (multiple unpatched CVEs)
+- WARN if version < latest stable (check https://github.com/openclaw/openclaw/releases)
+- Known vulnerable versions:
+  - < 2026.1.29: CVE-2026-25253 (auth token exfiltration via crafted URL, CVSS 8.8)
+  - < 2026.2.23: CVE-2026-22175 (exec allowlist bypass via busybox/toybox, CVSS 7.1)
+  - < 2026.2.26: Advisory: DM-paired senders authorized in group contexts
+  - < 2026.3.11: Advisory: WebSocket origin bypass in trusted-proxy auth mode (Critical)
+  - < 2026.3.11: Advisory: Exec allowlist glob pattern `?` crosses directory boundaries
+  - < 2026.3.12: Advisory: Setup/pairing codes embed long-lived gateway token
+
+Remediation: `npm update -g openclaw && openclaw gateway restart`
+
+---
+
+## 2. Gateway Configuration
+
+### 2a. Binding
+Check: `gateway.bind` in openclaw.json
+
+- PASS if "loopback" or "127.0.0.1"
+- FAIL if "0.0.0.0" or missing (defaults to all interfaces on some versions)
+- FAIL if any public IP address
+- Context: 135,000-220,000+ OpenClaw instances found exposed to the internet
+
+### 2b. Auth mode
+Check: `gateway.auth.mode` in openclaw.json
+
+- PASS if "token"
+- FAIL if "trusted-proxy" (attack surface for origin bypass advisory)
+- WARN if auth section is missing entirely
+
+### 2c. Tailscale mode
+Check: `gateway.tailscale.mode` in openclaw.json (if Tailscale is configured)
+
+- PASS if "serve"
+- FAIL if "funnel" (exposes gateway to public internet via Tailscale ingress)
+
+---
+
+## 3. Exec Security
+
+CRITICAL: Check `exec.security` in openclaw.json
+
+- PASS if "allowlist" or "ask"
+- FAIL if "full" (any prompt injection gives attacker arbitrary command execution)
+- WARN if allowlist contains broad patterns like `*`, `?`, or shell wrappers (busybox, toybox, sh, bash)
+- WARN if `sudo` is on the allowlist
+- WARN if `op` (1Password CLI) is directly on the allowlist without a proxy
+
+Context: With exec.security: "full", there is no technical barrier between a
+prompt injection and arbitrary command execution under the agent's OS user.
+This is the single most impactful security setting.
+
+Remediation: Switch to "allowlist" mode. Audit which commands your agent
+actually uses by reviewing session logs, then build an explicit allowlist.
+
+---
+
+## 4. Channel Policies
+
+### 4a. Slack
+Check: `channels.slack.groupPolicy` and per-account settings
+
+- PASS if "allowlist" or "pairing"
+- WARN if "open" (anyone in any channel can trigger agent tools)
+- Check per-account overrides: `channels.slack.accounts.*.groupPolicy`
+- Check per-channel: `channels.slack.accounts.*.channels.*.requireMention`
+- WARN if any channel has requireMention: false in a shared workspace
+
+### 4b. Discord
+Check: `channels.discord.groupPolicy` and guild settings
+
+- PASS if "allowlist"
+- WARN if individual guilds have allowlist overrides but top-level is "open"
+- Check: `channels.discord.guilds.*.requireMention`
+
+### 4c. General principle
+All senders to one agent share the same delegated tool authority.
+If the agent has exec access, everyone in a shared channel can trigger exec.
+There is no per-sender permission scoping within a single agent.
+
+WARN if any channel with groupPolicy "open" has an agent with exec access.
+
+---
+
+## 5. Credential Management
+
+### 5a. Plaintext secrets in config
+Check openclaw.json for any fields that look like API keys or tokens
+
+- FAIL if API keys appear as plaintext values in the config file
+- Specifically check: tools.web.search.apiKey, memorySearch.apiKey,
+  and any custom tool configurations
+- WARN if bot tokens or app tokens are in plaintext (even though they must be)
+- Remediation: Move secrets to 1Password and reference via `op read`
+
+### 5b. 1Password vault scoping
+If using 1Password:
+
+- WARN if the service account token has access to personal vaults
+- Best practice: Dedicated "Agent Credentials" vault with only what the agent needs
+- WARN if the agent can run `op` directly (should use a secrets proxy)
+
+### 5c. GitHub tokens
+Check for GitHub authentication configuration
+
+- PASS if using GitHub App with installation tokens (short-lived, scoped)
+- WARN if using fine-grained PAT (acceptable but check expiration)
+- FAIL if using classic PAT (broad scope, no repository restrictions)
+
+### 5d. Gateway token rotation
+Check: `gateway.auth.token` age
+
+- WARN if the gateway token has not been rotated since upgrading past 2026.3.12
+  (setup codes in earlier versions contained the long-lived token)
+- Remediation: `openclaw config set gateway.auth.token "$(openssl rand -hex 32)"`
+
+---
+
+## 6. Network Posture
+
+### 6a. Inbound access
+- PASS if gateway only accessible via localhost and Tailscale
+- FAIL if gateway responds to connections from LAN IP
+- Test: From another machine, `curl http://<mac-lan-ip>:18789/` should FAIL
+
+### 6b. Outbound access
+- WARN if no outbound network restrictions are configured
+- Best practice: DNS-level blocking of known exfiltration endpoints
+  or macOS pf firewall rules limiting which domains the agent can reach
+- Check for unexpected outbound connections:
+  `lsof -i -nP | grep ESTABLISHED | grep -v "localhost|127.0.0.1|::1|tailscale|100.64|100.100"`
+
+---
+
+## 7. Agent Isolation (Multiplayer)
+
+If multiple agents or shared channels are in use:
+
+### 7a. Personal vs team agent separation
+- WARN if a single agent with full tool access operates in both DMs and shared channels
+- Best practice: Personal agent (DMs, full tools) + team agent (shared channels, restricted tools)
+
+### 7b. Memory isolation
+- FAIL if a team-facing agent has access to personal memory files
+  (MEMORY.md, SOUL.md, USER.md, daily notes)
+- Best practice: Separate workspace directories for personal and team agents
+
+### 7c. Tool restrictions for shared agents
+Check agent-specific tool deny lists in openclaw.json
+
+- WARN if a shared-channel agent has exec access
+- WARN if a shared-channel agent has browser access
+- WARN if a shared-channel agent can spawn sub-agents
+- Best practice: Team agents should deny exec, browser, sessions_spawn, tts, nodes
+
+---
+
+## 8. Persistence and IOC Checks
+
+### 8a. SSH keys
+Check: `cat ~/.ssh/authorized_keys`
+
+- WARN if any unrecognized keys are present
+- Each key should map to a known device
+
+### 8b. Scheduled tasks
+Check: `crontab -l` and `ls ~/Library/LaunchAgents/`
+
+- Expected LaunchAgents: ai.openclaw.gateway.plist (and optionally github-webhooks)
+- WARN if any unexpected LaunchAgents or cron entries exist
+
+### 8c. Suspicious exec patterns in logs
+Search recent gateway logs for indicators of compromise:
+
+- `grep -i "busybox\|toybox" ~/.openclaw/logs/gateway.err.log` (CVE-2026-22175)
+- `grep -iE "/dev/tcp|nc -e|mkfifo|ncat |netcat " ~/.openclaw/logs/gateway.err.log` (reverse shells)
+- `grep -iE "curl.*(pastebin|ngrok|webhook\.site|pipedream|requestbin)" ~/.openclaw/logs/gateway.err.log` (exfiltration)
+- `grep -iE "base64 -d" ~/.openclaw/logs/gateway.err.log` (encoded payloads)
+
+- FAIL if any of these patterns are found (investigate immediately)
+
+### 8d. Config audit trail
+Check: `tail -20 ~/.openclaw/logs/config-audit.jsonl`
+
+- All entries should trace to intentional `openclaw config set` commands
+- WARN if any entries have unexpected sources or suspicious patterns
+
+---
+
+## 9. LLM Provider Configuration
+
+### 9a. Subscription tier
+- FAIL if using consumer-tier subscriptions (Claude Free, ChatGPT Free/Plus)
+  for any work involving client or sensitive data
+- PASS if using API tier (Anthropic or OpenAI) — no training, short retention
+- Best practice for sensitive clients: Anthropic Zero Data Retention agreement
+  or AWS Bedrock (model provider never sees prompts)
+
+### 9b. Provider data handling (verify periodically)
+- Anthropic API: No training. 7-day retention (reduced Sept 2025). ZDR available.
+- OpenAI API: No training (since March 2023). 30-day abuse monitoring.
+- AWS Bedrock: No storage, no logging, provider has no access.
+- Google Vertex AI: Per GCP data processing terms.
+
+---
+
+## 10. Log Management
+
+### 10a. Log rotation
+- WARN if gateway.err.log exceeds 1GB without rotation configured
+- Best practice: Configure logrotate or launchd-based rotation
+- Retain at least 90 days of logs for forensic purposes
+
+### 10b. Log access
+- WARN if log files are world-readable
+- Best practice: Restrict log file permissions to the agent's OS user
+
+---
+
+## Scoring
+
+After checking all items, calculate a score:
+
+- Each FAIL = 0 points
+- Each WARN = 1 point
+- Each PASS = 2 points
+
+Sections 1-4 are weighted 2x (most impactful security controls).
+
+Report the total score, the maximum possible score, and a percentage.
+List all FAIL items first with specific remediation commands.
+List WARN items second with recommendations.
+
+### Risk rating:
+- 90-100%: Strong security posture
+- 70-89%: Acceptable with noted improvements
+- 50-69%: Significant gaps — address FAIL items immediately
+- Below 50%: Critical — stop and harden before continued use
+
+---
+
+## References
+
+- Attaché Security Docs: https://docs.attache.dev/security
+- OpenClaw Security: https://docs.openclaw.ai/gateway/security
+- OWASP Top 10 for Agentic Applications: https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/
+- NVIDIA NemoClaw: https://nvidianews.nvidia.com/news/nvidia-announces-nemoclaw
+- Auth0 OpenClaw Security Guide: https://auth0.com/blog/five-step-guide-securing-moltbot-ai-agent/
