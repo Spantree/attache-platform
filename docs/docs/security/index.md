@@ -120,3 +120,4 @@ Attache's security controls today cover gateway hardening, exec allowlists, chan
 - **[Risk Register](./risk-register.md)** — Each risk, how Attache addresses it, and where you need to take action yourself.
 - **[Audit](./audit.md)** — Verifying your security posture, detecting compromise, and prompt injection signatures in logs.
 - **[LLM Provider Data Handling](./llm-providers.md)** — What each provider does with your data, how to choose the right tier, and how this compares to tools you already trust.
+- **[Credential Managers](./credential-managers.md)** — Comparison of 1Password, Bitwarden, macOS Keychain, GNOME Keyring, pass, KeePassXC, HashiCorp Vault, AWS Secrets Manager, and more. Which ones support mobile push approval for agent access.

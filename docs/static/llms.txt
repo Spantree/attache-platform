@@ -13,6 +13,7 @@ focus on what your agents do, not how they're secured.
 - [Risk Register](https://docs.attache.dev/security/risk-register): Structured risk/mitigation matrix with CVE applicability
 - [Audit Procedures](https://docs.attache.dev/security/audit): Automated and manual security checks, IOC detection, incident response
 - [LLM Provider Data Handling](https://docs.attache.dev/security/llm-providers): Provider comparison, subscription tiers, data sovereignty
+- [Credential Managers](https://docs.attache.dev/security/credential-managers): Comparison of 10+ credential managers, push approval support, platform recommendations
 - [Architecture](https://docs.attache.dev/architecture): System design, Ansible automation, network topology
 - [Memory](https://docs.attache.dev/memory): Agent memory system, persistence, knowledge management
 
