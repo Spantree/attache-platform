@@ -1,0 +1,52 @@
+# Attaché — Secure AI Agent Deployment Platform
+> Turnkey macOS deployment for OpenClaw agents with enterprise-grade security
+
+Attaché is a deployment platform that turns a Mac mini into a hardened,
+always-on AI agent workstation. It handles the infrastructure so you can
+focus on what your agents do, not how they're secured.
+
+## Documentation
+
+- [Security Overview](https://docs.attache.dev/security): Trust model, threat landscape, how Attaché mitigates by design
+- [Hardening Guide](https://docs.attache.dev/security/hardening): Gateway config, exec policy, four-tier autonomy model, credential management
+- [Multiplayer](https://docs.attache.dev/security/multiplayer): Safe patterns for team and multi-agent access
+- [Risk Register](https://docs.attache.dev/security/risk-register): Structured risk/mitigation matrix with CVE applicability
+- [Audit Procedures](https://docs.attache.dev/security/audit): Automated and manual security checks, IOC detection, incident response
+- [LLM Provider Data Handling](https://docs.attache.dev/security/llm-providers): Provider comparison, subscription tiers, data sovereignty
+- [Architecture](https://docs.attache.dev/architecture): System design, Ansible automation, network topology
+- [Memory](https://docs.attache.dev/memory): Agent memory system, persistence, knowledge management
+
+## Machine-Readable Resources
+
+- [Self-Audit Guide](https://docs.attache.dev/llm.txt): Feed this to an OpenClaw agent to audit its own security configuration. 10 sections, PASS/WARN/FAIL criteria, scoring rubric.
+
+## Key Security Features
+
+- Dedicated macOS hardware (Mac mini) with admin user locked down via exec allowlists
+- Gateway bound to loopback; remote access via Tailscale only
+- Token-based gateway authentication (not trusted-proxy)
+- 1Password integration with scoped service account vaults
+- Four-tier autonomy model: free / pre-approved / approve-once / always-approve
+- Multiplayer agent patterns: personal + team agent separation with memory isolation
+- Secrets proxy daemon for credential access control with DM approval flows
+- Bloom filter credential scanning for outbound exfiltration detection (roadmap)
+- OWASP Agentic Top 10 alignment
+
+## Roadmap
+
+- Bloom filter credential scanning (detects secrets in outbound commands)
+- Tiered risk scoring with time-decay approval caching
+- Supervisor agent evaluation (hybrid heuristic + LLM scanning)
+- OS-level sandboxing via macOS seatbelt profiles
+- NemoClaw / OpenShell compatibility
+
+## Context
+
+- Built by [Spantree](https://spantree.net), a Trifork company
+- Powered by [OpenClaw](https://github.com/openclaw/openclaw)
+- Security docs aligned with [OWASP Top 10 for Agentic Applications (2026)](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)
+
+## Contact
+
+- Docs: https://docs.attache.dev
+- GitHub: https://github.com/Spantree/attache-platform
