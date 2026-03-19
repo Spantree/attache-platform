@@ -118,7 +118,7 @@ Anthropic recently [open-sourced their sandbox runtime](https://github.com/anthr
 
 The key insight from their work: **effective sandboxing requires both filesystem and network isolation.** Without network isolation, a compromised agent can exfiltrate files. Without filesystem isolation, a compromised agent can escape the sandbox to reach the network. You need both.
 
-This is an area where Attaché's security model has room to grow. For now, the exec allowlist and dedicated OS user provide the primary boundaries. Watch this space.
+This is an area where Attaché's security model has room to grow. For now, the exec allowlist and secrets proxy provide the primary boundaries. Watch this space.
 
 ## Balancing autonomy and security
 
