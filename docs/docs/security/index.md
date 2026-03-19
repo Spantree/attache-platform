@@ -119,3 +119,4 @@ Attaché's security controls today cover gateway hardening, exec allowlists, cha
 - **[Shared Access](./shared-access.md)** — How to let your team interact with agents without giving everyone the keys to the kingdom.
 - **[Risk Register](./risk-register.md)** — A structured look at each risk, how Attaché addresses it, and where you need to take action yourself.
 - **[Audit](./audit.md)** — How to verify your security posture and check for signs of compromise.
+- **[LLM Provider Data Handling](./llm-providers.md)** — What each provider does with your data, how to choose the right tier, and how this compares to tools you already trust.
