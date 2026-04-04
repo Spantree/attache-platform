@@ -36,7 +36,7 @@ Internal data pipeline platform for real-time analytics.
 ## Relations
 
 - part_of [[organizations/spantree]]
-- depends_on [[projects/attache]]
+- depends_on [[projects/evie-platform]]
 - related_to [[people/jane-doe]]
 ```
 

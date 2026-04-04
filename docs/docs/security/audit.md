@@ -9,7 +9,7 @@ Configuration is only half the job. The other half is checking that reality matc
 
 ## The automated check
 
-OpenClaw has a built-in audit command that Attache recommends running regularly:
+OpenClaw has a built-in audit command that Evie Platform recommends running regularly:
 
 ```bash
 openclaw security audit          # Checks config, versions, common mistakes
@@ -24,7 +24,7 @@ Run it after every config change. Run it at least weekly even if nothing changed
 
 ## Reviewing logs
 
-Your gateway logs are the primary audit trail. On a standard Attache deployment, they're at `~/.openclaw/logs/`.
+Your gateway logs are the primary audit trail. On a standard Evie Platform deployment, they're at `~/.openclaw/logs/`.
 
 For log rotation and retention policy, see [Hardening: log retention](./hardening.md#log-retention-and-rotation).
 
@@ -97,7 +97,7 @@ grep -l "you must\|always do\|never tell\|ignore previous\|disregard" \
 
 ```bash
 # If using the secrets proxy, check for unusual access patterns
-grep "status=denied\|status=approved_via_dm" /var/log/attache-secrets-proxy.log
+grep "status=denied\|status=approved_via_dm" /var/log/evie-secrets-proxy.log
 ```
 
 ### Building a baseline
@@ -163,7 +163,7 @@ cat ~/.ssh/authorized_keys
 ls -la ~/.ssh/
 ```
 
-On a standard Attache Mac mini, you should see your SSH key and possibly the machine's own key. Anything else — find out where it came from.
+On a standard Evie Platform Mac mini, you should see your SSH key and possibly the machine's own key. Anything else — find out where it came from.
 
 ### Persistence mechanisms
 

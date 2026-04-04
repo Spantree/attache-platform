@@ -76,7 +76,7 @@ provides implicit contextual information...
 
 ## Relations
 
-- informs [[projects/attache]]
+- informs [[projects/evie-platform]]
 - related_to [[research/agent-memory/ori-mnemos-review]]
 
 ## References

@@ -5,13 +5,13 @@ sidebar_position: 2
 
 # Hardening Guide
 
-Attache ships with secure defaults. This guide covers how to tune them — and the additional hardening steps that turn a reasonable deployment into a defensible one.
+Evie Platform ships with secure defaults. This guide covers how to tune them — and the additional hardening steps that turn a reasonable deployment into a defensible one.
 
 ## Gateway configuration
 
 ### Loopback binding (default)
 
-Attache binds the gateway to `127.0.0.1` by default:
+Evie Platform binds the gateway to `127.0.0.1` by default:
 
 ```json
 {
@@ -30,7 +30,7 @@ Censys and Bitsight scans found 135,000-220,000+ OpenClaw instances exposed to t
 
 ### Token auth (default)
 
-Attache defaults to `token` auth mode:
+Evie Platform defaults to `token` auth mode:
 
 ```json
 {
@@ -42,7 +42,7 @@ Attache defaults to `token` auth mode:
 }
 ```
 
-The alternative — `trusted-proxy` — delegates authentication to a reverse proxy. That's the attack surface for the critical origin bypass advisory (versions before 2026.3.11). A malicious web page can open a WebSocket through your proxy and get operator-level access. Attache uses token auth specifically to avoid this class of vulnerability.
+The alternative — `trusted-proxy` — delegates authentication to a reverse proxy. That's the attack surface for the critical origin bypass advisory (versions before 2026.3.11). A malicious web page can open a WebSocket through your proxy and get operator-level access. Evie Platform uses token auth specifically to avoid this class of vulnerability.
 
 ### Tailscale: serve, not funnel
 
@@ -56,13 +56,13 @@ The alternative — `trusted-proxy` — delegates authentication to a reverse pr
 }
 ```
 
-Attache configures `serve` mode, which keeps traffic within your tailnet. `funnel` punches a hole to the public internet through Tailscale's ingress — undoing most of the network isolation.
+Evie Platform configures `serve` mode, which keeps traffic within your tailnet. `funnel` punches a hole to the public internet through Tailscale's ingress — undoing most of the network isolation.
 
 ## Exec policy
 
 This is the most important security decision in any OpenClaw deployment.
 
-### Why Attache defaults to allowlist mode
+### Why Evie Platform defaults to allowlist mode
 
 ```json
 {
@@ -72,7 +72,7 @@ This is the most important security decision in any OpenClaw deployment.
 }
 ```
 
-Attache's exec policy defaults to allowlist mode. The agent requests approval for each new command pattern. You pre-approve specific commands and grant `allow-always` for patterns you trust. Everything else gets blocked.
+Evie Platform's exec policy defaults to allowlist mode. The agent requests approval for each new command pattern. You pre-approve specific commands and grant `allow-always` for patterns you trust. Everything else gets blocked.
 
 The alternative — `exec.security: "full"` — means the agent can run any shell command, anytime, with no restrictions. If a prompt injection succeeds, the attacker gets arbitrary command execution under your agent's OS user.
 
@@ -107,7 +107,7 @@ OpenClaw's exec allowlist operates at the application layer. For stronger isolat
 
 The key insight from their work: **effective sandboxing requires both filesystem and network isolation.** Without network isolation, a compromised agent exfiltrates files. Without filesystem isolation, a compromised agent escapes the sandbox to reach the network. You need both.
 
-Attache doesn't integrate OS-level sandboxing yet, but it's on the [roadmap](./index.md#roadmap). For now, the exec allowlist, dedicated OS user, and network egress controls provide the primary boundaries.
+Evie Platform doesn't integrate OS-level sandboxing yet, but it's on the [roadmap](./index.md#roadmap). For now, the exec allowlist, dedicated OS user, and network egress controls provide the primary boundaries.
 
 ### OS-level sandboxing
 
@@ -124,7 +124,7 @@ To add OS-level defense in depth on top of those controls:
 
 ```bash
 # Example seatbelt profile for the admin agent
-cat > /tmp/attache-admin.sb << 'EOF'
+cat > /tmp/evie-admin.sb << 'EOF'
 (version 1)
 (deny default)
 (allow file-read* (subpath "/Users/openclaw"))
@@ -136,7 +136,7 @@ cat > /tmp/attache-admin.sb << 'EOF'
 EOF
 
 # Run the agent under the sandbox
-sandbox-exec -f /tmp/attache-admin.sb openclaw gateway start
+sandbox-exec -f /tmp/evie-admin.sb openclaw gateway start
 ```
 
 3. **Combine with exec allowlist.** The seatbelt profile is a second layer. If the application-layer allowlist is bypassed (as in CVE-2026-22175), the OS-level sandbox still blocks unauthorized access.
@@ -173,7 +173,7 @@ The application-layer controls (exec allowlists, secrets proxy, bloom filter sca
 
 ## Secrets proxy daemon
 
-Attache recommends removing direct `op read` from the exec allowlist and routing all secret access through a proxy daemon instead.
+Evie Platform recommends removing direct `op read` from the exec allowlist and routing all secret access through a proxy daemon instead.
 
 ### The problem with direct `op read`
 
@@ -270,7 +270,7 @@ Anthropic's [OS-level sandboxing for Claude Code](https://www.anthropic.com/engi
 
 ## Network egress controls
 
-Attache's loopback binding and Tailscale handle inbound access. Outbound traffic deserves the same attention — a compromised agent with `curl` access can exfiltrate data to any server on the internet.
+Evie Platform's loopback binding and Tailscale handle inbound access. Outbound traffic deserves the same attention — a compromised agent with `curl` access can exfiltrate data to any server on the internet.
 
 ### DNS-level blocking
 
@@ -312,7 +312,7 @@ Restrict `curl` to specific domains in the exec allowlist where possible. The co
 
 ## Channel policies
 
-### Slack: Attache defaults to allowlist mode
+### Slack: Evie Platform defaults to allowlist mode
 
 ```json
 {
@@ -324,7 +324,7 @@ Restrict `curl` to specific domains in the exec allowlist where possible. The co
 }
 ```
 
-With `groupPolicy: "open"`, anyone in any Slack channel where your bot is present can interact with it and trigger its full tool permissions. Attache defaults to `"allowlist"` to prevent this.
+With `groupPolicy: "open"`, anyone in any Slack channel where your bot is present can interact with it and trigger its full tool permissions. Evie Platform defaults to `"allowlist"` to prevent this.
 
 ### Require mentions
 
@@ -370,7 +370,7 @@ When `requireMention` is on, the agent only processes messages that explicitly `
 
 ### 1Password with scoped vaults
 
-Attache stores credentials in 1Password, not `openclaw.json`:
+Evie Platform stores credentials in 1Password, not `openclaw.json`:
 
 ```bash
 op read "op://Agent-Vault/ANTHROPIC_API_KEY/credential"
@@ -496,7 +496,7 @@ Document your emergency procedure somewhere accessible under stress — not buri
 
 ### Declarative recovery via Ansible
 
-Attache's Ansible playbooks are the recovery mechanism. If you suspect compromise:
+Evie Platform's Ansible playbooks are the recovery mechanism. If you suspect compromise:
 
 1. Stop the gateway
 2. Rotate all credentials (see [Audit: credential rotation](./audit.md#credential-rotation))
@@ -539,7 +539,7 @@ The current stable release is **2026.3.12+**. If you're behind that, you're carr
 
 ### Patch SLA
 
-Commit to a timeline and stick to it. Attache's defaults:
+Commit to a timeline and stick to it. Evie Platform's defaults:
 
 - **Critical (CVSS >= 9.0):** Same day.
 - **High (CVSS 7.0-8.9):** Within 48 hours.

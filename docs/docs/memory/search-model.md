@@ -93,7 +93,7 @@ Different layers lean on different tiers depending on the data and access patter
 
 ## Retrieval Ranking: Vitality and Decay
 
-["Attention Is All You Need"](https://arxiv.org/abs/1706.03762) could have been dismissed as overengineered in 2017 — why not just use RNNs with a simple hidden state? The answer was that uniform sequential processing doesn't scale. The same argument applies to agent memory. Naive retrieval — search everything, rank by text similarity — works fine at 50 notes. At 50,000 notes across four layers, undifferentiated retrieval wastes the most expensive resource in the system: **context window tokens**. A 6-month-old note about a resolved bug shouldn't compete equally with yesterday's architecture decision.
+["Attention Is All You Need"](https://arxiv.org/abs/1706.03762) could have been dismissed as overengineered in 2017 — why not just use RNNs with a simple hidden state? The answer was that uniform sequential processing doesn't scale. The same argument applies to agent memory. Naive retrieval — search everything, rank by text similarity — works fine at 50 notes. At 50,000 notes across five layers, undifferentiated retrieval wastes the most expensive resource in the system: **context window tokens**. A 6-month-old note about a resolved bug shouldn't compete equally with yesterday's architecture decision.
 
 Vitality scoring is to agent memory what attention is to sequence processing — a principled mechanism for focusing on what matters. Both solve the same fundamental problem (selective focus over a large space), just at different timescales: attention operates within a single forward pass; vitality operates across an agent's lifetime.
 

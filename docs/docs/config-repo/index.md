@@ -4,13 +4,13 @@ sidebar_position: 4
 
 # Config Repo Guide
 
-Your config repo is where your agent becomes *yours*. It layers personalization on top of Evie Platform's base platform — extra packages, shell config, workspace files, custom Ansible playbooks, and bootstrap scripts.
+Your config repo is where your agent becomes _yours_. It layers personalization on top of Evie Platform's base platform — extra packages, shell config, workspace files, custom Ansible playbooks, and bootstrap scripts.
 
 ## Getting Started
 
 Create a new GitHub repo. It can be:
 
-**Public repos** work well for shared team configurations that don't include workspace files or secrets. Name it something like `yourorg/attache-config` and let everyone on the team reference it.
+**Public repos** work well for shared team configurations that don't include workspace files or secrets. Name it something like `yourorg/evie-config` and let everyone on the team reference it.
 
 **Private repos** are for a specific agent's full setup — workspace files, skills, Ansible playbooks, everything. Name it after the agent (e.g., `username/evie`) and keep it locked down with SSH key access.
 
@@ -20,7 +20,7 @@ All directories are optional. Evie Platform discovers and applies whatever it fi
 
 ```
 my-agent/
-├── attache.config.json              # Feature flags and variable overrides
+├── evie.config.json              # Feature flags and variable overrides
 ├── Brewfile                 # Additional Homebrew packages
 ├── mise/
 │   └── config.toml          # Additional mise tools
@@ -54,7 +54,7 @@ my-agent/
     └── README.md            # Setup instructions (no actual secrets)
 ```
 
-## attache.config.json Reference
+## evie.config.json Reference
 
 ```json
 {
@@ -75,7 +75,11 @@ my-agent/
   },
 
   "homebrew_extra": [
-    "ffmpeg", "sox", "imagemagick", "ripgrep", "pandoc-crossref"
+    "ffmpeg",
+    "sox",
+    "imagemagick",
+    "ripgrep",
+    "pandoc-crossref"
   ],
 
   "homebrew_casks_extra": ["1password"],
@@ -94,13 +98,13 @@ my-agent/
 
 ### backends
 
-Each backend tells Evie Platform *what* you need, and Evie Platform handles the *how*:
+Each backend tells Evie Platform _what_ you need, and Evie Platform handles the _how_:
 
-| Backend | Value | What Evie Platform does |
-|---|---|---|
-| `secrets` | `onepassword` | Installs 1Password CLI, stores service account token in macOS Keychain, configures `op` for non-interactive use |
-| `tunnel` | `tailscale` | Installs Tailscale, prompts for auth key or interactive login |
-| `database` | `supabase` | Runs local Supabase via Docker Compose (pgvector, pg_trgm enabled) |
+| Backend    | Value         | What Evie Platform does                                                                                         |
+| ---------- | ------------- | --------------------------------------------------------------------------------------------------------------- |
+| `secrets`  | `onepassword` | Installs 1Password CLI, stores service account token in macOS Keychain, configures `op` for non-interactive use |
+| `tunnel`   | `tailscale`   | Installs Tailscale, prompts for auth key or interactive login                                                   |
+| `database` | `supabase`    | Runs local Supabase via Docker Compose (pgvector, pg_trgm enabled)                                              |
 
 **Future backend options** are planned but not yet implemented. For secrets, HashiCorp Vault and Doppler are on the roadmap. For tunneling, Cloudflare Tunnel is the likely next addition.
 
@@ -108,7 +112,7 @@ Each backend tells Evie Platform *what* you need, and Evie Platform handles the 
 
 Evie Platform's base ensures zsh is the default shell and sources `~/.zshrc.local` if it exists. Beyond that, **shell config is entirely yours** — put your `zshrc`, `zprofile`, and `zshenv` files in your config repo's `shell/` directory.
 
-The base does *not* install Oh My Zsh, Starship, or any shell framework. If you want them, add the installation to your `Brewfile`, `scripts/`, or Ansible playbooks in the config repo.
+The base does _not_ install Oh My Zsh, Starship, or any shell framework. If you want them, add the installation to your `Brewfile`, `scripts/`, or Ansible playbooks in the config repo.
 
 ## Workspace Files
 
@@ -126,7 +130,7 @@ During bootstrap, Ansible copies `skills/` to `~/.openclaw/skills/`. If you late
 
 ## Custom Ansible
 
-Your config repo can include full Ansible playbooks and roles. These run *after* the base bootstrap completes, so you can assume all base tooling is available.
+Your config repo can include full Ansible playbooks and roles. These run _after_ the base bootstrap completes, so you can assume all base tooling is available.
 
 ### Example: Credentials Playbook
 
@@ -207,20 +211,20 @@ gh auth login --with-token <<< "${GITHUB_TOKEN}"
 
 ## Public vs Private Repos
 
-| | Public Config | Private Config |
-|---|---|---|
-| **Use case** | Shared team defaults | Specific agent setup |
-| **Contains workspace files** | Usually not | Yes (SOUL.md, skills, etc.) |
-| **Contains credentials** | Never | Never (use 1Password/vault) |
-| **Example name** | `myorg/attache-config` | `username/agent-name` |
-| **Auth required** | No | Yes (SSH key or GH token) |
+|                              | Public Config        | Private Config              |
+| ---------------------------- | -------------------- | --------------------------- |
+| **Use case**                 | Shared team defaults | Specific agent setup        |
+| **Contains workspace files** | Usually not          | Yes (SOUL.md, skills, etc.) |
+| **Contains credentials**     | Never                | Never (use 1Password/vault) |
+| **Example name**             | `myorg/evie-config`  | `username/agent-name`       |
+| **Auth required**            | No                   | Yes (SSH key or GH token)   |
 
 ## Template Repository
 
 We provide a template config repo you can fork as a starting point:
 
 ```bash
-gh repo create my-agent --template Spantree/attache-config-template --private
+gh repo create my-agent --template Spantree/evie-config-template --private
 ```
 
-*(Template coming soon)*
+_(Template coming soon)_

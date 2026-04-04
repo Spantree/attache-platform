@@ -4,19 +4,33 @@ sidebar_position: 3
 
 # Architecture
 
-Evie Platform uses a two-layer architecture. A **base platform** handles everything needed to run an OpenClaw agent on bare macOS. An optional **user config repo** layers personalization on top — your dotfiles, skills, workspace files, and custom Ansible playbooks.
+Evie Platform turns OpenClaw from a generic agent runtime into a personal AI agent. The architecture has two dimensions: the **platform layers** that add capabilities on top of OpenClaw, and the **deployment layers** that provision and personalize a running agent.
 
-## Two-Layer Design
+## Platform Overview
+
+![Evie Platform Architecture](/img/evie-platform-L0.png)
+
+OpenClaw provides the agent runtime: a gateway daemon, message routing across channels, tool execution, and the SOUL.md personality system. Evie Platform adds five subsystems on top:
+
+- **Reasoning and Orchestration** -- Ego (identity governance), blind multi-model evaluation (swap between Anthropic, OpenAI, Google without changing behavior), and CC/Codex Dispatch for bidirectional agent-to-CLI orchestration via tmux
+- **Memory System** -- A [five-layer model](/memory/) (episodic, identity, topical, procedural, artifact) built on an activity log foundation, with hybrid search and overnight Dream Cycle consolidation
+- **Secrets and Security** -- [Progressive trust](/security/), agent-blind credential injection, four-tier risk model, and leak detection
+- **Skills and Extensibility** -- [SKILL.md convention](/specifications/skill-manifests), security-first custom skills, MCP bridge via mcporter
+- **Infrastructure** -- Local-first on Apple Silicon, Postgres stack (pgvector + ParadeDB + TimescaleDB), Tailscale mesh networking
+
+Each subsystem is documented in its own section. The rest of this page covers the deployment architecture: how you go from bare macOS to a running agent.
+
+## Two-Layer Deployment Design
 
 ```
 ┌─────────────────────────────────────────────┐
 │           User Config Repo                  │
 │  (github.com/username/agent-name)           │
 │                                             │
-│  attache.config.json, Brewfile, workspace/, │
+│  evie.config.json, Brewfile, workspace/, │
 │  skills/, ansible/, shell/, scripts/        │
 ├─────────────────────────────────────────────┤
-│           Evie Platform Base Platform             │
+│           Evie Platform (Base)                    │
 │  (github.com/Spantree/evie-platform)     │
 │                                             │
 │  Ansible roles: homebrew, mise, node,       │
@@ -43,9 +57,9 @@ The base platform is opinionated and turnkey. Every Evie Platform agent runs the
 
 ### Layer 2: User Config Repo
 
-The config repo is where personalization lives. It can be public (a shared team config like `myorg/attache-config`) or private (a specific agent's setup like `divideby0/evie`). Evie Platform discovers a known directory structure and applies it automatically after the base completes.
+The config repo is where personalization lives. It can be public (a shared team config like `myorg/evie-config`) or private (a specific agent's setup like `divideby0/evie`). Evie Platform discovers a known directory structure and applies it automatically after the base completes.
 
-See the [Config Repo Guide](../config-repo/) for the full directory structure and `attache.config.json` reference.
+See the [Config Repo Guide](../config-repo/) for the full directory structure and `evie.config.json` reference.
 
 ## Bootstrap Sequence
 
@@ -57,7 +71,7 @@ The bootstrap runs as a single Ansible playbook with two phases. The base phase 
    homebrew → shell → node → docker → openclaw →
    ssh → tailscale → workspace → supabase
 3. If config repo specified:
-   a. Clone config repo → ~/.attache/config
+   a. Clone config repo → ~/.evie/config
    b. Merge group_vars (user overrides base)
    c. Re-run base with merged vars (idempotent)
    d. Install extra Homebrew packages from Brewfile
@@ -77,17 +91,17 @@ The bootstrap runs as a single Ansible playbook with two phases. The base phase 
 
 When a config repo overlays the base, different file types merge differently. The goal is predictable behavior where the user's choices always win on conflict.
 
-| Item | Behavior |
-|---|---|
-| `group_vars/all.yml` | Deep-merged with base. User values win on conflict. |
-| `Brewfile` | Appended to base packages. Homebrew handles deduplication. |
-| `mise/config.toml` | Merged with base tools. User versions override base versions. |
-| `workspace/` | Copied into `~/.openclaw/workspaces/main/`. Overwrites existing files. |
-| `skills/` | Copied into `~/.openclaw/skills/`. Shared across all workspaces. |
-| `shell/` | Installed as overlays (`zshrc.local` sourced from `.zshrc`). |
-| `ansible/playbooks/` | Run after base bootstrap. Entirely user-controlled. |
-| `ansible/roles/` | Available to user playbooks only. Not mixed into base. |
-| `scripts/` | Run in alphabetical order after everything else. |
+| Item                 | Behavior                                                               |
+| -------------------- | ---------------------------------------------------------------------- |
+| `group_vars/all.yml` | Deep-merged with base. User values win on conflict.                    |
+| `Brewfile`           | Appended to base packages. Homebrew handles deduplication.             |
+| `mise/config.toml`   | Merged with base tools. User versions override base versions.          |
+| `workspace/`         | Copied into `~/.openclaw/workspaces/main/`. Overwrites existing files. |
+| `skills/`            | Copied into `~/.openclaw/skills/`. Shared across all workspaces.       |
+| `shell/`             | Installed as overlays (`zshrc.local` sourced from `.zshrc`).           |
+| `ansible/playbooks/` | Run after base bootstrap. Entirely user-controlled.                    |
+| `ansible/roles/`     | Available to user playbooks only. Not mixed into base.                 |
+| `scripts/`           | Run in alphabetical order after everything else.                       |
 
 ## Security Model
 
@@ -105,4 +119,4 @@ Secure tunneling is required for every Evie Platform deployment. Agent machines 
 
 **Tailscale was chosen for practical reasons.** Zero-config mesh networking means agent machines are reachable by hostname without port forwarding or dynamic DNS. MagicDNS gives you `agent-mac.tailnet.ts.net` out of the box. ACLs control who can reach the machine and which ports are open. And Tailscale Serve/Funnel lets you expose specific services without touching the firewall.
 
-**Future tunnel providers** (Cloudflare Tunnel, WireGuard) can be added as alternatives, but every deployment must have at least one configured via `backends.tunnel` in `attache.config.json`.
+**Future tunnel providers** (Cloudflare Tunnel, WireGuard) can be added as alternatives, but every deployment must have at least one configured via `backends.tunnel` in `evie.config.json`.
