@@ -29,7 +29,7 @@ notes, long-term memory, and semantic search.
 
 ## Observations
 
-- [note] Covers episodic memory only; Attaché extends with knowledge layer
+- [note] Covers episodic memory only; Evie Platform extends with knowledge layer
 - [reference] Canonical docs for memory_search tool behavior
 
 ## Relations

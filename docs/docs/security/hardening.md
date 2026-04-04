@@ -109,9 +109,15 @@ The key insight from their work: **effective sandboxing requires both filesystem
 
 Attache doesn't integrate OS-level sandboxing yet, but it's on the [roadmap](./index.md#roadmap). For now, the exec allowlist, dedicated OS user, and network egress controls provide the primary boundaries.
 
-### macOS seatbelt profiles for the admin user
+### OS-level sandboxing
 
-Attache runs under a dedicated `openclaw` OS user, but some operations (system updates, LaunchDaemon management) require an admin-level account on headless macOS. To lock down this admin user:
+The right OS-level strategy depends on your platform. See [macOS vs Linux](/architecture/macos-vs-linux) for the full rationale behind these differences.
+
+#### macOS: seatbelt profiles for the admin user
+
+Evie Platform runs the agent as an admin user on macOS. This is deliberate — headless Mac minis present invisible GUI permission dialogs (Keychain access, TCC consent, Gatekeeper prompts) that hang non-admin processes with no way to dismiss them. Security is enforced at the application layer instead: exec allowlists, secrets proxy, and outbound scanning.
+
+To add OS-level defense in depth on top of those controls:
 
 1. **Keep exec allowlist mode.** Even the admin user should run under allowlist, not `"full"`.
 2. **Apply a seatbelt sandbox profile** that restricts filesystem access to the agent's workspace and denies network access except to known endpoints:
@@ -136,6 +142,34 @@ sandbox-exec -f /tmp/attache-admin.sb openclaw gateway start
 3. **Combine with exec allowlist.** The seatbelt profile is a second layer. If the application-layer allowlist is bypassed (as in CVE-2026-22175), the OS-level sandbox still blocks unauthorized access.
 
 This is defense in depth: the exec allowlist handles the common case, and the seatbelt profile catches what gets through.
+
+#### Linux: dedicated unprivileged user
+
+On Linux, there's no GUI consent layer to worry about. Run the agent as a dedicated unprivileged user with minimal group memberships:
+
+```bash
+# Create a dedicated agent user with no login shell
+useradd -r -m -s /usr/sbin/nologin openclaw
+
+# Grant only the groups the agent needs
+usermod -aG docker openclaw  # only if Docker access is required
+
+# Lock down the workspace
+chmod 700 /home/openclaw
+```
+
+Pair this with seccomp or AppArmor profiles for additional containment:
+
+```bash
+# Example AppArmor profile snippet
+/home/openclaw/** rw,
+/usr/bin/git rix,
+/usr/local/bin/openclaw rix,
+deny /etc/shadow r,
+deny /root/** rw,
+```
+
+The application-layer controls (exec allowlists, secrets proxy, bloom filter scanning) work identically on both platforms. Linux just gives you a tighter OS-level starting point because it doesn't fight you with invisible GUI dialogs.
 
 ## Secrets proxy daemon
 

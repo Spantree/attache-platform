@@ -345,4 +345,4 @@ This bidirectional sync ensures that the markdown files and the database stay co
 - **Retention policy** — how long to keep activity records? Archive after N months?
 - **Privacy boundaries** — which entity data can surface in group contexts?
 - **Sync cadence** — how often to regenerate markdown from Postgres? Event-driven (on write) vs. periodic (cron)?
-- **Federation** — can entity memory span multiple Attaché instances?
+- **Federation** — can entity memory span multiple Evie Platform instances?

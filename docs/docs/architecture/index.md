@@ -4,7 +4,7 @@ sidebar_position: 3
 
 # Architecture
 
-Attaché uses a two-layer architecture. A **base platform** handles everything needed to run an OpenClaw agent on bare macOS. An optional **user config repo** layers personalization on top — your dotfiles, skills, workspace files, and custom Ansible playbooks.
+Evie Platform uses a two-layer architecture. A **base platform** handles everything needed to run an OpenClaw agent on bare macOS. An optional **user config repo** layers personalization on top — your dotfiles, skills, workspace files, and custom Ansible playbooks.
 
 ## Two-Layer Design
 
@@ -16,8 +16,8 @@ Attaché uses a two-layer architecture. A **base platform** handles everything n
 │  attache.config.json, Brewfile, workspace/, │
 │  skills/, ansible/, shell/, scripts/        │
 ├─────────────────────────────────────────────┤
-│           Attaché Base Platform             │
-│  (github.com/Spantree/attache-platform)     │
+│           Evie Platform Base Platform             │
+│  (github.com/Spantree/evie-platform)     │
 │                                             │
 │  Ansible roles: homebrew, mise, node,       │
 │  docker, openclaw, ssh, tailscale,          │
@@ -29,7 +29,7 @@ Attaché uses a two-layer architecture. A **base platform** handles everything n
 
 ### Layer 1: Base Platform
 
-The base platform is opinionated and turnkey. Every Attaché agent runs the same set of roles, and the playbooks are idempotent — run them again anytime to converge.
+The base platform is opinionated and turnkey. Every Evie Platform agent runs the same set of roles, and the playbooks are idempotent — run them again anytime to converge.
 
 **System foundations** come first: Xcode CLI tools, Rosetta on Apple Silicon, and Homebrew with core CLI packages. These rarely change but need to be present before anything else.
 
@@ -43,7 +43,7 @@ The base platform is opinionated and turnkey. Every Attaché agent runs the same
 
 ### Layer 2: User Config Repo
 
-The config repo is where personalization lives. It can be public (a shared team config like `myorg/attache-config`) or private (a specific agent's setup like `divideby0/evie`). Attaché discovers a known directory structure and applies it automatically after the base completes.
+The config repo is where personalization lives. It can be public (a shared team config like `myorg/attache-config`) or private (a specific agent's setup like `divideby0/evie`). Evie Platform discovers a known directory structure and applies it automatically after the base completes.
 
 See the [Config Repo Guide](../config-repo/) for the full directory structure and `attache.config.json` reference.
 
@@ -99,9 +99,9 @@ When a config repo overlays the base, different file types merge differently. Th
 
 ## Networking
 
-Secure tunneling is required for every Attaché deployment. Agent machines run services (Supabase Studio, dev servers, the OpenClaw gateway) that should never be exposed on the open network, and you need reliable remote access for management.
+Secure tunneling is required for every Evie Platform deployment. Agent machines run services (Supabase Studio, dev servers, the OpenClaw gateway) that should never be exposed on the open network, and you need reliable remote access for management.
 
-**Tailscale is the default tunnel provider** and the first one Attaché supports. It's installed as part of the base platform, not as an optional feature. After bootstrap, the agent machine must be joined to a tailnet via auth key or interactive login.
+**Tailscale is the default tunnel provider** and the first one Evie Platform supports. It's installed as part of the base platform, not as an optional feature. After bootstrap, the agent machine must be joined to a tailnet via auth key or interactive login.
 
 **Tailscale was chosen for practical reasons.** Zero-config mesh networking means agent machines are reachable by hostname without port forwarding or dynamic DNS. MagicDNS gives you `agent-mac.tailnet.ts.net` out of the box. ACLs control who can reach the machine and which ports are open. And Tailscale Serve/Funnel lets you expose specific services without touching the firewall.
 

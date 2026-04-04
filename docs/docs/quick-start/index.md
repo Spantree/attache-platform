@@ -4,7 +4,7 @@ sidebar_position: 2
 
 # Quick Start
 
-This guide walks you through setting up an Attaché agent from scratch. By the end, you'll have a fully configured Mac running an OpenClaw-powered AI agent.
+This guide walks you through setting up an Evie Platform agent from scratch. By the end, you'll have a fully configured Mac running an OpenClaw-powered AI agent.
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ You'll need two machines: a target Mac where the agent will live, and a control 
 
 ### Target Mac
 
-**Start with macOS Tahoe (15.x),** either a clean install or a minimal one. Attaché's Ansible playbooks assume a fresh-ish system — they won't conflict with existing software, but a clean slate is the simplest path.
+**Start with macOS Tahoe (15.x),** either a clean install or a minimal one. Evie Platform's Ansible playbooks assume a fresh-ish system — they won't conflict with existing software, but a clean slate is the simplest path.
 
 **Create a single admin user account** that the agent will operate under. Name it something that reflects the agent's identity — `evie`, `jarvis`, `friday`, whatever you like. This user owns the workspace, runs the OpenClaw gateway, and is the SSH target for all management.
 
@@ -22,7 +22,7 @@ You'll need two machines: a target Mac where the agent will live, and a control 
 
 ### Control Machine
 
-**Install uv,** the Python package manager that Attaché uses to manage its dependencies. On macOS, `brew install uv` or `curl -LsSf https://astral.sh/uv/install.sh | sh` both work. uv is the only tool you need on the control side — it handles Ansible and everything else.
+**Install uv,** the Python package manager that Evie Platform uses to manage its dependencies. On macOS, `brew install uv` or `curl -LsSf https://astral.sh/uv/install.sh | sh` both work. uv is the only tool you need on the control side — it handles Ansible and everything else.
 
 **Set up SSH access to the target.** Key-based authentication is strongly recommended — the bootstrap will disable password auth on the target as part of SSH hardening, so if you're relying on password login, you'll lock yourself out.
 
@@ -96,7 +96,7 @@ uv run attache bootstrap evie@mac-mini.local --config divideby0/evie --private
 If you prefer a persistent `attache` command instead of `uv run`:
 
 ```bash
-uv tool install attache-platform
+uv tool install evie-platform
 attache bootstrap evie@mac-mini.local --config divideby0/evie
 ```
 

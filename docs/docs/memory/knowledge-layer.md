@@ -28,15 +28,15 @@ For resource types (VideoObject, WebPage, HowTo), **markdown is primary** with o
 Knowledge is organized into folders by type. Types are **fully qualified** to make provenance unambiguous:
 
 - `schema.org/Person` — a standard [Schema.org](https://schema.org) type
-- `attache.dev/Project` — a custom Attaché type (when no Schema.org type fits)
+- `meetevie.dev/Project` — a custom Evie Platform type (when no Schema.org type fits)
 
-This makes it immediately clear what's portable vs. what's ours. Schema.org types are **open-world** — you can freely add extension properties beyond the spec. Most types use `schema.org/*` with Attaché-specific extensions (e.g., `schema.org/Report` with `mode` and `providers` fields). Custom `attache.dev/*` types are only created when no Schema.org type fits at all.
+This makes it immediately clear what's portable vs. what's ours. Schema.org types are **open-world** — you can freely add extension properties beyond the spec. Most types use `schema.org/*` with Evie Platform-specific extensions (e.g., `schema.org/Report` with `mode` and `providers` fields). Custom `meetevie.dev/*` types are only created when no Schema.org type fits at all.
 
 ```
 workspaces/main/knowledge/
 ├── people/                        # schema.org/Person
 ├── organizations/                 # schema.org/Organization
-├── projects/                      # attache.dev/Project
+├── projects/                      # meetevie.dev/Project
 ├── events/                        # schema.org/Event
 ├── media/
 │   ├── videos/                    # schema.org/VideoObject

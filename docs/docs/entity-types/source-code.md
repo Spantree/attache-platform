@@ -12,8 +12,8 @@ sidebar_label: Repositories
 ```markdown
 ---
 type: schema.org/SoftwareSourceCode
-title: Attaché Platform
-code_repository: https://github.com/spantree/attache-platform
+title: Evie Platform Platform
+code_repository: https://github.com/spantree/evie-platform
 programming_language:
   - TypeScript
   - Python
@@ -25,7 +25,7 @@ topics:
   - macos
   - ansible
 same_as:
-  - https://docs.attache.dev
+  - https://docs.meetevie.dev
 ---
 
 Turnkey platform for deploying personal AI agents on macOS.

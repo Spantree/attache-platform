@@ -1,6 +1,6 @@
 # Service Architecture
 
-Attaché uses Docker Compose as its service layer. The base platform ships required services (Supabase). Skills can add optional services via their own compose files. Each skill runs its own independent compose project — no merging, no assembly.
+Evie Platform uses Docker Compose as its service layer. The base platform ships required services (Supabase). Skills can add optional services via their own compose files. Each skill runs its own independent compose project — no merging, no assembly.
 
 ## Design Principles
 
@@ -8,7 +8,7 @@ Attaché uses Docker Compose as its service layer. The base platform ships requi
 
 **Ansible orchestrates, Compose runs.** Ansible's job is discovering compose files and running `docker compose up`. Compose handles the actual container lifecycle — networking, volumes, health checks, restarts. This separation means you can always `docker compose` directly for debugging.
 
-**Skills own their services.** If a skill needs SonarQube, it ships a `docker-compose.yml`. Attaché doesn't know or care what SonarQube is. It just sees a compose file, starts the containers, and moves on.
+**Skills own their services.** If a skill needs SonarQube, it ships a `docker-compose.yml`. Evie Platform doesn't know or care what SonarQube is. It just sees a compose file, starts the containers, and moves on.
 
 **Everything survives restarts.** Every service uses `restart: unless-stopped` so Docker brings them back when Colima starts. Colima itself runs as a launchd agent that starts on boot. The only way a service stays down is if you explicitly `docker compose down` it.
 
@@ -16,7 +16,7 @@ Attaché uses Docker Compose as its service layer. The base platform ships requi
 
 ## Base Services
 
-Every Attaché agent runs these services. They're defined in the base platform's compose file:
+Every Evie Platform agent runs these services. They're defined in the base platform's compose file:
 
 ```yaml
 # ~/.attache/base/docker-compose.yml
@@ -136,7 +136,7 @@ Docker Compose files can exist at three levels, all running independently:
 
 | Tier | Location | Purpose | Required? |
 |---|---|---|---|
-| **Base** | `attache-platform/docker-compose.yml` | Supabase, core infrastructure | Yes |
+| **Base** | `evie-platform/docker-compose.yml` | Supabase, core infrastructure | Yes |
 | **User** | `<config-repo>/docker-compose.yml` | User's extra services (Redis, Ollama, etc.) | No |
 | **Skill** | `skills/<name>/docker-compose.yml` | Skill-specific services (SonarQube, Grafana, etc.) | No |
 
@@ -163,7 +163,7 @@ This means installing, updating, or removing a skill's infrastructure never affe
 
 ### Container Naming Convention
 
-All Attaché-managed containers use the `attache-` prefix:
+All Evie Platform-managed containers use the `attache-` prefix:
 
 ```
 attache-supabase-db
@@ -172,7 +172,7 @@ attache-sonarqube
 attache-grafana
 ```
 
-This avoids conflicts with any other Docker workloads on the machine and makes it easy to list all Attaché services with `docker ps --filter "name=attache-"`.
+This avoids conflicts with any other Docker workloads on the machine and makes it easy to list all Evie Platform services with `docker ps --filter "name=attache-"`.
 
 ## Environment Variables
 
@@ -193,7 +193,7 @@ Ansible generates the `.env` file during bootstrap. Skill infra playbooks append
 
 ## Docker Runtime
 
-Attaché uses **Colima** as the Docker runtime on macOS — lightweight, CLI-native, no GUI dependency:
+Evie Platform uses **Colima** as the Docker runtime on macOS — lightweight, CLI-native, no GUI dependency:
 
 ```yaml
 # ansible/roles/docker/defaults/main.yml
@@ -253,7 +253,7 @@ cd skills/code-review && docker compose up -d
 cd skills/code-review && docker compose down
 cd skills/code-review && docker compose logs -f sonarqube
 
-# See all Attaché services
+# See all Evie Platform services
 docker ps --filter "name=attache-"
 ```
 

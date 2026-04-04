@@ -29,7 +29,7 @@ long-term memory, with comparisons to cognitive science models.
 ## Observations
 
 - [note] Mentions ACT-R as inspiration for decay models
-- [recommendation] Relevant to Attaché memory architecture
+- [recommendation] Relevant to Evie Platform memory architecture
 
 ## Relations
 

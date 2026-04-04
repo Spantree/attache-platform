@@ -9,7 +9,7 @@ sidebar_label: Memory System
 Your agent has amnesia — every session starts from scratch. The memory system gives it continuity by organizing information into four layers: a journal (episodic), a people directory (identity), a feed of messages and meetings (activity), and a structured knowledge base (knowledge). Different layers store different kinds of information in whatever format makes it easiest to find later.
 :::
 
-An Attaché agent wakes up fresh every session. It has no built-in memory of yesterday's conversations, last week's decisions, or the person it's working for. Everything it knows comes from files it reads and databases it queries.
+An Evie Platform agent wakes up fresh every session. It has no built-in memory of yesterday's conversations, last week's decisions, or the person it's working for. Everything it knows comes from files it reads and databases it queries.
 
 The memory system gives agents continuity across sessions. It's organized into four layers, each handling a different kind of information with storage optimized for how that information is accessed.
 
@@ -51,9 +51,9 @@ All four layers converge on Supabase (Postgres) as the data backbone, though the
 Entity types in the knowledge and identity layers use **fully-qualified type names** to make provenance unambiguous:
 
 - `schema.org/Person` — a standard [Schema.org](https://schema.org) type (portable, understood by LLMs natively)
-- `attache.dev/Project` — a custom Attaché type (when no Schema.org type fits)
+- `meetevie.dev/Project` — a custom Evie Platform type (when no Schema.org type fits)
 
-Schema.org types are **open-world** — you can freely add properties beyond what the spec defines. Most Attaché types use a standard Schema.org type with extension properties (e.g., `schema.org/Report` with `mode`, `status`, and `providers` fields for research notes). Custom `attache.dev/*` types are only created when no Schema.org type fits at all.
+Schema.org types are **open-world** — you can freely add properties beyond what the spec defines. Most Evie Platform types use a standard Schema.org type with extension properties (e.g., `schema.org/Report` with `mode`, `status`, and `providers` fields for research notes). Custom `meetevie.dev/*` types are only created when no Schema.org type fits at all.
 
 Property names use **snake_case** in YAML frontmatter and Postgres columns, mapped from Schema.org's camelCase equivalents at the serialization boundary (e.g., `given_name` ↔ Schema.org `givenName`).
 

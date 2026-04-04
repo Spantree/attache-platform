@@ -5,14 +5,14 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
 const config: Config = {
-  title: 'Attaché',
+  title: 'Evie Platform',
   tagline: 'Turnkey AI agent platform powered by OpenClaw',
 
-  url: 'https://attache.dev',
+  url: 'https://docs.meetevie.dev',
   baseUrl: '/',
 
   organizationName: 'Spantree',
-  projectName: 'attache',
+  projectName: 'evie-platform',
 
   // Cross-package links (e.g. /slides/) are only valid when all packages are
   // served together behind a reverse proxy. Use 'warn' so the docs build
@@ -63,7 +63,7 @@ const config: Config = {
       respectPrefersColorScheme: false,
     },
     navbar: {
-      title: 'Attaché',
+      title: 'Evie Platform',
       items: [
         {
           to: '/',
@@ -93,7 +93,7 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/Spantree/attache',
+              href: 'https://github.com/Spantree/evie-platform',
             },
             {
               label: 'OpenClaw',
@@ -102,7 +102,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Attaché.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Evie Platform by Spantree.`,
     },
     prism: {
       theme: prismThemes.github,

@@ -107,6 +107,21 @@ Attache's security controls today cover gateway hardening, exec allowlists, chan
 
 **Bloom filter credential scanning** — Build a bloom filter from 1Password vault entries and scan outbound commands for potential credential exfiltration. The target is sub-5ms per command, though we haven't benchmarked at scale yet. Catches the most dangerous exfiltration pattern: an agent embedding an API key in a curl command or URL.
 
+:::info What's a bloom filter?
+A bloom filter is a compact data structure that answers one question very fast: *"Have I seen this before?"* You feed it a set of known values (in this case, your credentials from 1Password), and it builds a bit array using multiple hash functions. Later, you can test any string against it and get one of two answers: **definitely not in the set** or **probably in the set**.
+
+The key properties that make it useful here:
+
+- **Speed.** Testing a string takes microseconds, not milliseconds. You can scan every command the agent runs without perceptible delay.
+- **Size.** A bloom filter holding 1,000 credentials uses roughly 1.2 KB of memory. The full credential values never exist in the filter — only their hashed fingerprints.
+- **One-way.** You can't extract the original credentials from the filter. Even if an attacker accessed the filter itself, they'd get a bit array, not your API keys.
+- **False positives, never false negatives.** The filter might occasionally flag an innocent string as a match (tunable — typically under 0.1%), but it will *never* miss a real credential. For security scanning, that's exactly the tradeoff you want.
+
+In practice: Evie Platform syncs your 1Password vault into a bloom filter on startup, then tests every outbound shell command and URL against it. A credential appearing in a `curl` command or git push triggers an immediate block and DM approval request — all in under 5ms.
+
+**Limitations.** A bloom filter catches credentials that appear verbatim in a command. It won't catch a credential that's been split across multiple commands (`echo $KEY | cut -c1-20`), encoded (base64, hex), or assembled through variable interpolation. A prompt-injected agent with enough creativity could evade it. That's why the bloom filter is one layer in a defense-in-depth stack, not the whole defense. The exec allowlist prevents arbitrary `curl` and `echo` commands from running in the first place, and the secrets proxy prevents the agent from ever seeing raw credential values at all. The bloom filter catches the obvious exfiltration pattern that slips through the other layers — a full key in a URL or command argument.
+:::
+
 **Tiered risk scoring with time-decay** — Assign base risk scores to action categories. Tier 1 (read-only) runs freely. Tier 2 (reversible writes) pre-approved via allowlist. Tier 3 (external side effects) approved once per session via DM. Tier 4 (destructive/credential operations) always requires human approval. Recently-approved actions decay to lower risk scores; stale approvals climb back up.
 
 **Supervisor agent evaluation** — A secondary agent in a separate context evaluates risky operations before execution. Runs a fast heuristic check first; only escalates to LLM-based evaluation for ambiguous cases. Inspired by PRISM's hybrid scanning pipeline.

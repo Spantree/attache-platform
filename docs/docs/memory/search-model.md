@@ -104,7 +104,7 @@ Vitality scoring is to agent memory what attention is to sequence processing —
 | Solution | Selective attention (Q/K/V) | Selective retrieval (vitality scoring) |
 | Vindicated at scale | GPT-3/4 | Agents running for months/years |
 
-Attaché's vitality model draws from [ACT-R](http://act-r.psy.cmu.edu/) (Adaptive Control of Thought — Rational), a cognitive architecture developed by John Anderson at Carnegie Mellon University since the 1990s, and [Ori-Mnemos](https://github.com/aayoawoyemi/Ori-Mnemos), an open-source agent memory system that extends ACT-R with graph-aware features.
+Evie Platform's vitality model draws from [ACT-R](http://act-r.psy.cmu.edu/) (Adaptive Control of Thought — Rational), a cognitive architecture developed by John Anderson at Carnegie Mellon University since the 1990s, and [Ori-Mnemos](https://github.com/aayoawoyemi/Ori-Mnemos), an open-source agent memory system that extends ACT-R with graph-aware features.
 
 ### Base-Level Activation (ACT-R)
 
@@ -139,7 +139,7 @@ $$
 
 ### Metabolic Rates
 
-Not all memory should decay at the same speed. A person's identity doesn't fade like yesterday's standup notes. Attaché applies **metabolic rate multipliers** to the decay parameter, inspired by Ori-Mnemos's observation that different memory types have fundamentally different lifecycles:
+Not all memory should decay at the same speed. A person's identity doesn't fade like yesterday's standup notes. Evie Platform applies **metabolic rate multipliers** to the decay parameter, inspired by Ori-Mnemos's observation that different memory types have fundamentally different lifecycles:
 
 | Layer | Metabolic Rate | Effective Decay | Behavior |
 |---|---|---|---|

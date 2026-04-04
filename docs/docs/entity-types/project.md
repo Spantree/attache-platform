@@ -5,13 +5,13 @@ sidebar_label: Projects
 
 # Projects
 
-`attache.dev/Project` — the only custom Attaché type. No Schema.org type fits the concept of a cross-system project container that links repos, channels, and people.
+`meetevie.dev/Project` — the only custom Evie Platform type. No Schema.org type fits the concept of a cross-system project container that links repos, channels, and people.
 
 ## Example
 
 ```markdown
 ---
-type: attache.dev/Project
+type: meetevie.dev/Project
 id: c3d4e5f6-7890-12ab-cdef-345678901bcd
 permalink: projects/aurora
 title: Aurora
@@ -55,7 +55,7 @@ Internal data pipeline platform for real-time analytics.
 
 ```typescript
 export const ProjectSchema = z.object({
-  type: z.literal("attache.dev/Project"),
+  type: z.literal("meetevie.dev/Project"),
   title: z.string(),
   status: z.enum(["active", "archived", "planned"]).optional(),
   repos: z.array(z.string().url()).default([]),

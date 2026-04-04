@@ -23,7 +23,7 @@ tags:
 ---
 
 Foundational text on cognitive architectures. Describes the
-theoretical basis for ACT-R, which informs Attaché's decay model.
+theoretical basis for ACT-R, which informs Evie Platform's decay model.
 
 ## Observations
 

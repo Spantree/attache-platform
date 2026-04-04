@@ -1,6 +1,6 @@
 # Skill Manifests
 
-Skills are the primary extension point for Attaché agents. A skill teaches an agent *how* to do something — code review, research, deployment, whatever. Some skills are pure logic (just markdown and scripts). Others need infrastructure — Docker services, API keys, CLI tools.
+Skills are the primary extension point for Evie Platform agents. A skill teaches an agent *how* to do something — code review, research, deployment, whatever. Some skills are pure logic (just markdown and scripts). Others need infrastructure — Docker services, API keys, CLI tools.
 
 The **manifest** is how a skill declares what it needs to run.
 
@@ -78,7 +78,7 @@ volumes:
   sonarqube-extensions:
 ```
 
-## How Attaché Uses Manifests
+## How Evie Platform Uses Manifests
 
 ### During Bootstrap
 
@@ -193,6 +193,6 @@ Skills fall into a few natural categories:
 
 ## Relationship to ClawHub
 
-Skills published to [ClawHub](https://clawhub.com) can include manifests. When installed via `clawhub install`, Attaché reads the manifest and provisions any required services automatically.
+Skills published to [ClawHub](https://clawhub.com) can include manifests. When installed via `clawhub install`, Evie Platform reads the manifest and provisions any required services automatically.
 
 Skills without manifests work fine — they're treated as pure logic skills with no infrastructure requirements.

@@ -39,7 +39,7 @@ engineering, and cloud infrastructure.
 ## Relations
 
 - acquired_by [[organizations/trifork]]
-- has_repo [[repos/attache-platform]]
+- has_repo [[repos/evie-platform]]
 - has_repo [[repos/openclaw]]
 ```
 

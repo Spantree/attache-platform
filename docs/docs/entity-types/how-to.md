@@ -12,7 +12,7 @@ sidebar_label: Guides
 ```markdown
 ---
 type: schema.org/HowTo
-title: "Deploy Attaché to a New Mac Mini"
+title: "Deploy Evie Platform to a New Mac Mini"
 audience: both
 estimated_time: PT2H
 tags:
@@ -22,7 +22,7 @@ tags:
 ---
 
 Step-by-step guide for bootstrapping a new Mac mini with
-the Attaché platform.
+the Evie Platform platform.
 
 ## Prerequisites
 

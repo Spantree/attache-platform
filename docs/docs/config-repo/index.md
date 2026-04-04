@@ -4,7 +4,7 @@ sidebar_position: 4
 
 # Config Repo Guide
 
-Your config repo is where your agent becomes *yours*. It layers personalization on top of Attaché's base platform — extra packages, shell config, workspace files, custom Ansible playbooks, and bootstrap scripts.
+Your config repo is where your agent becomes *yours*. It layers personalization on top of Evie Platform's base platform — extra packages, shell config, workspace files, custom Ansible playbooks, and bootstrap scripts.
 
 ## Getting Started
 
@@ -16,7 +16,7 @@ Create a new GitHub repo. It can be:
 
 ## Directory Structure
 
-All directories are optional. Attaché discovers and applies whatever it finds.
+All directories are optional. Evie Platform discovers and applies whatever it finds.
 
 ```
 my-agent/
@@ -86,7 +86,7 @@ my-agent/
   },
 
   "git": {
-    "user_name": "Evie (Attaché)",
+    "user_name": "Evie (Evie Platform)",
     "user_email": "evie@spantree.net"
   }
 }
@@ -94,9 +94,9 @@ my-agent/
 
 ### backends
 
-Each backend tells Attaché *what* you need, and Attaché handles the *how*:
+Each backend tells Evie Platform *what* you need, and Evie Platform handles the *how*:
 
-| Backend | Value | What Attaché does |
+| Backend | Value | What Evie Platform does |
 |---|---|---|
 | `secrets` | `onepassword` | Installs 1Password CLI, stores service account token in macOS Keychain, configures `op` for non-interactive use |
 | `tunnel` | `tailscale` | Installs Tailscale, prompts for auth key or interactive login |
@@ -106,7 +106,7 @@ Each backend tells Attaché *what* you need, and Attaché handles the *how*:
 
 ### Shell configuration
 
-Attaché's base ensures zsh is the default shell and sources `~/.zshrc.local` if it exists. Beyond that, **shell config is entirely yours** — put your `zshrc`, `zprofile`, and `zshenv` files in your config repo's `shell/` directory.
+Evie Platform's base ensures zsh is the default shell and sources `~/.zshrc.local` if it exists. Beyond that, **shell config is entirely yours** — put your `zshrc`, `zprofile`, and `zshenv` files in your config repo's `shell/` directory.
 
 The base does *not* install Oh My Zsh, Starship, or any shell framework. If you want them, add the installation to your `Brewfile`, `scripts/`, or Ansible playbooks in the config repo.
 

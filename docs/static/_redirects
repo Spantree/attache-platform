@@ -1,0 +1,6 @@
+# Redirects from old app.meetevie.dev QBO URLs
+# These are proxied to maintain original paths for QuickBooks app listing
+# Cloudflare Pages _redirects format: from to statusCode
+
+# Old attache.dev domain redirects (handled at DNS/Cloudflare level)
+# This file covers path-level redirects within the new site
