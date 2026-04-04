@@ -1,6 +1,8 @@
 # Service Architecture
 
-Attaché uses Docker Compose as its service layer. The base platform ships required services (Supabase). Skills can add optional services via their own compose files. Each skill runs its own independent compose project — no merging, no assembly.
+![Infrastructure & Runtime](/img/evie-infrastructure-L1.png)
+
+Evie Platform uses Docker Compose as its service layer. The base platform ships required services (Supabase). Skills can add optional services via their own compose files. Each skill runs its own independent compose project — no merging, no assembly.
 
 ## Design Principles
 
@@ -8,7 +10,7 @@ Attaché uses Docker Compose as its service layer. The base platform ships requi
 
 **Ansible orchestrates, Compose runs.** Ansible's job is discovering compose files and running `docker compose up`. Compose handles the actual container lifecycle — networking, volumes, health checks, restarts. This separation means you can always `docker compose` directly for debugging.
 
-**Skills own their services.** If a skill needs SonarQube, it ships a `docker-compose.yml`. Attaché doesn't know or care what SonarQube is. It just sees a compose file, starts the containers, and moves on.
+**Skills own their services.** If a skill needs SonarQube, it ships a `docker-compose.yml`. Evie Platform doesn't know or care what SonarQube is. It just sees a compose file, starts the containers, and moves on.
 
 **Everything survives restarts.** Every service uses `restart: unless-stopped` so Docker brings them back when Colima starts. Colima itself runs as a launchd agent that starts on boot. The only way a service stays down is if you explicitly `docker compose down` it.
 
@@ -16,14 +18,14 @@ Attaché uses Docker Compose as its service layer. The base platform ships requi
 
 ## Base Services
 
-Every Attaché agent runs these services. They're defined in the base platform's compose file:
+Every Evie Platform agent runs these services. They're defined in the base platform's compose file:
 
 ```yaml
-# ~/.attache/base/docker-compose.yml
+# ~/.evie/base/docker-compose.yml
 services:
   supabase-db:
     image: supabase/postgres:15.6.1.143
-    container_name: attache-supabase-db
+    container_name: evie-supabase-db
     ports:
       - "${SUPABASE_DB_PORT:-65432}:5432"
     volumes:
@@ -41,7 +43,7 @@ services:
 
   supabase-studio:
     image: supabase/studio:latest
-    container_name: attache-supabase-studio
+    container_name: evie-supabase-studio
     ports:
       - "${SUPABASE_STUDIO_PORT:-65433}:3000"
     environment:
@@ -60,12 +62,12 @@ volumes:
 
 Supabase is the backbone for all structured data:
 
-| Layer | What it stores | Postgres features used |
-|---|---|---|
-| **Knowledge** | basic-memory entities, relations, embeddings | pgvector, tsvector, pg_trgm |
-| **Activity** | Slack messages, meeting transcripts, calendar events | FTS, JSONB |
-| **Identity** | People crosslinks, match candidates (MDM) | Foreign keys, indexes |
-| **Agent state** | Session metadata, credential references | Standard tables |
+| Layer           | What it stores                                       | Postgres features used      |
+| --------------- | ---------------------------------------------------- | --------------------------- |
+| **Knowledge**   | basic-memory entities, relations, embeddings         | pgvector, tsvector, pg_trgm |
+| **Activity**    | Slack messages, meeting transcripts, calendar events | FTS, JSONB                  |
+| **Identity**    | People crosslinks, match candidates (MDM)            | Foreign keys, indexes       |
+| **Agent state** | Session metadata, credential references              | Standard tables             |
 
 The base platform runs migrations on first boot to set up the required schemas, extensions (`pgvector`, `pg_trgm`), and tables.
 
@@ -77,7 +79,7 @@ Each skill with infrastructure needs ships a `docker-compose.yml` at the skill r
 skills/
 └── code-review/
     ├── SKILL.md
-    ├── attache.config.json
+    ├── evie.config.json
     ├── docker-compose.yml      # right at the root, not buried
     └── scripts/
         └── review.ts
@@ -90,7 +92,7 @@ skills/
 services:
   sonarqube:
     image: sonarqube:community
-    container_name: attache-sonarqube
+    container_name: evie-sonarqube
     ports:
       - "9000:9000"
     volumes:
@@ -110,7 +112,7 @@ volumes:
 services:
   grafana:
     image: grafana/grafana-oss
-    container_name: attache-grafana
+    container_name: evie-grafana
     ports:
       - "3000:3000"
     volumes:
@@ -119,7 +121,7 @@ services:
 
   prometheus:
     image: prom/prometheus
-    container_name: attache-prometheus
+    container_name: evie-prometheus
     ports:
       - "9090:9090"
     volumes:
@@ -134,17 +136,17 @@ volumes:
 
 Docker Compose files can exist at three levels, all running independently:
 
-| Tier | Location | Purpose | Required? |
-|---|---|---|---|
-| **Base** | `attache-platform/docker-compose.yml` | Supabase, core infrastructure | Yes |
-| **User** | `<config-repo>/docker-compose.yml` | User's extra services (Redis, Ollama, etc.) | No |
-| **Skill** | `skills/<name>/docker-compose.yml` | Skill-specific services (SonarQube, Grafana, etc.) | No |
+| Tier      | Location                           | Purpose                                            | Required? |
+| --------- | ---------------------------------- | -------------------------------------------------- | --------- |
+| **Base**  | `evie-platform/docker-compose.yml` | Supabase, core infrastructure                      | Yes       |
+| **User**  | `<config-repo>/docker-compose.yml` | User's extra services (Redis, Ollama, etc.)        | No        |
+| **Skill** | `skills/<name>/docker-compose.yml` | Skill-specific services (SonarQube, Grafana, etc.) | No        |
 
 Each runs as its own compose project. No merging, no multi-file assembly:
 
 ```bash
 # Start base services
-cd ~/.attache/base && docker compose up -d
+cd ~/.evie/base && docker compose up -d
 
 # Start a skill's services
 cd ~/.openclaw/skills/code-review && docker compose up -d
@@ -156,27 +158,27 @@ cd ~/.openclaw/skills/code-review && docker compose pull && docker compose up -d
 cd ~/.openclaw/skills/code-review && docker compose down -v
 
 # Check what's running across all projects
-docker ps --filter "name=attache-"
+docker ps --filter "name=evie-"
 ```
 
 This means installing, updating, or removing a skill's infrastructure never affects the base platform or other skills.
 
 ### Container Naming Convention
 
-All Attaché-managed containers use the `attache-` prefix:
+All Evie Platform-managed containers use the `evie-` prefix:
 
 ```
-attache-supabase-db
-attache-supabase-studio
-attache-sonarqube
-attache-grafana
+evie-supabase-db
+evie-supabase-studio
+evie-sonarqube
+evie-grafana
 ```
 
-This avoids conflicts with any other Docker workloads on the machine and makes it easy to list all Attaché services with `docker ps --filter "name=attache-"`.
+This avoids conflicts with any other Docker workloads on the machine and makes it easy to list all Evie Platform services with `docker ps --filter "name=evie-"`.
 
 ## Environment Variables
 
-Service configuration uses environment variables, stored in `~/.attache/.env`:
+Service configuration uses environment variables, stored in `~/.evie/.env`:
 
 ```bash
 # Base services
@@ -193,7 +195,7 @@ Ansible generates the `.env` file during bootstrap. Skill infra playbooks append
 
 ## Docker Runtime
 
-Attaché uses **Colima** as the Docker runtime on macOS — lightweight, CLI-native, no GUI dependency:
+Evie Platform uses **Colima** as the Docker runtime on macOS — lightweight, CLI-native, no GUI dependency:
 
 ```yaml
 # ansible/roles/docker/defaults/main.yml
@@ -204,7 +206,7 @@ colima_disk: 60
 colima_mount_type: virtiofs
 ```
 
-The base platform installs Colima via Homebrew and starts it with appropriate resource limits. Docker Desktop is explicitly *not* used — it has permission issues with agent user home directories and requires a GUI session.
+The base platform installs Colima via Homebrew and starts it with appropriate resource limits. Docker Desktop is explicitly _not_ used — it has permission issues with agent user home directories and requires a GUI session.
 
 ## Surviving Restarts
 
@@ -215,11 +217,11 @@ Every service must survive a machine reboot. This requires two things:
 Ansible installs a launchd agent that starts Colima automatically:
 
 ```xml
-<!-- ~/Library/LaunchAgents/com.attache.colima.plist -->
+<!-- ~/Library/LaunchAgents/com.evie.colima.plist -->
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.attache.colima</string>
+    <string>com.evie.colima</string>
     <key>ProgramArguments</key>
     <array>
         <string>/opt/homebrew/bin/colima</string>
@@ -244,29 +246,29 @@ The only way a service stays down is if you explicitly `docker compose down` it.
 
 ```bash
 # Base platform
-cd ~/.attache/base && docker compose up -d
-cd ~/.attache/base && docker compose down
-cd ~/.attache/base && docker compose logs -f supabase-db
+cd ~/.evie/base && docker compose up -d
+cd ~/.evie/base && docker compose down
+cd ~/.evie/base && docker compose logs -f supabase-db
 
 # Skill services (each skill independently)
 cd skills/code-review && docker compose up -d
 cd skills/code-review && docker compose down
 cd skills/code-review && docker compose logs -f sonarqube
 
-# See all Attaché services
-docker ps --filter "name=attache-"
+# See all Evie Platform services
+docker ps --filter "name=evie-"
 ```
 
 ## Ansible's Role
 
-Ansible handles the *orchestration* of Docker Compose, not the containers themselves:
+Ansible handles the _orchestration_ of Docker Compose, not the containers themselves:
 
-| Ansible does | Docker Compose does |
-|---|---|
-| Install Colima + Docker CLI | Run containers |
-| Discover skill compose files | Network between services |
-| Generate `.env` with credentials | Mount volumes |
-| Run `docker compose up -d` | Health checks |
-| Run migrations after DB is healthy | Restart policies |
+| Ansible does                       | Docker Compose does      |
+| ---------------------------------- | ------------------------ |
+| Install Colima + Docker CLI        | Run containers           |
+| Discover skill compose files       | Network between services |
+| Generate `.env` with credentials   | Mount volumes            |
+| Run `docker compose up -d`         | Health checks            |
+| Run migrations after DB is healthy | Restart policies         |
 
 This separation means you can always `docker compose` directly for debugging, and Ansible re-runs are idempotent.

@@ -5,9 +5,9 @@ sidebar_position: 3
 
 # Multiplayer
 
-Attache is designed as a personal agent — one operator, one gateway, full tool access. But real work is collaborative. Team members need to interact with agents. Agents need to coordinate with other agents. Attache's multiplayer patterns make this safe by default.
+Evie Platform is designed as a personal agent — one operator, one gateway, full tool access. But real work is collaborative. Team members need to interact with agents. Agents need to coordinate with other agents. Evie Platform's multiplayer patterns make this safe by default.
 
-## The constraint Attache works around
+## The constraint Evie Platform works around
 
 OpenClaw is explicit about this in their docs:
 
@@ -15,11 +15,11 @@ OpenClaw is explicit about this in their docs:
 
 There's no per-sender permission model. No way to say "Alice can search the web but Bob can also run shell commands." If your agent has exec access and ten people can message it, all ten can trigger exec. That includes anything they paste into the channel — which is exactly how prompt injection works.
 
-OpenClaw was designed for single-operator use. Attache makes multiplayer safe through agent splitting, memory isolation, and approval flows.
+OpenClaw was designed for single-operator use. Evie Platform makes multiplayer safe through agent splitting, memory isolation, and approval flows.
 
 ## The split model: personal + team agents
 
-Attache's recommended pattern is two separate agent configurations on the same gateway.
+Evie Platform's recommended pattern is two separate agent configurations on the same gateway.
 
 ### Your personal agent
 
@@ -27,7 +27,7 @@ Your copilot. Full exec, credential access, memory, browser — everything. It o
 
 ### The team-facing agent
 
-The agent your colleagues interact with. Attache configures it with deliberate limits:
+The agent your colleagues interact with. Evie Platform configures it with deliberate limits:
 
 - No exec access (or a very tight allowlist)
 - No access to your credential vaults
@@ -52,7 +52,7 @@ A team agent without exec is still genuinely useful: answering questions, search
 
 ## Agent-to-agent coordination
 
-When agents need to coordinate — your personal agent delegating research to a team agent, or multiple team agents working on different aspects of a project — Attache enforces the same boundaries:
+When agents need to coordinate — your personal agent delegating research to a team agent, or multiple team agents working on different aspects of a project — Evie Platform enforces the same boundaries:
 
 - Each agent operates within its own tool permissions. A team agent can't escalate to your personal agent's exec access.
 - Inter-agent messages are treated as untrusted input by the receiving agent, just like messages from external senders.
@@ -64,7 +64,7 @@ The coordination pattern is message-based, not shared-context. Agents exchange r
 
 Your personal agent's memory files contain private context — conversations, decisions, calendar details, credential references, relationship notes. If the team agent shares the same workspace, anyone in a shared channel can ask it to read those files.
 
-Attache addresses this:
+Evie Platform addresses this:
 
 - **Separate workspace directories** for personal and team agents. No symlinks, no shared memory files.
 - **Separate clones or read-only mounts** for shared project repos.
@@ -118,11 +118,11 @@ Even with a locked-down team agent, control who can interact with it. Open group
 
 **Cline** requires explicit human approval for every action through a GUI. No sandboxing — the human is the sandbox. Works for interactive sessions but doesn't scale to autonomous operation.
 
-OpenClaw sits in the middle: application-layer controls (exec allowlists, tool deny lists, channel policies) but no OS-level sandboxing. Attache's multiplayer patterns layer safety on top of what OpenClaw provides.
+OpenClaw sits in the middle: application-layer controls (exec allowlists, tool deny lists, channel policies) but no OS-level sandboxing. Evie Platform's multiplayer patterns layer safety on top of what OpenClaw provides.
 
 ## Secrets approval via DM
 
-For operations where you want human oversight — especially credential access — Attache supports a lightweight approval flow through your existing messaging channels.
+For operations where you want human oversight — especially credential access — Evie Platform supports a lightweight approval flow through your existing messaging channels.
 
 ### The pattern
 

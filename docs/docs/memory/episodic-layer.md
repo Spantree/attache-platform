@@ -11,7 +11,7 @@ Think of this as the agent's work journal. Every day it writes down what happene
 
 The episodic memory layer is the agent's temporal record — a stream of what happened, what was decided, and what matters. It's named after the cognitive science concept of [episodic memory](https://en.wikipedia.org/wiki/Episodic_memory): first-person, time-ordered experiences that consolidate over time into lasting knowledge.
 
-**This is OpenClaw's native memory system.** Out of the box, every OpenClaw agent gets episodic memory — daily logs, a curated long-term file, and semantic search over both. OpenClaw also ships with a `memory/reference/` folder convention for stable reference documents, but that's a lightweight stopgap. Attaché replaces it with the [Knowledge Layer](./knowledge-layer) — a structured, Schema.org-typed, basic-memory-backed knowledge base with proper entity resolution and relational queries. If you're running Attaché, `reference/` is superseded; use the knowledge layer instead.
+**This is OpenClaw's native memory system.** Out of the box, every OpenClaw agent gets episodic memory — daily logs, a curated long-term file, and semantic search over both. OpenClaw also ships with a `memory/reference/` folder convention for stable reference documents, but that's a lightweight stopgap. Evie Platform replaces it with the [Knowledge Layer](./knowledge-layer) — a structured, Schema.org-typed, basic-memory-backed knowledge base with proper entity resolution and relational queries. If you're running Evie Platform, `reference/` is superseded; use the knowledge layer instead.
 
 ## Two Files, Two Purposes
 
@@ -29,7 +29,7 @@ workspaces/main/
 │   ├── 2026-03-07.md          # Yesterday
 │   ├── ...
 │   └── reference/             # OpenClaw convention — superseded by Knowledge Layer
-└── knowledge/                 # Attaché Knowledge Layer (see Knowledge Layer docs)
+└── knowledge/                 # Evie Platform Knowledge Layer (see Knowledge Layer docs)
     ├── people/
     ├── organizations/
     ├── projects/
@@ -37,7 +37,7 @@ workspaces/main/
 ```
 
 :::note
-OpenClaw's `memory/reference/` folder is where vanilla OpenClaw agents store stable reference docs (setup notes, config details, project summaries). Attaché replaces this with the `knowledge/` directory — a structured, typed knowledge base backed by basic-memory and Postgres. Existing `reference/` files can be migrated to the appropriate knowledge type folder.
+OpenClaw's `memory/reference/` folder is where vanilla OpenClaw agents store stable reference docs (setup notes, config details, project summaries). Evie Platform replaces this with the `knowledge/` directory — a structured, typed knowledge base backed by basic-memory and Postgres. Existing `reference/` files can be migrated to the appropriate knowledge type folder.
 :::
 
 ## How Memory Gets Written

@@ -4,7 +4,7 @@ sidebar_position: 6
 
 # Specifications
 
-Detailed specifications for each Attaché component.
+Detailed specifications for each Evie Platform component.
 
 ## Available Specs
 

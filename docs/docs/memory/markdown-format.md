@@ -112,7 +112,7 @@ Relations use the syntax `- relation_type [[target]]`. Controlled vocabulary:
 | `member_of` | Group membership | `- member_of [[organizations/trifork]]` |
 | `manages` | Management/ownership | `- manages [[projects/aurora]]` |
 | `reports_to` | Reporting structure | `- reports_to [[people/john-smith]]` |
-| `part_of` | Hierarchical containment | `- part_of [[projects/attache]]` |
+| `part_of` | Hierarchical containment | `- part_of [[projects/evie-platform]]` |
 | `related_to` | General connection | `- related_to [[people/raphael-dobers]]` |
 | `depends_on` | Dependency | `- depends_on [[projects/basic-memory]]` |
 | `acquired_by` | Acquisition | `- acquired_by [[organizations/trifork]]` |
@@ -133,6 +133,6 @@ basic-memory's `format` command can be configured with a custom formatter:
 
 ```json
 {
-  "formatter_command": "attache-format {file}"
+  "formatter_command": "evie-format {file}"
 }
 ```

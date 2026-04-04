@@ -35,7 +35,7 @@ tags:
 
 ## Context
 
-We're designing a decay model for Attaché's memory system and need
+We're designing a decay model for Evie Platform's memory system and need
 to understand how ACT-R's base-level activation applies to agent
 memory retrieval — particularly the power law of forgetting and
 how frequency/recency interact.
@@ -76,7 +76,7 @@ provides implicit contextual information...
 
 ## Relations
 
-- informs [[projects/attache]]
+- informs [[projects/evie-platform]]
 - related_to [[research/agent-memory/ori-mnemos-review]]
 
 ## References

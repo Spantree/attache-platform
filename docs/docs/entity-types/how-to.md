@@ -12,17 +12,17 @@ sidebar_label: Guides
 ```markdown
 ---
 type: schema.org/HowTo
-title: "Deploy Attaché to a New Mac Mini"
+title: "Deploy Evie Platform to a New Mac Mini"
 audience: both
 estimated_time: PT2H
 tags:
   - deployment
-  - attache
+  - evie-platform
   - runbook
 ---
 
 Step-by-step guide for bootstrapping a new Mac mini with
-the Attaché platform.
+Evie Platform.
 
 ## Prerequisites
 
@@ -34,7 +34,7 @@ the Attaché platform.
 
 1. Install Xcode Command Line Tools
 2. Install Homebrew
-3. Run `attache bootstrap` with config repo
+3. Run `evie bootstrap` with config repo
 4. Verify Supabase, OpenClaw, and Tailscale are running
 
 ## Observations
@@ -44,7 +44,7 @@ the Attaché platform.
 
 ## Relations
 
-- part_of [[projects/attache]]
+- part_of [[projects/evie-platform]]
 ```
 
 ## Fields

@@ -12,9 +12,9 @@ Entity types define the shape of knowledge in the system — what fields a perso
 Types use **fully-qualified names** to make provenance unambiguous:
 
 - `schema.org/Person` — a standard [Schema.org](https://schema.org) type (portable, understood by LLMs natively)
-- `attache.dev/Project` — a custom Attaché type (when no Schema.org type fits)
+- `meetevie.dev/Project` — a custom Evie Platform type (when no Schema.org type fits)
 
-Schema.org types are **open-world** — you can freely add properties beyond what the spec defines. Most Attaché types use a standard Schema.org type with extension properties. Custom `attache.dev/*` types are only created when no Schema.org type fits at all.
+Schema.org types are **open-world** — you can freely add properties beyond what the spec defines. Most Evie Platform types use a standard Schema.org type with extension properties. Custom `meetevie.dev/*` types are only created when no Schema.org type fits at all.
 
 ## Common Fields
 
@@ -45,7 +45,7 @@ See [Markdown Format](/memory/markdown-format) for the full formatting specifica
 |---|---|---|
 | [People](./person) | `schema.org/Person` | Markdown + Postgres |
 | [Organizations](./organization) | `schema.org/Organization` | Markdown + Postgres |
-| [Projects](./project) | `attache.dev/Project` | Markdown + Postgres |
+| [Projects](./project) | `meetevie.dev/Project` | Markdown + Postgres |
 | [Events](./event) | `schema.org/Event` | Markdown + Postgres |
 | [Research Reports](./research) | `schema.org/Report` | Markdown + Postgres |
 | [Videos](./video) | `schema.org/VideoObject` | Markdown |

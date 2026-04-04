@@ -93,7 +93,7 @@ Different layers lean on different tiers depending on the data and access patter
 
 ## Retrieval Ranking: Vitality and Decay
 
-["Attention Is All You Need"](https://arxiv.org/abs/1706.03762) could have been dismissed as overengineered in 2017 — why not just use RNNs with a simple hidden state? The answer was that uniform sequential processing doesn't scale. The same argument applies to agent memory. Naive retrieval — search everything, rank by text similarity — works fine at 50 notes. At 50,000 notes across four layers, undifferentiated retrieval wastes the most expensive resource in the system: **context window tokens**. A 6-month-old note about a resolved bug shouldn't compete equally with yesterday's architecture decision.
+["Attention Is All You Need"](https://arxiv.org/abs/1706.03762) could have been dismissed as overengineered in 2017 — why not just use RNNs with a simple hidden state? The answer was that uniform sequential processing doesn't scale. The same argument applies to agent memory. Naive retrieval — search everything, rank by text similarity — works fine at 50 notes. At 50,000 notes across five layers, undifferentiated retrieval wastes the most expensive resource in the system: **context window tokens**. A 6-month-old note about a resolved bug shouldn't compete equally with yesterday's architecture decision.
 
 Vitality scoring is to agent memory what attention is to sequence processing — a principled mechanism for focusing on what matters. Both solve the same fundamental problem (selective focus over a large space), just at different timescales: attention operates within a single forward pass; vitality operates across an agent's lifetime.
 
@@ -104,7 +104,7 @@ Vitality scoring is to agent memory what attention is to sequence processing —
 | Solution | Selective attention (Q/K/V) | Selective retrieval (vitality scoring) |
 | Vindicated at scale | GPT-3/4 | Agents running for months/years |
 
-Attaché's vitality model draws from [ACT-R](http://act-r.psy.cmu.edu/) (Adaptive Control of Thought — Rational), a cognitive architecture developed by John Anderson at Carnegie Mellon University since the 1990s, and [Ori-Mnemos](https://github.com/aayoawoyemi/Ori-Mnemos), an open-source agent memory system that extends ACT-R with graph-aware features.
+Evie Platform's vitality model draws from [ACT-R](http://act-r.psy.cmu.edu/) (Adaptive Control of Thought — Rational), a cognitive architecture developed by John Anderson at Carnegie Mellon University since the 1990s, and [Ori-Mnemos](https://github.com/aayoawoyemi/Ori-Mnemos), an open-source agent memory system that extends ACT-R with graph-aware features.
 
 ### Base-Level Activation (ACT-R)
 
@@ -139,7 +139,7 @@ $$
 
 ### Metabolic Rates
 
-Not all memory should decay at the same speed. A person's identity doesn't fade like yesterday's standup notes. Attaché applies **metabolic rate multipliers** to the decay parameter, inspired by Ori-Mnemos's observation that different memory types have fundamentally different lifecycles:
+Not all memory should decay at the same speed. A person's identity doesn't fade like yesterday's standup notes. Evie Platform applies **metabolic rate multipliers** to the decay parameter, inspired by Ori-Mnemos's observation that different memory types have fundamentally different lifecycles:
 
 | Layer | Metabolic Rate | Effective Decay | Behavior |
 |---|---|---|---|

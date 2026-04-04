@@ -11,9 +11,9 @@ This page breaks down what each provider does with your data, and how to choose 
 
 ## The data sovereignty argument
 
-With Attache, your agent runs on hardware you control. Your files, credentials, memory, and conversation history stay on your Mac mini. The only data that leaves your network is the inference payload — the prompt and context sent to the LLM for processing, and the response that comes back.
+With Evie Platform, your agent runs on hardware you control. Your files, credentials, memory, and conversation history stay on your Mac mini. The only data that leaves your network is the inference payload — the prompt and context sent to the LLM for processing, and the response that comes back.
 
-Compare this to cloud-based AI tools (Google Gemini with Drive access, Microsoft Copilot with email integration, GitHub Copilot with your full codebase) where the tool itself runs in someone else's infrastructure and has standing access to your data. With Attache, you control what gets sent and when.
+Compare this to cloud-based AI tools (Google Gemini with Drive access, Microsoft Copilot with email integration, GitHub Copilot with your full codebase) where the tool itself runs in someone else's infrastructure and has standing access to your data. With Evie Platform, you control what gets sent and when.
 
 The remaining question is: what does the LLM provider do with the inference data?
 
@@ -32,7 +32,7 @@ _Last verified: 2026-03-19. Sources: [Anthropic API Terms of Service](https://ww
 
 Anthropic's API terms state that API inputs and outputs are not used for model training. The 7-day retention is for trust and safety monitoring. Zero Data Retention is available through a commercial agreement and applies to API endpoints and Claude Code.
 
-**For Attache deployments: use the API tier.** If handling sensitive client data, get a ZDR agreement.
+**For Evie Platform deployments: use the API tier.** If handling sensitive client data, get a ZDR agreement.
 
 ### OpenAI (GPT-4, GPT-4o)
 
@@ -47,7 +47,7 @@ _Last verified: 2026-03-19. Sources: [OpenAI API Data Usage Policy](https://open
 
 OpenAI's API data usage policy states that API data is not used for training (effective March 1, 2023). The retention window is 30 days — longer than Anthropic's 7 days. ZDR requires an Enterprise agreement. Consumer products (Plus, Free) have training enabled by default; users must manually opt out.
 
-**For Attache deployments: use the API tier.** Be aware of the 30-day abuse monitoring window.
+**For Evie Platform deployments: use the API tier.** Be aware of the 30-day abuse monitoring window.
 
 ### Google (Gemini)
 
@@ -112,7 +112,7 @@ That's not an argument for being careless. It's an argument for consistency. App
 
 ## Configuration
 
-Attache supports multiple LLM providers. Point your agent at the appropriate endpoint:
+Evie Platform supports multiple LLM providers. Point your agent at the appropriate endpoint:
 
 ```json
 {

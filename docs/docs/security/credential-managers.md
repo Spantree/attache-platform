@@ -5,7 +5,7 @@ sidebar_position: 7
 
 # Credential manager comparison
 
-Attaché needs a way for agents to access secrets at runtime. The choice of credential manager affects your security posture, your platform compatibility, and whether you can implement approval workflows for sensitive access.
+Evie Platform needs a way for agents to access secrets at runtime. The choice of credential manager affects your security posture, your platform compatibility, and whether you can implement approval workflows for sensitive access.
 
 This page compares the options — from platform-native keystores to enterprise secrets managers — and identifies which ones support the mobile push approval pattern we recommend for high-sensitivity credentials.
 
@@ -114,7 +114,7 @@ pass show openclaw/MY_API_KEY
 - No push approval, no rotation
 - Single-user design — no service account model
 
-**Verdict:** Good option for Linux-based Attaché deployments where 1Password isn't available. The GPG key acts as the trust root instead of a service account token.
+**Verdict:** Good option for Linux-based Evie Platform deployments where 1Password isn't available. The GPG key acts as the trust root instead of a service account token.
 
 ### KeePassXC
 
@@ -143,7 +143,7 @@ aws secretsmanager get-secret-value --secret-id prod/db/password
 
 **Auto-rotation:** Yes — built-in support for RDS, DocumentDB, Redshift, and custom Lambda rotators.
 
-**Best for:** Attaché deployments that already run on AWS, or when routing LLM inference through Bedrock.
+**Best for:** Evie Platform deployments that already run on AWS, or when routing LLM inference through Bedrock.
 
 ### Doppler
 
@@ -157,7 +157,7 @@ doppler secrets get MY_API_KEY --plain
 
 **Best for:** Teams that want a managed secrets platform without running Vault infrastructure.
 
-## Attaché's recommendation by deployment type
+## Evie Platform's recommendation by deployment type
 
 | Deployment | Recommended manager | Why |
 |---|---|---|
@@ -166,11 +166,11 @@ doppler secrets get MY_API_KEY --plain
 | **Linux** | pass (simple) or Vault OSS (advanced) | pass for single-operator; Vault for teams or when approval workflows are needed |
 | **Enterprise / regulated** | HashiCorp Vault Enterprise | Only option with native push approval and control groups |
 | **AWS-heavy** | AWS Secrets Manager | Native IAM integration, CloudTrail audit, Lambda rotation |
-| **Maximum isolation** | Vault Enterprise + Attaché secrets proxy | Push approval from Vault + bloom filter scanning from Attaché |
+| **Maximum isolation** | Vault Enterprise + Evie Platform secrets proxy | Push approval from Vault + bloom filter scanning from Evie Platform |
 
 ## Building push approval without Vault Enterprise
 
-If Vault Enterprise pricing is out of reach (it usually is for small teams), you can build an equivalent workflow using Attaché's secrets proxy pattern:
+If Vault Enterprise pricing is out of reach (it usually is for small teams), you can build an equivalent workflow using Evie Platform's secrets proxy pattern:
 
 ```
 Agent requests credential
@@ -184,4 +184,4 @@ Agent requests credential
 
 This gives you push-approval semantics on top of any credential manager — even free ones like macOS Keychain or pass. The proxy is the gatekeeper; the underlying store just needs CLI access.
 
-The Attaché secrets proxy is on our [roadmap](./index.md#roadmap). In the meantime, the DM approval pattern described in [Multiplayer](./multiplayer.md#secrets-approval-via-dm) works with any messaging channel you already use.
+The Evie Platform secrets proxy is on our [roadmap](./index.md#roadmap). In the meantime, the DM approval pattern described in [Multiplayer](./multiplayer.md#secrets-approval-via-dm) works with any messaging channel you already use.
