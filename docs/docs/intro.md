@@ -22,7 +22,9 @@ Evie Platform builds on that foundation with three layers OpenClaw doesn't provi
 
 Think of it this way: OpenClaw gives you the engine. Evie Platform gives you the car.
 
-![Evie Platform Architecture](/img/openclaw-to-evie-evolution.png)
+import ImageLightbox from '@site/src/components/ImageLightbox';
+
+<ImageLightbox src="/img/openclaw-to-evie-evolution.png" alt="Evie Platform Architecture" />
 
 ## Why Evie Platform?
 
