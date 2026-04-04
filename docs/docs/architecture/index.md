@@ -13,6 +13,8 @@ Evie Platform turns OpenClaw from a generic agent runtime into a personal AI age
 OpenClaw provides the agent runtime: a gateway daemon, message routing across channels, tool execution, and the SOUL.md personality system. Evie Platform adds five subsystems on top:
 
 - **Reasoning and Orchestration** -- Ego (identity governance), blind multi-model evaluation (swap between Anthropic, OpenAI, Google without changing behavior), and CC/Codex Dispatch for bidirectional agent-to-CLI orchestration via tmux
+
+![Reasoning & Orchestration](/img/evie-reasoning-L1.png)
 - **Memory System** -- A [five-layer model](/memory/) (episodic, identity, topical, procedural, artifact) built on an activity log foundation, with hybrid search and overnight Dream Cycle consolidation
 - **Secrets and Security** -- [Progressive trust](/security/), agent-blind credential injection, four-tier risk model, and leak detection
 - **Skills and Extensibility** -- [SKILL.md convention](/specifications/skill-manifests), security-first custom skills, MCP bridge via mcporter
