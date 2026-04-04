@@ -8,13 +8,15 @@ Evie Platform turns OpenClaw from a generic agent runtime into a personal AI age
 
 ## Platform Overview
 
-![Evie Platform Architecture](/img/evie-platform-L0.png)
+import ImageLightbox from '@site/src/components/ImageLightbox';
+
+<ImageLightbox src="/img/evie-platform-L0.png" alt="Evie Platform Architecture" />
 
 OpenClaw provides the agent runtime: a gateway daemon, message routing across channels, tool execution, and the SOUL.md personality system. Evie Platform adds five subsystems on top:
 
 - **Reasoning and Orchestration** -- Ego (identity governance), blind multi-model evaluation (swap between Anthropic, OpenAI, Google without changing behavior), and CC/Codex Dispatch for bidirectional agent-to-CLI orchestration via tmux
 
-![Reasoning & Orchestration](/img/evie-reasoning-L1.png)
+<ImageLightbox src="/img/evie-reasoning-L1.png" alt="Reasoning & Orchestration" />
 - **Memory System** -- A [five-layer model](/memory/) (episodic, identity, topical, procedural, artifact) built on an activity log foundation, with hybrid search and overnight Dream Cycle consolidation
 - **Secrets and Security** -- [Progressive trust](/security/), agent-blind credential injection, four-tier risk model, and leak detection
 - **Skills and Extensibility** -- [SKILL.md convention](/specifications/skill-manifests), security-first custom skills, MCP bridge via mcporter
@@ -122,3 +124,8 @@ Secure tunneling is required for every Evie Platform deployment. Agent machines 
 **Tailscale was chosen for practical reasons.** Zero-config mesh networking means agent machines are reachable by hostname without port forwarding or dynamic DNS. MagicDNS gives you `agent-mac.tailnet.ts.net` out of the box. ACLs control who can reach the machine and which ports are open. And Tailscale Serve/Funnel lets you expose specific services without touching the firewall.
 
 **Future tunnel providers** (Cloudflare Tunnel, WireGuard) can be added as alternatives, but every deployment must have at least one configured via `backends.tunnel` in `evie.config.json`.
+
+## Further Reading
+
+- **[Design Decisions](./design-decisions/)** -- the reasoning behind key architectural choices: why Postgres, why Mac mini, why Bun, why Discord, why not Neo4j, why local-first, and blind multi-model evaluation.
+- **[Agent Orchestration](./agent-orchestration)** -- runtime-agnostic agent delegation, Git as coordination layer, and multi-model evaluation.

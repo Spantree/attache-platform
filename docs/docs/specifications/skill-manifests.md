@@ -1,8 +1,10 @@
 # Skill Manifests
 
-Skills are the primary extension point for Evie Platform agents. A skill teaches an agent *how* to do something: code review, research, deployment, whatever. Some skills are pure logic (just markdown and scripts). Others need infrastructure like Docker services, API keys, or CLI tools.
+Skills are the primary extension point for Evie Platform agents. A skill teaches an agent _how_ to do something: code review, research, deployment, whatever. Some skills are pure logic (just markdown and scripts). Others need infrastructure like Docker services, API keys, or CLI tools.
 
-![Skills & Extensibility](/img/evie-skills-L1.png)
+import ImageLightbox from '@site/src/components/ImageLightbox';
+
+<ImageLightbox src="/img/evie-skills-L1.png" alt="Skills & Extensibility" />
 
 ## The SKILL.md Convention
 

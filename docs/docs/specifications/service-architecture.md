@@ -1,6 +1,8 @@
 # Service Architecture
 
-![Infrastructure & Runtime](/img/evie-infrastructure-L1.png)
+import ImageLightbox from '@site/src/components/ImageLightbox';
+
+<ImageLightbox src="/img/evie-infrastructure-L1.png" alt="Infrastructure & Runtime" />
 
 Evie Platform uses Docker Compose as its service layer. The base platform ships required services (Supabase). Skills can add optional services via their own compose files. Each skill runs its own independent compose project — no merging, no assembly.
 

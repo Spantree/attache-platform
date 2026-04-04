@@ -13,7 +13,9 @@ An Evie Platform agent wakes up fresh every session. It has no built-in memory o
 
 The memory system gives agents continuity across sessions. It's built on an activity log foundation and organized into five layers, each handling a different recall pattern with storage optimized for how that information gets accessed.
 
-![Memory System Architecture](/img/evie-memory-system-L1.png)
+import ImageLightbox from '@site/src/components/ImageLightbox';
+
+<ImageLightbox src="/img/evie-memory-system-L1.png" alt="Memory System Architecture" />
 
 ## The Activity Log
 
@@ -61,14 +63,14 @@ With five layers accumulating over months, surfacing the right memories at the r
 
 All five layers plus the activity log converge on Supabase (Postgres) as the data backbone, though they use different access patterns.
 
-| Layer | Primary Storage | Access Pattern |
-|---|---|---|
-| Activity Log | Postgres (TimescaleDB) | Time-range queries + full-text search |
-| [Episodic Memory](./episodic-layer) | Markdown files | File reads + embedding search |
-| [Identity](./identity-layer) | Postgres | Lookup by identifier + fuzzy matching |
-| [Topical (Knowledge)](./knowledge-layer) | Markdown + Postgres (basic-memory) | Structured queries + semantic search |
-| Procedural | SKILL.md files | File reads + skill registry |
-| Artifact | Markdown + Postgres | Content-addressed retrieval |
+| Layer                                    | Primary Storage                    | Access Pattern                        |
+| ---------------------------------------- | ---------------------------------- | ------------------------------------- |
+| Activity Log                             | Postgres (TimescaleDB)             | Time-range queries + full-text search |
+| [Episodic Memory](./episodic-layer)      | Markdown files                     | File reads + embedding search         |
+| [Identity](./identity-layer)             | Postgres                           | Lookup by identifier + fuzzy matching |
+| [Topical (Knowledge)](./knowledge-layer) | Markdown + Postgres (basic-memory) | Structured queries + semantic search  |
+| Procedural                               | SKILL.md files                     | File reads + skill registry           |
+| Artifact                                 | Markdown + Postgres                | Content-addressed retrieval           |
 
 ### Why Postgres?
 

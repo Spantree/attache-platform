@@ -28,16 +28,16 @@ OpenClaw maintains its own security documentation at [docs.openclaw.ai/gateway/s
 
 A fresh Evie Platform deployment ships with these decisions already made:
 
-| Default                          | What it prevents                                                                                                                                                    |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Dedicated Mac mini**           | Agent runs on separate hardware. A compromise doesn't touch your primary workstation.                                                                               |
-| **Dedicated `openclaw` OS user** | Agent process runs under a restricted account, not your admin user.                                                                                                 |
+| Default                          | What it prevents                                                                                                                                                          |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Dedicated Mac mini**           | Agent runs on separate hardware. A compromise doesn't touch your primary workstation.                                                                                     |
+| **Dedicated `openclaw` OS user** | Agent process runs under a restricted account, not your admin user.                                                                                                       |
 | **Key-only SSH**                 | Evie Platform's setup playbook disables password authentication. Brute-force isn't viable.                                                                                |
-| **Tailscale for remote access**  | Gateway never touches the public internet. Every connection requires authenticated tailnet membership.                                                              |
-| **Loopback gateway binding**     | Gateway listens on `127.0.0.1` only. Not reachable from LAN. Traffic goes through Tailscale or stays on localhost.                                                  |
+| **Tailscale for remote access**  | Gateway never touches the public internet. Every connection requires authenticated tailnet membership.                                                                    |
+| **Loopback gateway binding**     | Gateway listens on `127.0.0.1` only. Not reachable from LAN. Traffic goes through Tailscale or stays on localhost.                                                        |
 | **Token-based auth**             | Every connection presents a token. Evie Platform does not use `trusted-proxy` mode, which has been the subject of a [critical advisory](#the-cve-and-advisory-situation). |
-| **1Password for secrets**        | Credentials live in scoped 1Password vaults, not plaintext config files.                                                                                            |
-| **Ansible-managed setup**        | Infrastructure is declarative. Drift is detectable. Re-running a playbook converges back to a known-good configuration.                                             |
+| **1Password for secrets**        | Credentials live in scoped 1Password vaults, not plaintext config files.                                                                                                  |
+| **Ansible-managed setup**        | Infrastructure is declarative. Drift is detectable. Re-running a playbook converges back to a known-good configuration.                                                   |
 
 Most OpenClaw tutorials have you running the gateway on your laptop, exposed on all interfaces, with full exec permissions. Evie Platform exists because that's a terrible idea.
 
@@ -51,12 +51,12 @@ Even on day one, the agent can draft emails freely. It just can't send them with
 
 Evie Platform encodes this progression into a **four-tier trust model**:
 
-| Tier | Policy | Examples |
-|---|---|---|
-| **Tier 1: Run freely** | Read-only, no side effects | Reading email, checking calendar, searching Slack, browsing repos, fetching web pages |
-| **Tier 2: Pre-approved** | Write operations within reversible boundaries | Creating git branches, committing code, opening PRs, drafting emails |
-| **Tier 3: Approve once per session** | External side effects, used regularly | Sending email, posting to Slack channels, triggering deployments |
-| **Tier 4: Always approve** | High-consequence, irreversible operations | Deleting data, modifying SSH config, accessing production DB credentials, financial transactions |
+| Tier                                 | Policy                                        | Examples                                                                                         |
+| ------------------------------------ | --------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Tier 1: Run freely**               | Read-only, no side effects                    | Reading email, checking calendar, searching Slack, browsing repos, fetching web pages            |
+| **Tier 2: Pre-approved**             | Write operations within reversible boundaries | Creating git branches, committing code, opening PRs, drafting emails                             |
+| **Tier 3: Approve once per session** | External side effects, used regularly         | Sending email, posting to Slack channels, triggering deployments                                 |
+| **Tier 4: Always approve**           | High-consequence, irreversible operations     | Deleting data, modifying SSH config, accessing production DB credentials, financial transactions |
 
 Tiers 1 and 2 cover the vast majority of daily agent activity. The agent only blocks on tier 3 and 4 operations, which come up far less frequently. See [Hardening: the four-tier model](./hardening.md#the-four-tier-model) for implementation details.
 
@@ -74,7 +74,9 @@ The [secrets proxy daemon](./hardening.md#secrets-proxy-daemon) sits between the
 
 There is no direct interaction between the requesting agent and the credential itself. Even a fully compromised agent can only access secrets the proxy's allowlist permits. The proxy also runs **leak detection** (regex + entropy scanning) on every outbound message to catch accidental credential exposure.
 
-![Security Architecture](/img/evie-security-L1.png)
+import ImageLightbox from '@site/src/components/ImageLightbox';
+
+<ImageLightbox src="/img/evie-security-L1.png" alt="Security Architecture" />
 
 ## The threat landscape
 
@@ -143,14 +145,14 @@ Evie Platform's security controls today cover gateway hardening, exec allowlists
 **Bloom filter credential scanning** — Build a bloom filter from 1Password vault entries and scan outbound commands for potential credential exfiltration. The target is sub-5ms per command, though we haven't benchmarked at scale yet. Catches the most dangerous exfiltration pattern: an agent embedding an API key in a curl command or URL.
 
 :::info What's a bloom filter?
-A bloom filter is a compact data structure that answers one question very fast: *"Have I seen this before?"* You feed it a set of known values (in this case, your credentials from 1Password), and it builds a bit array using multiple hash functions. Later, you can test any string against it and get one of two answers: **definitely not in the set** or **probably in the set**.
+A bloom filter is a compact data structure that answers one question very fast: _"Have I seen this before?"_ You feed it a set of known values (in this case, your credentials from 1Password), and it builds a bit array using multiple hash functions. Later, you can test any string against it and get one of two answers: **definitely not in the set** or **probably in the set**.
 
 The key properties that make it useful here:
 
 - **Speed.** Testing a string takes microseconds, not milliseconds. You can scan every command the agent runs without perceptible delay.
 - **Size.** A bloom filter holding 1,000 credentials uses roughly 1.2 KB of memory. The full credential values never exist in the filter — only their hashed fingerprints.
 - **One-way.** You can't extract the original credentials from the filter. Even if an attacker accessed the filter itself, they'd get a bit array, not your API keys.
-- **False positives, never false negatives.** The filter might occasionally flag an innocent string as a match (tunable — typically under 0.1%), but it will *never* miss a real credential. For security scanning, that's exactly the tradeoff you want.
+- **False positives, never false negatives.** The filter might occasionally flag an innocent string as a match (tunable — typically under 0.1%), but it will _never_ miss a real credential. For security scanning, that's exactly the tradeoff you want.
 
 In practice: Evie Platform syncs your 1Password vault into a bloom filter on startup, then tests every outbound shell command and URL against it. A credential appearing in a `curl` command or git push triggers an immediate block and DM approval request — all in under 5ms.
 
